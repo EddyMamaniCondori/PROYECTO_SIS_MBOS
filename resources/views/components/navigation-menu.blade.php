@@ -54,12 +54,43 @@
                 </a>
               </li>
 
+
+
+            
+               <!-- desplegable-->
               <li class="nav-item">
-                <a href="{{ route('distritos.index')  }}" class="nav-link">
-                  <i class="bi bi-house-heart"></i>
-                  <p>Distritos</p>
+                <a href="#" class="nav-link">
+                  <i class="bi bi-house-fill"></i>
+                  <p>
+                    Distritos
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
                 </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ route('distritos.index')  }}" class="nav-link">
+                      <i class="bi bi-houses"></i>
+                      <p>Todos los Distritos</p>
+                    </a>
+                  </li>
+                  @if($sw_cambio)
+                    <li class="nav-item">
+                        <a href="{{ route('distritos.asignaciones') }}" class="nav-link">
+                            <i class="bi bi-house-check"></i>
+                            <p>Asignaciones distritales</p>
+                        </a>
+                    </li>
+                  @endif
+
+                  <li class="nav-item">
+                    <a href="{{ route('distritos.historiales')}}" class="nav-link">
+                      <i class="bi bi-house-add"></i>
+                      <p>Historiales distritales</p>
+                    </a>
+                  </li>
+                </ul>
               </li>
+
               <!-- desplegable-->
               <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -83,7 +114,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('iglesias.indexasignar')}}" class="nav-link">
+                    <a href="#" class="nav-link">
                       <i class="bi bi-house-add"></i>
                       <p>asignar iglesia</p>
                     </a>
@@ -113,7 +144,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="{{ route('iglesias.indexasignar')}}" class="nav-link">
+                    <a href="#" class="nav-link">
                       <i class="bi bi-house-add"></i>
                       <p>asignar Desafio</p>
                     </a>

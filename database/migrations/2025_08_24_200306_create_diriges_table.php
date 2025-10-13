@@ -15,10 +15,12 @@ return new class extends Migration
             // Claves foráneas
             $table->unsignedBigInteger('id_distrito');
             $table->unsignedBigInteger('id_pastor');
+            
 
             // Atributos de la relación
             $table->date('fecha_asignacion');
             $table->date('fecha_finalizacion')->nullable(); // puede estar vacío si sigue activo
+            $table->string('año');
 
             $table->timestamps();
 
@@ -34,7 +36,7 @@ return new class extends Migration
                 ->onDelete('set null');
 
             // Para evitar duplicados de asignaciones
-            $table->unique(['id_distrito', 'id_pastor', 'fecha_asignacion']);
+            $table->unique(['id_distrito', 'id_pastor', 'año']);
         });
     }
 

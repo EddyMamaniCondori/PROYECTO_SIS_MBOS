@@ -15,11 +15,16 @@ return new class extends Migration
             $table->id('id_distrito'); // PK autoincremental
             $table->string('nombre', 150);
             $table->integer('nro_iglesias')->default(0); // valor por defecto
-            $table->foreignId('id_pastor')->references('id_pastor')->on('pastors')->onDelete('set null');
+            $table->boolean('sw_cambio')->default(false);
+            $table->boolean('sw_estado')->default(false);
+            $table->string('año');
+            $table->foreignId('id_pastor')->nullable()
+                ->constrained('pastors', 'id_pastor')
+                ->nullOnDelete();
 
-
-            $table->unsignedBigInteger('id_grupo')->nullable(); // FK hacia Grupo
-            $table->foreign('id_grupo')->references('id_grupo')->on('grupos')->onDelete('cascade');
+            $table->foreignId('id_grupo')->nullable()
+                ->constrained('grupos', 'id_grupo')
+                ->cascadeOnDelete();
 
             $table->timestamps();
         });

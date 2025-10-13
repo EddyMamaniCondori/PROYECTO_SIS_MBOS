@@ -61,10 +61,11 @@
                                     <thead>
                                         <tr>
                                             <th>Nombre Completo</th>
-                                            <th>Fecha de nacimiento</th>
                                             <th>ci</th>
-                                            <th>fecha de ordenacion</th>
                                             <th>cargo</th>
+                                            <th>celular</th>
+                                            <th>edad</th>
+                                            <th>Informacion</th>
                                             <th>acciones</th>
                                         </tr>
                                     </thead>
@@ -75,27 +76,56 @@
                                             {{$persona->id_persona}} &nbsp {{$persona->nombre}} &nbsp {{$persona->ape_paterno}} &nbsp  {{$persona->ape_materno }}
                                             </td>
                                             <td>
-                                                {{$persona->fecha_nac}}
-                                            </td>
-                                            <td>
                                                 {{$persona->ci}}
                                             </td>
-                                            <td> 
-                                                {{$persona->fecha_ordenacion}}
+                                            <td>
+                                                {{$persona->cargo}}
+                                            </td>
+                                            <td>
+                                                {{$persona->celular}}
                                             </td>
                                             <td> 
-                                                {{$persona->cargo}}
+                                                
+
+                                                {{ \Carbon\Carbon::parse($persona->fecha_nac)->age }}
+
+
+                                            </td>
+                                            <td> 
+                                                @if ($persona->fecha_ordenacion)
+                                                    <span class="badge bg-success fs-6">
+                                                        <i class="bi bi-check-circle-fill"></i> Pastor Ordenado
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-danger fs-6">
+                                                        <i class="bi bi-x-circle-fill"></i> No Ordenado
+                                                    </span>
+                                                @endif
+                                                <br>
+                                                @if ($persona->fecha_contratacion)
+                                                    <span class="badge bg-primary mt-1 fs-6">
+                                                        <i class="bi bi-briefcase-fill"></i> Pastor Contratado
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-warning mt-1 fs-6" >
+                                                        <i class="bi bi-exclamation-triangle-fill"></i> No Contratado
+                                                    </span>
+                                                @endif
                                             </td>
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                                
+                                                    <form action="{{ route('pastor.perfil', $persona->id_persona) }}" method="GET">
+                                                        <button type="submit" class="btn btn-info">Ver Perfil</button>
+                                                    </form>
 
-                                                <form action="" method="get">
-                                                    <button type="submit" class="btn btn-warning">Editar</button>
-                                                </form>
-                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$persona->id_persona}}">Eliminar</button>
+                                                    <form action="" method="get">
+                                                        <button type="submit" class="btn btn-warning">Editar</button>
+                                                    </form>
+                                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$persona->id_persona}}">Eliminar</button>
                                             </td>
                                         </tr>
-                                         <div class="modal fade" id="confirmModal-{{$persona->id_persona}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal fade" id="confirmModal-{{$persona->id_persona}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                 <div class="modal-header">
@@ -117,16 +147,17 @@
                                                 </div>
                                                 </div>
                                             </div>
-                                            </div>
+                                        </div>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
                                             <th>Nombre Completo</th>
-                                            <th>Fecha de nacimiento</th>
                                             <th>ci</th>
-                                            <th>fecha de ordenacion</th>
                                             <th>cargo</th>
+                                            <th>celular</th>
+                                            <th>edad</th>
+                                            <th>Informacion</th>
                                             <th>acciones</th>
                                         </tr>
                                     </tfoot>

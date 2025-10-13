@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PastorRequest extends FormRequest
 {
@@ -22,40 +23,73 @@ class PastorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre'       => 'required|string|max:30|regex:/^[\pL\s\-]+$/u',
-            'ape_paterno'  => 'required|string|max:30|regex:/^[\pL\s\-]+$/u',
-            'ape_materno'  => 'required|string|max:30|regex:/^[\pL\s\-]+$/u',
-            'fecha_nac'   => 'required|date|before:today',
-            'ci'            => 'required',
-            'edad'      => 'required',
-            'fecha_ordenacion'   => 'required|date',
-            'cargo'    => 'required|string|max:80',
+            'nombre'             => 'required|string|max:30|regex:/^[\pL\s\-]+$/u',
+            'ape_paterno'        => 'required|string|max:30|regex:/^[\pL\s\-]+$/u',
+            'ape_materno'        => 'nullable|string|max:30|regex:/^[\pL\s\-]+$/u',
+            'fecha_nac'          => 'required|date|before:today',
+            'ci'                 => [
+                                        'required',
+                                        'string',
+                                        'max:20',
+                                        Rule::unique('personas', 'ci')->ignore($this->id_persona, 'id_persona'),
+                                    ],
+            'celular'            => ['required','regex:/^[67]\d{7}$/'], // empieza con 6 o 7 y 8 dígitos
+            'ciudad'             => 'required|string|max:100',
+            'zona'               => 'required|string|max:100',
+            'calle'              => 'nullable|string|max:100',
+            'nro'                => 'nullable|string|max:20',
+            'fecha_ordenacion'   => 'nullable|date|before_or_equal:today',
+            'cargo'              => 'nullable|string|max:80',
+            'fecha_contratacion' => 'nullable|date|before_or_equal:today',
         ];
     }
     public function messages()
-    {
-        return [
-            'nombre.required' => 'El nombre es obligatorio.',
-            'nombre.max' => 'El nombre no debe superar los 30 caracteres.',
-            'nombre.regex' => 'El nombre solo debe contener letras y espacios.',
+{
+    return [
+        'nombre.required'       => 'El nombre es obligatorio.',
+        'nombre.max'            => 'El nombre no debe superar los 30 caracteres.',
+        'nombre.regex'          => 'El nombre solo debe contener letras y espacios.',
 
-            'ape_paterno.required' => 'El apellido paterno es obligatorio.',
-            'ape_paterno.max' => 'El apellido paterno no debe superar los 30 caracteres.',
-            'ape_paterno.regex' => 'El apellido paterno solo debe contener letras y espacios.',
+        'ape_paterno.required'  => 'El apellido paterno es obligatorio.',
+        'ape_paterno.max'       => 'El apellido paterno no debe superar los 30 caracteres.',
+        'ape_paterno.regex'     => 'El apellido paterno solo debe contener letras y espacios.',
 
-            'ape_materno.required' => 'El apellido materno es obligatorio.',
-            'ape_materno.max' => 'El apellido materno no debe superar los 30 caracteres.',
-            'ape_materno.regex' => 'El apellido materno solo debe contener letras y espacios.',
+        
+        'ape_materno.max'       => 'El apellido materno no debe superar los 30 caracteres.',
+        'ape_materno.regex'     => 'El apellido materno solo debe contener letras y espacios.',
 
-            'fecha_naci.required' => 'La fecha de nacimiento es obligatoria.',
-            'fecha_naci.date' => 'La fecha de nacimiento debe ser una fecha válida.',
-            'fecha_naci.before' => 'La fecha de nacimiento debe ser anterior a hoy.',
+        'fecha_nac.required'    => 'La fecha de nacimiento es obligatoria.',
+        'fecha_nac.date'        => 'La fecha de nacimiento debe ser una fecha válida.',
+        'fecha_nac.before'      => 'La fecha de nacimiento debe ser anterior a hoy.',
 
-            'celular.required' => 'El número de celular es obligatorio.',
-            'celular.regex' => 'El número de celular debe empezar con 6 o 7 y tener exactamente 8 dígitos.',
+        'ci.required'           => 'El carnet de identidad es obligatorio.',
+        'ci.unique'             => 'El carnet de identidad ya está registrado.',
+        'ci.max'                => 'El carnet de identidad no debe superar los 20 caracteres.',
 
-            'domicilio.required' => 'El domicilio es obligatorio.',
-            'domicilio.max' => 'El domicilio no debe superar los 80 caracteres.',
-        ];
-    }
+        'celular.required'      => 'El número de celular es obligatorio.',
+        'celular.regex'         => 'El número de celular debe empezar con 6 o 7 y tener exactamente 8 dígitos.',
+
+        'ciudad.required'       => 'La ciudad es obligatoria.',
+        'ciudad.max'            => 'La ciudad no debe superar los 100 caracteres.',
+
+        'zona.required'         => 'La zona es obligatoria.',
+        'zona.max'              => 'La zona no debe superar los 100 caracteres.',
+
+        'calle.max'             => 'La calle no debe superar los 100 caracteres.',
+        'nro.max'               => 'El número no debe superar los 20 caracteres.',
+
+        'fecha_ordenacion.date'     => 'La fecha de ordenación debe ser una fecha válida.',
+        'fecha_ordenacion.before_or_equal' => 'La fecha de ordenación no puede ser futura.',
+
+        'cargo.required'        => 'El cargo es obligatorio.',
+        'cargo.max'             => 'El cargo no debe superar los 80 caracteres.',
+
+        'fecha_contratacion.date'     => 'La fecha de contratación debe ser una fecha válida.',
+        'fecha_contratacion.before_or_equal' => 'La fecha de contratación no puede ser futura.',
+
+        'nro_distritos.integer' => 'El número de distritos debe ser un número.',
+        'nro_distritos.min'     => 'El número de distritos no puede ser negativo.',
+    ];
+}
+
 }

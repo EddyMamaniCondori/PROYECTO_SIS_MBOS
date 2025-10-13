@@ -14,58 +14,96 @@ class PastorSeeder extends Seeder
      */
     public function run(): void
     {
-         $pastores = [
+        $pastores = [
             [
-                'id_pastor' => 1,
-                'fecha_ordenacion' => '2010-03-12',
+                'id_pastor' => 1, // Henry Coronel
+                'fecha_ordenacion' => '2010-03-15',
                 'ordenado' => true,
-                'cargo' => 'Pastor Principal',
-                'nro_distritos' => 3,
+                'cargo' => 'Pastor Distrital',
+                'nro_distritos' => 0,
+                'fecha_contratacion' => '2009-01-01',
+                'contratado' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
-                'id_pastor' => 2,
-                'fecha_ordenacion' => '2015-07-20',
+                'id_pastor' => 2, // Franz Ciro Valdez
+                'fecha_ordenacion' => '2015-07-22',
                 'ordenado' => true,
-                'cargo' => 'Asistente de Distrito',
-                'nro_distritos' => 2,
+                'cargo' => 'Pastor Distrital',
+                'nro_distritos' => 0,
+                'fecha_contratacion' => '2014-02-10',
+                'contratado' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
-                'id_pastor' => 3,
-                'fecha_ordenacion' => '2012-11-05',
+                'id_pastor' => 3, // Ronald Moya
+                'fecha_ordenacion' => '2018-11-05',
                 'ordenado' => true,
-                'cargo' => 'Pastor de Jóvenes',
-                'nro_distritos' => 1,
+                'cargo' => 'Pastor Distrital',
+                'nro_distritos' => 0,
+                'fecha_contratacion' => '2018-01-15',
+                'contratado' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
-                'id_pastor' => 4,
-                'fecha_ordenacion' => '2018-02-14',
+                'id_pastor' => 4, // Jhon Mamani
+                'fecha_ordenacion' => null,
                 'ordenado' => false,
-                'cargo' => 'Evangelista',
-                'nro_distritos' => 1,
+                'cargo' => 'Pastor Distrital',
+                'nro_distritos' => 0,
+                'fecha_contratacion' => '2020-05-01',
+                'contratado' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
-                'id_pastor' => 5,
-                'fecha_ordenacion' => '2016-09-01',
-                'ordenado' => true,
-                'cargo' => 'Pastor Asociado',
-                'nro_distritos' => 2,
-            ],
-            [
-                'id_pastor' => 6,
-                'fecha_ordenacion' => '2020-04-10',
+                'id_pastor' => 5, // Juan Carlos Lima
+                'fecha_ordenacion' => null,
                 'ordenado' => false,
-                'cargo' => 'Líder de Ministerio',
-                'nro_distritos' => 1,
+                'cargo' => 'Pastor Distrital',
+                'nro_distritos' => 0,
+                'fecha_contratacion' => null,
+                'contratado' => false,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
-                'id_pastor' => 7,
-                'fecha_ordenacion' => '2011-12-30',
+                'id_pastor' => 6, // Manuel Morante
+                'fecha_ordenacion' => '2016-06-11',
                 'ordenado' => true,
-                'cargo' => 'Supervisor Regional',
-                'nro_distritos' => 4,
+                'cargo' => 'Pastor Distrital',
+                'nro_distritos' => 0,
+                'fecha_contratacion' => '2015-02-15',
+                'contratado' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'id_pastor' => 7, // Noel Larico
+                'fecha_ordenacion' => null,
+                'ordenado' => false,
+                'cargo' => 'Pastor Distrital',
+                'nro_distritos' => 0,
+                'fecha_contratacion' => '2021-01-25',
+                'contratado' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'id_pastor' => 8, // David Gutierrez
+                'fecha_ordenacion' => '2019-04-19',
+                'ordenado' => true,
+                'cargo' => 'Pastor Distrital',
+                'nro_distritos' => 0,
+                'fecha_contratacion' => null,
+                'contratado' => false,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
         ];
-
         foreach ($pastores as $pastor) {
             DB::table('pastors')->insert([
                 'id_pastor' => $pastor['id_pastor'],
@@ -73,6 +111,8 @@ class PastorSeeder extends Seeder
                 'ordenado' => $pastor['ordenado'],
                 'cargo' => $pastor['cargo'],
                 'nro_distritos' => $pastor['nro_distritos'],
+                'fecha_contratacion' => Carbon::now()->subYears(5)->format('Y-m-d'), // ejemplo de fecha
+                'contratado' => true,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);

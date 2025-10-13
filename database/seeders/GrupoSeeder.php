@@ -20,7 +20,7 @@ class GrupoSeeder extends Seeder
         $administrativos = Administrativo::all();
 
         // Verificar que existan al menos 3 administrativos
-        if ($administrativos->count() < 3) {
+        if ($administrativos->count() < 2) {
             $this->command->error('No hay suficientes administrativos para asignar a los grupos.');
             return;
         }
@@ -29,7 +29,6 @@ class GrupoSeeder extends Seeder
         $grupos = [
             ['nombre' => 'GP1', 'nro_distritos' => 0],
             ['nombre' => 'GP2', 'nro_distritos' => 0],
-            ['nombre' => 'GP3', 'nro_distritos' => 0],
         ];
 
         foreach ($grupos as $index => $data) {

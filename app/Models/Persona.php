@@ -5,6 +5,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+use App\Models\Pastor;
+
+use App\Models\Persona; 
 
 class Persona extends Model
 {
@@ -23,7 +26,11 @@ class Persona extends Model
         'ape_materno',
         'fecha_nac',
         'ci',
-        'edad',
+        'celular',
+        'ciudad',
+        'zona',
+        'calle',
+        'nro',
     ];
 
 
@@ -52,5 +59,8 @@ class Persona extends Model
     {
         return "{$this->nombre} {$this->ape_paterno} {$this->ape_materno}";
     }
+
+    
+
 
 }

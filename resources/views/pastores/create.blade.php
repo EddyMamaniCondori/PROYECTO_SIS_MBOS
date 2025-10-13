@@ -31,10 +31,12 @@
                     @csrf
                 
                     <div class="row g-3">
+                        <h5 class="mb-0"><strong>Datos Generales</strong></h5>
+                        <hr>
 
                         <div class="col-md-6"> <!--ocupa la mitad del espacio-->
 
-                            <label for="nombre" class="form-label">Nombre:</label>
+                            <label for="nombre" class="form-label">Nombre: <span class="text-danger">*</span></label>
                             <input type="text" name="nombre" id="nombre" class="form-control" value="{{@old('nombre')}}"> <!--name= debe tener mismo valor de la base de datos-->
                             @error('nombre')
                                 <small class="text-danger">{{$message}}</small>
@@ -42,7 +44,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="ape_paterno" class="form-label">Apellido Paterno:</label>
+                            <label for="ape_paterno" class="form-label">Apellido Paterno: <span class="text-danger">*</span></label>
                             <input type="text" name="ape_paterno" id="ape_paterno" class="form-control" value="{{@old('ape_paterno')}}"> <!--name= debe tener mismo valor de la base de datos-->
                             @error('ape_paterno')
                                 <small class="text-danger">{{$message}}</small>
@@ -57,41 +59,80 @@
                             @enderror
                         </div>
                         
-
+                        
                         <!--fecha-->
-                        <div class="col-md-6">
-                            <label for="fecha_nac" class="form-label">Fecha nacimiento:</label>
+                        <div class="col-md-4">
+                            <label for="fecha_nac" class="form-label">Fecha nacimiento: <span class="text-danger">*</span></label>
                             <input type="date" name="fecha_nac" id="fecha_nac" class="form-control" value="{{@old('fecha_nac')}}"> <!--name= debe tener mismo valor de la base de datos-->
                             @error('fecha_nac')
                                 <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
                         <!--celular-->
-                        <div class="col-md-6">
-                            <label for="ci" class="form-label">CI:</label>
+                        <div class="col-md-4">
+                            <label for="ci" class="form-label">CI: <span class="text-danger"> * </span></label>
                             <input type="text" name="ci" id="ci" class="form-control" value="{{@old('ci')}}"> <!--name= debe tener mismo valor de la base de datos-->
                             @error('ci')
                                 <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
                         <!--edad-->
-                        <div class="col-md-6">
-                            <label for="edad" class="form-label">Edad:</label>
-                            <input type="text" name="edad" id="edad" class="form-control" value="{{@old('edad')}}"> <!--name= debe tener mismo valor de la base de datos-->
-                            @error('edad')
+                        <div class="col-md-4">
+                            <label for="celular" class="form-label">Celular:</label> <span class="text-danger">*</span>
+                            <input type="text" name="celular" id="celular" class="form-control" value="{{@old('celular')}}"> <!--name= debe tener mismo valor de la base de datos-->
+                            @error('celular')
                                 <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
-                        <!--domicilio-->
-                        
+                    
+                        <h5 class="mb-0"><strong>Datos de direccion</strong></h5>
+                        <hr>
+                        <div class="col-md-4">
+                            <label for="ciudad" class="form-label">Ciudad:</label> <span class="text-danger">*</span>
+                            <input type="text" name="ciudad" id="ciudad" class="form-control" value="{{@old('ciudad')}}"> <!--name= debe tener mismo valor de la base de datos-->
+                            @error('ciudad')
+                                <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label for="zona" class="form-label">Zona:</label> <span class="text-danger">*</span>
+                            <input type="text" name="zona" id="zona" class="form-control" value="{{@old('zona')}}"> <!--name= debe tener mismo valor de la base de datos-->
+                            @error('zona')
+                                <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-2">
+                            <label for="calle" class="form-label">Calle:</label>
+                            <input type="text" name="calle" id="calle" class="form-control" value="{{@old('calle')}}"> <!--name= debe tener mismo valor de la base de datos-->
+                            @error('calle')
+                                <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-2">
+                            <label for="nro" class="form-label">Nro de puerta:</label>
+                            <input type="text" name="nro" id="nro" class="form-control" value="{{@old('nro')}}"> <!--name= debe tener mismo valor de la base de datos-->
+                            @error('nro')
+                                <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
+                        <h5 class="mb-0"><strong>Datos Pastorales</strong></h5>
+                        <hr>
                         <!--domicilio-->
                         <div class="col-md-6">
+                            <label for="fecha_contratacion" class="form-label">Fecha de contratacion:</label>
+                            <input type="date" name="fecha_contratacion" id="fecha_contratacion" class="form-control" value="{{@old('fecha_contratacion')}}"> <!--name= debe tener mismo valor de la base de datos-->
+                            @error('fecha_contratacion')
+                                <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-6">
                             <label for="fecha_ordenacion" class="form-label">Fecha ordenacion:</label>
-                            <input type="date" name="fecha_ordenacion" id="ffecha_ordenacion" class="form-control" value="{{@old('fecha_ordenacion')}}"> <!--name= debe tener mismo valor de la base de datos-->
+                            <input type="date" name="fecha_ordenacion" id="fecha_ordenacion" class="form-control" value="{{@old('fecha_ordenacion')}}"> <!--name= debe tener mismo valor de la base de datos-->
                             @error('fecha_ordenacion')
                                 <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
+                        
                         <div class="col-md-6">
                             <label for="cargo" class="form-label">Cargo:</label>
                             <input type="text" name="cargo" id="cargo" class="form-control" value="{{@old('cargo')}}"> <!--name= debe tener mismo valor de la base de datos-->

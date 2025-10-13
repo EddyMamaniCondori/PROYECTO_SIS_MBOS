@@ -13,21 +13,20 @@ return new class extends Migration
     {
         Schema::create('pastors', function (Blueprint $table) {
             $table->unsignedBigInteger('id_pastor')->primary()->unique(); // PK y FK a la vez
-            $table->date('fecha_ordenacion'); // Fecha de ordenación
+            $table->date('fecha_ordenacion')->nullable(); ; // Fecha de ordenación
             $table->boolean('ordenado')->default(false); // true/false o 1/0
-            $table->string('cargo', 100); // Cargo que ocupa
+            $table->string('cargo', 100)->nullable(); // Cargo que ocupa
             $table->integer('nro_distritos'); // Número de distritos asignados
-            
+            $table->date('fecha_contratacion')->nullable(); ; // Fecha de ordenación
+            $table->boolean('contratado')->default(false);
             // Definir la FK hacia personas(id_persona)
             $table->foreign('id_pastor')
                 ->references('id_persona')
                 ->on('personas')
                 ->onDelete('cascade');
-
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */

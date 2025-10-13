@@ -19,7 +19,7 @@ class PastorController extends Controller
     {
         $pastores = Persona::join('pastors as xp', 'personas.id_persona', '=', 'xp.id_pastor')
                     ->get();
-        
+        //dd($pastores);
         return view('pastores.index',['personas'=>$pastores]);
     }
 
@@ -48,12 +48,16 @@ class PastorController extends Controller
         try {
             DB::beginTransaction();
             $pers = Persona::create($request->validated()); // se crea el registro 
-            $pers ->pastor()->create([
-                'id'=>$pers->id,
-                'fecha_ordenacion' => $request->fecha_ordenacion,
-                'cargo'=>$request->cargo,
-                'nro_distritos' => 0,
+            $pers->pastor()->create([
+                'id_pastor'          => $pers->id_persona,  
+                'fecha_ordenacion'   => $request->filled('fecha_ordenacion') ? $request->fecha_ordenacion : null,
+                'ordenado'           => $request->filled('fecha_ordenacion'), // true si hay fecha, false si no
+                'cargo'              => $request->filled('cargo') ? $request->cargo : 'Pastor',
+                'fecha_contratacion' => $request->filled('fecha_contratacion') ? $request->fecha_contratacion : null,
+                'contratado'         => $request->filled('fecha_contratacion'), // true si hay fecha, false si no
+                'nro_distritos'      => 0,
             ]);
+
 
             /*$pers ->user()->create([
                 'id'=>$pers->id,
@@ -137,6 +141,24 @@ class PastorController extends Controller
             return response()->json(['error' => 'Error al Reactivar el Paciente: ' . $e->getMessage()], 500);
         }
         return redirect()->route('pacientes.index')->with('success','Paciente Recuperado Correctamente');
+    }
+
+    
+
+    public function perfil_pastor($id_pastor) //VERIFICADO
+    {
+        DB::beginTransaction();
+        $pastor = DB::table('pastors as xp')
+                ->join('personas as xpp', 'xp.id_pastor', '=', 'xpp.id_persona')
+                ->where('xp.id_pastor', $id_pastor)
+                ->select('xp.*', 'xpp.*')
+                ->first();
+        DB::commit();
+
+        if (!$pastor) {
+            abort(404, 'Pastor no encontrado');
+        }
+        return view('pastores.perfil_administrativo', compact('pastor'));
     }
 
     /*

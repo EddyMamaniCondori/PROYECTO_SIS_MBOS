@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             GrupoSeeder::class,
             DistritoSeeder::class,
             IglesiaSeeder::class,
+            DirigeSeeder::class,
         ]); 
     }
 }

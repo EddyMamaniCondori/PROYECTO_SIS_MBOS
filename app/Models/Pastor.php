@@ -19,6 +19,8 @@ class Pastor extends Model
         'ordenado',
         'cargo',
         'nro_distritos',
+        'fecha_contratacion',
+        'contratado',
     ];
 
     /**********************************************************

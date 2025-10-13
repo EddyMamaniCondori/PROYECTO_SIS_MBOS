@@ -18,7 +18,11 @@ return new class extends Migration
             $table->string('ape_materno', 100)->nullable(); // Puede ser NULL si no se registra
             $table->date('fecha_nac');
             $table->string('ci', 20)->unique(); // Carnet de Identidad único
-            $table->integer('edad');
+            $table->string('celular', 10);
+            $table->string('ciudad', 100);
+            $table->string('zona', 100);
+            $table->string('calle', 100)->nullable();
+            $table->string('nro', 20)->nullable();
             $table->timestamps(); // created_at y updated_at
         });
     }

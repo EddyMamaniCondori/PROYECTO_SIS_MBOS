@@ -34,7 +34,12 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Distritos</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Distritos
+                                            @foreach ($anios as $a)
+                                                {{ $a->año }}
+                                            @endforeach
+
+                                    </h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -43,6 +48,40 @@
               </div>
               <div class="row">
                 <a href="{{route('distritos.create')}}"><button type="button" class="btn btn-primary"> <i class="fa-solid fa-plus"></i> &nbsp Añadir nuevo distrito</button> </a><br>
+               <br>
+              </div>
+              <div class="row">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                YHabilitar Asiganciones distritales @foreach ($anios as $a)
+                                                        {{ $a->año+1}}
+                                                    @endforeach
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Habilitar Asignaciones</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Estas seguro que quieres habilitar las asiganaciones distritales para el @foreach ($anios as $a)
+                                                        {{ $a->año+1}}
+                                                    @endforeach
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <form action="{{ route('distritos.copiar.diriges') }}" method="get">
+                            <button type="submit" class="btn btn-success">
+                                Habilitar
+                            </button>
+                        </form>
+                    </div>
+                    </div>
+                </div>
+                </div>
               </div>
             </div>
           </div>
@@ -77,7 +116,16 @@
                                                 {{$distrito->nro_iglesias}}
                                             </td>
                                             <td>
-                                                {{$distrito->id_pastor}} &nbsp {{$distrito->nombre_pastor}} &nbsp {{$distrito->ape_paterno_pastor}} &nbsp {{$distrito->ape_materno_pastor}}
+                                                @if (!is_null($distrito->id_pastor))
+                                                    {{ $distrito->nombre_pastor }}
+                                                    &nbsp;{{ $distrito->ape_paterno_pastor }}
+                                                    &nbsp;{{ $distrito->ape_materno_pastor }}
+                                                @else
+                                                    <span class="badge bg-warning mt-1 fs-6">
+                                                        <i class="bi bi-exclamation-triangle-fill"></i> No Tiene Pastor Distrital
+                                                    </span>
+                                                @endif
+
                                             </td>
 
                                             <td>
@@ -87,7 +135,9 @@
 
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                <button type="submit" class="btn btn-primary">Asignar</button>
+                                                <form action="{{ route('distritos.historial', $distrito->id_distrito) }}" method="get">
+                                                    <button type="submit" class="btn btn-primary">Historial</button>
+                                                </form>
                                                 <form action="" method="get">
                                                     <button type="submit" class="btn btn-warning">Editar</button>
                                                 </form>
