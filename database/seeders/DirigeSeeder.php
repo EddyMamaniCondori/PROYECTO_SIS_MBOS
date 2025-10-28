@@ -18,7 +18,7 @@ class DirigeSeeder extends Seeder
             // ---------------------- GESTIÓN 2022 ----------------------
             [
                 'id_distrito' => 1,
-                'id_pastor' => 1,
+                'id_pastor' => 23,
                 'fecha_asignacion' => Carbon::create(2022, 1, 1),
                 'fecha_finalizacion' => Carbon::create(2024, 12, 31),
                 'año' => 2022,
@@ -27,7 +27,7 @@ class DirigeSeeder extends Seeder
             ],
             [
                 'id_distrito' => 2,
-                'id_pastor' => 2,
+                'id_pastor' => 25,
                 'fecha_asignacion' => Carbon::create(2022, 1, 1),
                 'fecha_finalizacion' => Carbon::create(2023, 12, 31),
                 'año' => 2022,
@@ -83,7 +83,7 @@ class DirigeSeeder extends Seeder
             // ---------------------- GESTIÓN 2023 ----------------------
             [
                 'id_distrito' => 1,
-                'id_pastor' => 1,
+                'id_pastor' => 37,
                 'fecha_asignacion' => Carbon::create(2023, 1, 1),
                 'fecha_finalizacion' => Carbon::create(2024, 12, 31),
                 'año' => 2023,
@@ -148,7 +148,7 @@ class DirigeSeeder extends Seeder
             // ---------------------- GESTIÓN 2024 ----------------------
             [
                 'id_distrito' => 1,
-                'id_pastor' => 1,
+                'id_pastor' => 23,
                 'fecha_asignacion' => Carbon::create(2024, 1, 1),
                 'fecha_finalizacion' => Carbon::create(2025, 12, 31),
                 'año' => 2024,

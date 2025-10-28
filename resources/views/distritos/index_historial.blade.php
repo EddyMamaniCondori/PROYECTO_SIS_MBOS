@@ -81,8 +81,6 @@
                                     <tfoot>
                                         <tr>
                                             <th>Nombre</th>
-                                            <th>nro de iglesias</th>
-                                            <th>pastor distrital</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </tfoot>

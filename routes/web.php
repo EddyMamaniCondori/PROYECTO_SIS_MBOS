@@ -11,6 +11,7 @@ use App\Http\Controllers\VisitasController;
 use App\Http\Controllers\EstudiantesController;
 use App\Http\Controllers\InstructoresController;
 use App\Http\Controllers\DesafioMensualController;
+use App\Http\Controllers\RemesaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -27,6 +28,18 @@ Route::get('/tablas', function () {
     return view('pruebas/table');
 });
 
+Route::get('/remesas/mes/{mes}/{anio}', [RemesaController::class, 'index_mes'])
+    ->name('remesas.index_mes');
+Route::get('/remesas/crear/{mes}/{anio}', [RemesaController::class, 'generarRemesasYGastos'])
+    ->name('remesas.crear');
+
+/*ruta extra para Pastores*/ 
+Route::get('pastores/indexdelete', [PastorController::class, 'indexdelete'])
+    ->name('pastores.indexdelete');
+Route::post('pastores/reactive/{id}', [PastorController::class, 'reactive'])
+    ->name('pastores.reactive');
+
+/*______________*/ 
 Route::get('bautisos/dashboard', [BautisosController::class, 'dashboard'])
     ->name('bautiso.dashboard');
 /*ruta extra para Distritos*/ 
@@ -87,3 +100,4 @@ Route::resource('visitas', VisitasController::class);
 Route::resource('estudiantes', EstudiantesController::class);
 Route::resource('instructores', InstructoresController::class);
 Route::resource('desafios', DesafioMensualController::class);
+Route::resource('remesas', RemesaController::class);

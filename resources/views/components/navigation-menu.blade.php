@@ -69,23 +69,21 @@
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
                     <a href="{{ route('distritos.index')  }}" class="nav-link">
-                      <i class="bi bi-houses"></i>
-                      <p>Todos los Distritos</p>
+                      <i class="bi bi-houses-fill"></i>&nbsp
+                      <p>Distritos</p>
                     </a>
                   </li>
-                  @if($sw_cambio)
                     <li class="nav-item">
                         <a href="{{ route('distritos.asignaciones') }}" class="nav-link">
-                            <i class="bi bi-house-check"></i>
-                            <p>Asignaciones distritales</p>
+                            <i class="bi bi-house-gear-fill"></i>
+                            <p>Asignación distrital</p>&nbsp
                         </a>
                     </li>
-                  @endif
 
                   <li class="nav-item">
                     <a href="{{ route('distritos.historiales')}}" class="nav-link">
-                      <i class="bi bi-house-add"></i>
-                      <p>Historiales distritales</p>
+                      <i class="bi bi-house-exclamation-fill"></i>&nbsp
+                      <p>Historial</p>
                     </a>
                   </li>
                 </ul>
@@ -258,7 +256,52 @@
                   </li>
                 </ul>
               </li>
-              <li class="nav-header">EXAMPLES</li>
+              <li class="nav-header">FINANCIERO</li>
+
+
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="bi bi-wallet2"></i>
+                  <p>
+                    Remesas
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ route('remesas.index')  }} " class="nav-link">
+                      <i class="bi bi-cash-coin"></i>
+                      <p> Remesas</p>
+                    </a>
+                    <a href="{{ route('estudiantes.index')  }}" class="nav-link">
+                      <i class="bi bi-stars"></i>
+                      <p>Puntualidad</p>
+                    </a>
+                    <a href="{{ route('estudiantes.index')  }}" class="nav-link">
+                      <i class="bi bi-file-earmark-bar-graph"></i>
+                      <p>Informe</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
+              
+              <li class="nav-item">
+                    
+                  </li>
+
+                  <li class="nav-item">
+                    <a href="./examples/lockscreen.html" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p> Egresos</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./examples/lockscreen.html" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p> Reportes</p>
+                    </a>
+                  </li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="nav-icon bi bi-box-arrow-in-right"></i>
@@ -268,7 +311,13 @@
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-                  <li class="nav-item">
+
+                  
+
+
+
+
+                                    <li class="nav-item">
                     <a href="#" class="nav-link">
                       <i class="nav-icon bi bi-box-arrow-in-right"></i>
                       <p>
@@ -313,12 +362,6 @@
                         </a>
                       </li>
                     </ul>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./examples/lockscreen.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Lockscreen</p>
-                    </a>
                   </li>
                 </ul>
               </li>

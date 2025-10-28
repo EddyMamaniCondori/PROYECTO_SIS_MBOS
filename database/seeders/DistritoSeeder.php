@@ -14,89 +14,34 @@ class DistritoSeeder extends Seeder
      */
     public function run(): void
     {
-         // Crear los 7 distritos con sus respectivos pastores
-        DB::table('distritos')->insert([
-            'nombre' => 'Bolivar',
-            'nro_iglesias' => 3,
-            'id_pastor' => 1,
-            'id_grupo' => 1,
-            'sw_cambio' => false,
-            'sw_estado' => false,
-            'año' => '2025',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
+        $distritos = [
+            'Muruamaya', 'San Martín', '27 de Mayo', 'Atipiris', 'Villa Remedios',
+            'Tilata', 'Cupilupaca', 'Santiago de Machaca', 'Pathipi', 'Curahuara',
+            'Bolivar', 'Viacha', 'Villa Adela', 'Cosmos', 'Maranatha',
+            'Villa Aroma', 'El Valle', 'Senkata 79', 'Pacajes', 'Inquisivi',
+            'Araca', 'Villa Juliana', 'La Hermosa', 'El Salvador', 'Fabril',
+            'Patacamaya', 'El Porvenir', 'Mariscal', 'Las Fronteras', 'Lahuachaca',
+            'Cosapa', 'Rosario', 'Cajuata', 'Vichaya', 'Charapaqui',
+            '25 de Julio', 'Ventilla', 'Santa Rosa', 'Collana'
+        ];
 
-        DB::table('distritos')->insert([
-            'nombre' => 'Cosmos',
-            'nro_iglesias' => 2,
-            'id_pastor' => 2,
-            'id_grupo' => 1,
-            'sw_cambio' => false,
-            'sw_estado' => false,
-            'año' => '2025',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
+        $data = [];
 
-        DB::table('distritos')->insert([
-            'nombre' => 'La Hermosa',
-            'nro_iglesias' => 4,
-            'id_pastor' => 3,
-            'id_grupo' => 2,
-            'sw_cambio' => false,
-            'sw_estado' => false,
-            'año' => '2025',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
+        foreach ($distritos as $distrito) {
+            $data[] = [
+                'nombre' => $distrito,
+                'nro_iglesias' => 0,
+                'id_pastor' => null, // Puedes asignar si tienes id
+                'id_grupo' => null,  // Puedes asignar si tienes id
+                'sw_cambio' => false,
+                'sw_estado' => false,
+                'año' => '2025',
+                'id_pastor' => 25,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+        }
 
-        DB::table('distritos')->insert([
-            'nombre' => 'Maranatha',
-            'nro_iglesias' => 3,
-            'id_pastor' => 4,
-            'id_grupo' => 2,
-            'sw_cambio' => false,
-            'sw_estado' => false,
-            'año' => '2025',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-
-        DB::table('distritos')->insert([
-            'nombre' => 'Pacajes',
-            'nro_iglesias' => 2,
-            'id_pastor' => 5,
-            'id_grupo' => 1,
-            'sw_cambio' => false,
-            'sw_estado' => false,
-            'año' => '2025',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-
-        DB::table('distritos')->insert([
-            'nombre' => 'Santa Rosa',
-            'nro_iglesias' => 3,
-            'id_pastor' => 6,
-            'id_grupo' => 2,
-            'sw_cambio' => false,
-            'sw_estado' => false,
-            'año' => '2025',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
-
-        DB::table('distritos')->insert([
-            'nombre' => 'Villa Adela',
-            'nro_iglesias' => 4,
-            'id_pastor' => 7,
-            'id_grupo' => 2,
-            'sw_cambio' => false,
-            'sw_estado' => false,
-            'año' => '2025',
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
+        DB::table('distritos')->insert($data);
     }
 }

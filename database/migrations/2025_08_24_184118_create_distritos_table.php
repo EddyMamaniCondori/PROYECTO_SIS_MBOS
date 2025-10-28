@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('nro_iglesias')->default(0); // valor por defecto
             $table->boolean('sw_cambio')->default(false);
             $table->boolean('sw_estado')->default(false);
-            $table->string('año');
+            $table->string('año')->nullable();
             $table->foreignId('id_pastor')->nullable()
                 ->constrained('pastors', 'id_pastor')
                 ->nullOnDelete();

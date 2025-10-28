@@ -65,7 +65,14 @@ class DistritoController extends Controller
      */
     public function create()
     {
-        $pastores = Pastor::PastorDC();
+        $pastores = DB::select("
+            SELECT xp.id_pastor, xpp.nombre, xpp.ape_paterno, xpp.ape_materno
+            FROM pastors xp
+            LEFT JOIN distritos xd ON xd.id_pastor = xp.id_pastor
+            join personas xpp on xp.id_pastor = xpp.id_persona
+            WHERE xd.id_pastor IS NULL and 
+            xpp.estado = true
+        ");
         $grupos = Grupo::all();
         return view('distritos.create', compact('pastores', 'grupos'));
     }

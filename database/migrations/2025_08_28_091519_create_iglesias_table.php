@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('zona')->nullable();
             $table->string('calle')->nullable();
             $table->string('nro')->nullable();
+            $table->enum('lugar', ['ALTIPLANO', 'EL ALTO'])->nullable();
+            $table->enum('tipo', ['IGLESIA', 'GRUPO', 'FILIAL'])->nullable();
             $table->unsignedBigInteger('distrito_id')->nullable();
             $table->foreign('distrito_id')
                 ->references('id_distrito')

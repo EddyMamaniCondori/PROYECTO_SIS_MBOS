@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class PastorRequest extends FormRequest
+class UpdatePastorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,7 +31,7 @@ class PastorRequest extends FormRequest
                                         'required',
                                         'string',
                                         'max:20',
-                                        Rule::unique('personas', 'ci')->ignore($this->id_persona, 'id_persona'),
+                                        Rule::unique('personas', 'ci')->ignore($this->route('pastore'), 'id_persona'),
                                     ],
             'celular'            => ['required','regex:/^[67]\d{7}$/'], // empieza con 6 o 7 y 8 dígitos
             'ciudad'             => 'required|string|max:100',
@@ -91,5 +91,4 @@ class PastorRequest extends FormRequest
             'nro_distritos.min'     => 'El número de distritos no puede ser negativo.',
         ];
     }
-
 }

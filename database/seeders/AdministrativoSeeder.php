@@ -16,12 +16,12 @@ class AdministrativoSeeder extends Seeder
     {
          $administrativos = [
             [
-                'id_persona' => 9,
+                'id_persona' => 1,
                 'cargo' => 'Secretario General',
                 'ministerio' => 'Administración Central',
             ],
             [
-                'id_persona' => 10,
+                'id_persona' => 2,
                 'cargo' => 'Tesorero',
                 'ministerio' => 'Finanzas y Recursos',
             ],

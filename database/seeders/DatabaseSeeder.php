@@ -29,6 +29,9 @@ class DatabaseSeeder extends Seeder
             DistritoSeeder::class,
             IglesiaSeeder::class,
             DirigeSeeder::class,
+            RemesaSeeder::class,
+            GastosSeeder::class,
+            GeneraSeeder::class,
         ]); 
     }
 }

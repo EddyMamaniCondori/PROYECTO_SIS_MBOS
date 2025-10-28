@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('zona', 100);
             $table->string('calle', 100)->nullable();
             $table->string('nro', 20)->nullable();
+            $table->boolean('estado')->default(true);
             $table->timestamps(); // created_at y updated_at
         });
     }

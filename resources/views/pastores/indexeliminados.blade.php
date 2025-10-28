@@ -34,18 +34,16 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Pastores</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Pastores Todos los pastores</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Pastores</li>
+                  <li class="breadcrumb-item"><a href="{{ route('pastores.index')}}">Pastores</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Todos los Pastores</li>
                 </ol>
               </div>
               <div class="row">
-                <a href="{{route('pastores.create')}}"><button type="button" class="btn btn-primary"> <i class="bi bi-person-plus-fill"></i> &nbsp Añadir nuevo registro </button> </a><br>
-              </div>
-              <div class="row pt-3">
-                <a href="{{route('pastores.indexdelete')}}"><button type="button" class="btn btn-danger"> <i class="bi bi-person-fill-x"></i> &nbsp Pastores Desactivados </button> </a><br>
+                <a href="{{route('pastores.index')}}"><button type="button" class="btn btn-success"> <i class="bi bi-person-fill-x"></i> &nbsp Pastores </button> </a><br>
               </div>
             </div>
           </div>
@@ -88,7 +86,10 @@
                                                 {{$persona->celular}}
                                             </td>
                                             <td> 
+                                                
+
                                                 {{ \Carbon\Carbon::parse($persona->fecha_nac)->age }}
+
 
                                             </td>
                                             <td> 
@@ -115,15 +116,7 @@
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
                                                 
-                                                    <form action="{{ route('pastor.perfil', $persona->id_persona) }}" method="GET">
-                                                        <button type="submit" class="btn btn-info"> <i class="bi bi-file-earmark-bar-graph-fill"></i> Ver Perfil</button>
-                                                    </form>
-
-                                                    <a href="{{ route('pastores.edit', $persona->id_persona) }}" class="btn btn-warning">
-                                                        <i class="bi bi-pencil-square"></i> Editar
-                                                    </a>
-
-                                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$persona->id_persona}}"> <i class="bi bi-trash3-fill"></i> Eliminar</button>
+                                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$persona->id_persona}}">Reactivar</button>
                                             </td>
                                         </tr>
                                         <div class="modal fade" id="confirmModal-{{$persona->id_persona}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -134,15 +127,17 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <strong style="color: red;">¿Seguro que quieres eliminar a este pastor? </strong><br>
+                                                    <strong style="color: red;">¿Seguro que quieres reactivar a este pastor? </strong><br>
                                                     <strong> Nombre: </strong> {{$persona->nombre}} &nbsp {{$persona->ape_paterno}} &nbsp  {{$persona->ape_materno }}
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                    <form action="{{ route('pastores.destroy',['pastore'=>$persona->id_persona])}}" method="POST">
-                                                        @method('DELETE')
+                                                    <form action="{{ route('pastores.reactive',['id'=>$persona->id_persona])}}" method="POST">
                                                         @csrf
-                                                    <button type="submit" class="btn btn-danger">Confirmar</button>
+                                                    <button type="submit" class="btn btn-success">
+                                                        <i class="bi bi-arrow-counterclockwise"></i> Confirmar
+                                                    </button>
+
                                                     </form>
                                                     
                                                 </div>

@@ -23,6 +23,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 1',
             'calle' => 'Calle 1',
             'nro' => '101',
+            'lugar' => 'ALTIPLANO',
+            'tipo' => 'FILIAL',
             'distrito_id' => 1, // Distrito 1
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -37,6 +39,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 2',
             'calle' => 'Calle 2',
             'nro' => '102',
+            'lugar' => 'EL ALTO',
+            'tipo' => 'IGLESIA',
             'distrito_id' => 2, // Distrito 2
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -51,6 +55,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 3',
             'calle' => 'Calle 3',
             'nro' => '103',
+            'lugar' => 'EL ALTO',
+            'tipo' => 'GRUPO',
             'distrito_id' => 3, // Distrito 3
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -65,6 +71,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 4',
             'calle' => 'Calle 4',
             'nro' => '104',
+            'lugar' => 'ALTIPLANO',
+            'tipo' => 'FILIAL',
             'distrito_id' => 4, // Distrito 4
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -79,6 +87,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 5',
             'calle' => 'Calle 5',
             'nro' => '105',
+            'lugar' => 'EL ALTO',
+            'tipo' => 'FILIAL',
             'distrito_id' => 5, // Distrito 5
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -93,6 +103,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 6',
             'calle' => 'Calle 6',
             'nro' => '106',
+            'lugar' => 'ALTIPLANO',
+            'tipo' => 'FILIAL',
             'distrito_id' => 6, // Distrito 6
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -107,6 +119,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 7',
             'calle' => 'Calle 7',
             'nro' => '107',
+            'lugar' => 'EL ALTO',
+            'tipo' => 'FILIAL',
             'distrito_id' => 7, // Distrito 7
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -121,6 +135,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 8',
             'calle' => 'Calle 8',
             'nro' => '108',
+            'lugar' => 'EL ALTO',
+            'tipo' => 'FILIAL',
             'distrito_id' => 1, // Vuelve a Distrito 1
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -135,6 +151,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 9',
             'calle' => 'Calle 9',
             'nro' => '109',
+            'lugar' => 'ALTIPLANO',
+            'tipo' => 'FILIAL',
             'distrito_id' => 2, // Distrito 2
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -149,6 +167,8 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 10',
             'calle' => 'Calle 10',
             'nro' => '110',
+            'lugar' => 'EL ALTO',
+            'tipo' => 'IGLESIA',
             'distrito_id' => 3, // Distrito 3
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
@@ -163,6 +183,22 @@ class IglesiaSeeder extends Seeder
             'zona' => 'Zona 11',
             'calle' => 'Calle 11',
             'nro' => '111',
+            'lugar' => 'ALTIPLANO',
+            'tipo' => 'IGLESIA',
+            'distrito_id' => 4, // Distrito 4
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+        DB::table('iglesias')->insert([
+            'nombre' => 'Maranatha',
+            'feligresia' => 180,
+            'feligrasia_asistente' => 110,
+            'ciudad' => 'Ciudad Ejemplo',
+            'zona' => 'Zona 11',
+            'calle' => 'Calle 11',
+            'nro' => '111',
+            'lugar' => 'ALTIPLANO',
+            'tipo' => 'GRUPO',
             'distrito_id' => 4, // Distrito 4
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),

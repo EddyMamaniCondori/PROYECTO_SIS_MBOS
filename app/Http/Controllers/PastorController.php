@@ -5,19 +5,31 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 
-use App\Models\Pastor;
+
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Models\Persona; 
+use App\Models\Pastor;
 
 use App\Http\Requests\PastorRequest;
-
+use App\Http\Requests\UpdatePastorRequest;
 
 class PastorController extends Controller
 {
+    public function indexdelete()
+    {
+        $pastores = Persona::join('pastors as xp', 'personas.id_persona', '=', 'xp.id_pastor')
+                    ->where('personas.estado', false)
+                    ->get();
+        //dd($pastores);
+        
+        return view('pastores.indexeliminados',['personas'=>$pastores]);
+    }
+
     public function index()
     {
         $pastores = Persona::join('pastors as xp', 'personas.id_persona', '=', 'xp.id_pastor')
+                    ->where('personas.estado', true)
                     ->get();
         //dd($pastores);
         return view('pastores.index',['personas'=>$pastores]);
@@ -86,31 +98,49 @@ class PastorController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $persona) //verificado
+    public function edit(string $pastore) //verificado
     {
-        $paciente = Persona::findOrFail($persona);
-        return view('paciente.edit',['paciente'=>$paciente]);
+        //dd($pastore);
+        $pastor = DB::table('personas as xp')
+                ->join('pastors as xpp', 'xp.id_persona', '=', 'xpp.id_pastor')
+                ->where('xp.id_persona', $pastore)
+                ->select('xp.*', 'xpp.*')
+                ->first();
+
+        return view('pastores.edit',['pastor'=>$pastor]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePacienteRequest $request, $id) //verificado
+    public function update(UpdatePastorRequest $request, $id) //verificado
     {
         try {
-         // Recuperar el modelo de la persona por el ID proporcionado en el request
-            $persona = Persona::findOrFail($id);
-
-            // Aplicar la actualización
-            $persona->update($request->validated());
-
-            // Redirigir con un mensaje de éxito
-            return redirect()->route('pacientes.index')->with('success', 'Paciente actualizado correctamente.');
+            $pastor = Pastor::findOrFail($id);
+            $persona = Persona::findOrFail($pastor->id_pastor); 
+            $persona->update([
+                'nombre'       => $request->nombre,
+                'ape_paterno'  => $request->ape_paterno,
+                'ape_materno'  => $request->ape_materno,
+                'fecha_nac'    => $request->fecha_nac,
+                'ci'           => $request->ci,
+                'celular'      => $request->celular,
+                'ciudad'       => $request->ciudad,
+                'zona'         => $request->zona,
+                'calle'        => $request->calle,
+                'nro'          => $request->nro,
+            ]);
+            $pastor->update([
+                'fecha_ordenacion'   => $request->fecha_ordenacion,
+                'cargo'              => $request->cargo,
+                'fecha_contratacion' => $request->fecha_contratacion,
+            ]);
+            return redirect()->route('pastores.index')->with('success', 'Pastor actualizado correctamente.');
         } catch (\Exception $e) {
             DB::rollBack();
-            // Redirigir con mensaje de error
-            return redirect()->back()->with('error', 'Error al actualizar el paciente: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
         }
+    
     }
 
     public function destroy(string $id) //VERIFICADO
@@ -118,14 +148,14 @@ class PastorController extends Controller
         try {
             DB::beginTransaction();
             $persona = Persona::find($id); 
-            $persona -> estado = 0;
+            $persona -> estado = false;
             $persona -> save();
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Error al Eliminar el Paciente: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Error al Eliminar al Pastor: ' . $e->getMessage()], 500);
         }
-        return redirect()->route('pacientes.index')->with('success','Paciente Eliminado Correctamente');
+        return redirect()->route('pastores.index')->with('success','Pastor Eliminado Correctamente');
     }
 
     public function reactive(string $id) //VERIFICADO
@@ -133,14 +163,14 @@ class PastorController extends Controller
         try {
             DB::beginTransaction();
             $persona = Persona::find($id); 
-            $persona -> estado = 1;
+            $persona -> estado = true;
             $persona -> save();
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Error al Reactivar el Paciente: ' . $e->getMessage()], 500);
+            return response()->json(['error' => 'Error al Reactivar el Pastor: ' . $e->getMessage()], 500);
         }
-        return redirect()->route('pacientes.index')->with('success','Paciente Recuperado Correctamente');
+        return redirect()->route('pastores.index')->with('success','Pastor Recuperado Correctamente');
     }
 
     
