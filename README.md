@@ -6,6 +6,12 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
+## PASOS PARA EL FUNCIONAMIENTO
+
+## IMPORTANTE BASE DE DATOS
+se debe ejucutar estas lineas en la base de datos
+CREATE EXTENSION IF NOT EXISTS unaccent; Postgressql
+
 
 ## About Laravel
 
@@ -51,6 +57,7 @@ Thank you for considering contributing to the Laravel framework! The contributio
 ## Code of Conduct
 
 In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
 
 ## Security Vulnerabilities
 
