@@ -17,7 +17,11 @@ class Distrito extends Model
         'nombre',
         'nro_iglesias',
         'id_pastor',
-        'id_grupo'
+        'id_grupo',
+        'sw_cambio',
+        'estado',
+        'fecha_asignacion',
+        'año'
     ];
     
     /************************************************

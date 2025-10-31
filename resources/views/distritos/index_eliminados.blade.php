@@ -11,10 +11,9 @@
 
 @section('content')
 
-{{-- ✅ Mensaje de éxito --}}
 @if (session('success'))
-<script>
-    const Toast = Swal.mixin({
+    <script>
+        const Toast = Swal.mixin({
         toast: true,
         position: "top-end",
         showConfirmButton: false,
@@ -24,67 +23,27 @@
             toast.onmouseenter = Swal.stopTimer;
             toast.onmouseleave = Swal.resumeTimer;
         }
-    });
-    Toast.fire({
+        });
+        Toast.fire({
         icon: "success",
         title: "{{ session('success') }}"
-    });
-</script>
-@endif
-
-{{-- ❌ Error general --}}
-@if (session('error'))
-<script>
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'error',
-    title: "{{ session('error') }}",
-    showConfirmButton: false,
-    timer: 4000,
-    timerProgressBar: true
-});
-</script>
-@endif
-
-{{-- ⚠️ Errores de validación --}}
-@if ($errors->any())
-<script>
-@foreach ($errors->all() as $error)
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'error',
-    title: "{{ $error }}",
-    showConfirmButton: false,
-    timer: 5000,
-    timerProgressBar: true
-});
-@endforeach
-</script>
+        });
+    </script>
 @endif
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Distritos
-                                            @foreach ($anios as $a)
-                                                {{ $a->año }}
-                                            @endforeach
+              <div class="col-sm-6"><h3 class="mb-0">Distritos Inhabilitados
 
                                     </h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Distritos</li>
+                  <li class="breadcrumb-item"><a href="{{ route('distritos.index')}}">Distritos</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Distritos Inhabilitados</li>
                 </ol>
               </div>
-              <div class="row">
-                <a href="{{route('distritos.create')}}"><button type="button" class="btn btn-success"> <i class="fa-solid fa-plus"></i> &nbsp Añadir nuevo distrito</button> </a><br>
-               
-              </div>
-              <div class="row pt-2 pb-2">
-                <a href="{{route('distritos.indexdelete')}}"><button type="button" class="btn btn-danger"> <i class="bi bi-person-fill-x"></i> &nbsp Distritos Inhabilitados </button> </a><br>
             </div>
           </div>
         </div>
@@ -147,65 +106,35 @@ Swal.fire({
                                                     <button type="submit" class="btn btn-primary"> <i class="bi bi-clock-history"></i>  Historial</button>
                                                 </form>
 
-                                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModalEdit-{{$distrito->id_distrito}}"> <i class="bi bi-pencil-square"></i>Editar</button>
-
-                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$distrito->id_distrito}}"> <i class="bi bi-trash-fill"></i>Eliminar</button>
+                                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$distrito->id_distrito}}"> <i class="bi bi-person-fill-check"></i>Reactivar</button>
                                             </td>
                                         </tr>
 
-                                            <!-- Modal  ELIMINACION-->
+                                            <!-- Modal -->
                                             <div class="modal fade" id="confirmModal-{{$distrito->id_distrito}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de Confirmacion</h1>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <strong style="color: red;">¿Seguro que quieres eliminar a este distrito? </strong><br>
-                                                            <strong> Nombre: </strong> {{$distrito->nombre}}
-                                                            
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                            <form action="{{ route('distritos.destroy',['distrito'=>$distrito->id_distrito])}}" method="POST">
-                                                                @method('DELETE')
-                                                                @csrf
-                                                            <button type="submit" class="btn btn-danger">Confirmar</button>
-                                                            </form>
-                                                            
-                                                        </div>
-                                                    </div>
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de Confirmacion</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <strong style="color: green;">¿Seguro que quieres Reactivar a este distrito? </strong><br>
+                                                    <center><strong> <h3>Nombre: </strong> {{$distrito->nombre}}</h3></center>
+                                                    <hr>
+                                                    
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    <form action="{{ route('distritos.reactive',['id'=>$distrito->id_distrito])}}" method="POST">
+                                                        @csrf
+                                                    <button type="submit" class="btn btn-success">Confirmar</button>
+                                                    </form>
+                                                    
+                                                </div>
                                                 </div>
                                             </div>
-                                            <!-- Modal  Actualizacion-->
-                                            <div class="modal fade" id="confirmModalEdit-{{$distrito->id_distrito}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar Distrito</h1>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-
-                                                        <form action="{{ route('distritos.update', $distrito->id_distrito) }}" method="POST">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <div class="modal-body">
-                                                                <div class="mb-3">
-                                                                    <label for="nombre" class="form-label">Nombre del Distrito</label>
-                                                                    <input type="text" class="form-control" id="nombre" name="nombre" value="{{ $distrito->nombre }}" required>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
                                             </div>
-
                                         @endforeach
                                     </tbody>
                                     <tfoot>

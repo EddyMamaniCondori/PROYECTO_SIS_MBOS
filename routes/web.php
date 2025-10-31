@@ -42,9 +42,14 @@ Route::post('pastores/reactive/{id}', [PastorController::class, 'reactive'])
 /*______________*/ 
 Route::get('bautisos/dashboard', [BautisosController::class, 'dashboard'])
     ->name('bautiso.dashboard');
+
+
 /*ruta extra para Distritos*/ 
 Route::get('distritos/asignaciones', [DistritoController::class, 'index_asignaciones'])
     ->name('distritos.asignaciones');
+
+Route::get('distritos/asiganual', [DistritoController::class, 'indexanual'])
+    ->name('distritos.asiganual');
 
 Route::get('distritos/historiales', [DistritoController::class, 'index_historial'])
     ->name('distritos.historiales');
@@ -55,13 +60,22 @@ Route::get('/distritos/historial/{id_distrito}', [DistritoController::class, 'hi
 Route::get('/distritos/copiar-diriges', [DistritoController::class, 'copiarADiriges'])
     ->name('distritos.copiar.diriges');
 
-    Route::get('/distritos/finalizar_asignaciones', [DistritoController::class, 'Finalizar_Asignaciones'])
+Route::get('/distritos/finalizar_asignaciones/{anio}', [DistritoController::class, 'Finalizar_Asignaciones'])
     ->name('distritos.finalizar_asignaciones');
+
+Route::get('distritos/indexdelete', [DistritoController::class, 'index_eliminado'])
+    ->name('distritos.indexdelete');
+    
+Route::post('distritos/reactive/{id}', [DistritoController::class, 'reactive'])
+    ->name('distritos.reactive');
+
  /*ruta para signaciones */
 Route::get('/distritos/asignacion/mantener/{id_distrito}', [DistritoController::class, 'mantenerAsignacion'])->name('distritos.mantener');
 Route::get('/distritos/asignaciones/liberar/{id_distrito}', [DistritoController::class, 'liberarAsignacion'])->name('distritos.liberar');
+
+Route::get('/distritos/asignaciones/liberar_anual/{id_distrito}', [DistritoController::class, 'liberarAsignacionAnual'])->name('distritos.liberar_anual');
 Route::post('/distritos/asignar/cambiar/{id_distrito}', [DistritoController::class, 'cambiarAsignacion'])->name('distritos.cambiar');
-   
+Route::post('/distritos/asignar/cambiaranual/{id_distrito}', [DistritoController::class, 'cambiarAsignacionAnual'])->name('distritos.cambiaranual');   
 
 
 Route::get('visitas/dashboard', [VisitasController::class, 'dashboard'])

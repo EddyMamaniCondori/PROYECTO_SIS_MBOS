@@ -11,22 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('distritos', function (Blueprint $table) {
-            $table->id('id_distrito'); // PK autoincremental
+        Schema::create('asignacion_distritos', function (Blueprint $table) {
+            $table->unsignedBigInteger('id_distrito_asignaciones')->primary();  // PK autoincremental
             $table->string('nombre', 150)->unique();
-            $table->integer('nro_iglesias')->default(0); // valor por defecto
-            $table->boolean('estado')->default(true); // eliminacion logica
-            $table->boolean('sw_cambio')->default(false);
+            $table->boolean('sw_estado')->default(false);
             $table->string('año')->nullable(); // identificar la gestion
-
-            $table->date('fecha_asignacion')->nullable();; // ES PASTOR ACTUAL DESDE QUE FECHA ESTA.
             $table->foreignId('id_pastor')->nullable()
                 ->constrained('pastors', 'id_pastor')
                 ->nullOnDelete();
-
-            $table->foreignId('id_grupo')->nullable()
-                ->constrained('grupos', 'id_grupo')
-                ->cascadeOnDelete();
 
             $table->timestamps();
         });
@@ -37,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('distritos');
+        Schema::dropIfExists('asignacion_distritos');
     }
 };

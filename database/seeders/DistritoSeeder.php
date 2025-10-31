@@ -31,12 +31,12 @@ class DistritoSeeder extends Seeder
             $data[] = [
                 'nombre' => $distrito,
                 'nro_iglesias' => 0,
+                'estado' => true, //eliminacion logica
                 'id_pastor' => null, // Puedes asignar si tienes id
                 'id_grupo' => null,  // Puedes asignar si tienes id
                 'sw_cambio' => false,
-                'sw_estado' => false,
                 'año' => '2025',
-                'id_pastor' => 25,
+                'fecha_asignacion' => '01/01/2025',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];

@@ -79,6 +79,16 @@
                             <p>Asignación distrital</p>&nbsp
                         </a>
                     </li>
+                    @if($sw_cambio)
+                    <li class="nav-item">
+                        <a href="{{ route('distritos.asiganual') }}" class="nav-link">
+                            <i class="bi bi-bezier2"></i>
+                            <p>Asignación distrital anual</p>&nbsp
+                        </a>
+                    </li>
+                    @endif
+                  
+                  
 
                   <li class="nav-item">
                     <a href="{{ route('distritos.historiales')}}" class="nav-link">

@@ -64,6 +64,23 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <tr>
+                                            <td>
+                                                {{$distrito->año}} 
+                                            </td>
+                                            <td>
+                                            {{$distrito->id_pastor}} &nbsp {{ $distrito->nombre_p }}
+                                                    &nbsp;{{ $distrito->ape_paterno }}
+                                                    &nbsp;{{ $distrito->ape_materno }}
+                                            </td>
+                                            <td>
+                                                {{$distrito->fecha_asignacion}}
+                                            </td>
+                                            <td>
+                                                <strong style="color:green">En curso</strong>
+                                            </td>
+                                        </tr>
+
                                         @foreach ($historial as $dirige)
                                         <tr>
                                             <td>
@@ -114,6 +131,7 @@
     $(document).ready(function() {
         $('#example').DataTable({
             scrollX: true,
+            ordering: false,
             language: {
                 search: "Buscar:",   // Cambia el texto de "Search"
                 lengthMenu: "Mostrar _MENU_ registros por página",

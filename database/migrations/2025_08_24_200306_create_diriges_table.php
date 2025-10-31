@@ -36,7 +36,7 @@ return new class extends Migration
                 ->onDelete('set null');
 
             // Para evitar duplicados de asignaciones
-            $table->unique(['id_distrito', 'id_pastor', 'año']);
+            $table->unique(['id_distrito', 'id_pastor', 'año','fecha_asignacion']);
         });
     }
 
