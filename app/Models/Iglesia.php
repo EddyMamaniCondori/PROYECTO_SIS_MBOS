@@ -13,12 +13,16 @@ class Iglesia extends Model
 
     protected $fillable = [
         'nombre',
+        'estado',
+        'codigo',
         'feligresia',
-        'feligrasia_asistente',
+        'feligresia_asistente',
         'ciudad',
         'zona',
         'calle',
         'nro',
+        'lugar',
+        'tipo',
         'distrito_id',
     ];
 

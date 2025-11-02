@@ -116,7 +116,7 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./widgets/info-box.html" class="nav-link">
+                    <a href="{{ route('iglesias.asignaciones')  }}" class="nav-link">
                       <i class="bi bi-house-check"></i>
                       <p>iglesias asignadas</p>
                     </a>

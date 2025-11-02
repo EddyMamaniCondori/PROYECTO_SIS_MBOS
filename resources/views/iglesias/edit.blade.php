@@ -16,12 +16,12 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Crear Iglesia</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Editar Iglesia</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
                   <li class="breadcrumb-item"><a href="{{ route('iglesias.index')}}">Iglesias</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Crear Iglesias</li>
+                  <li class="breadcrumb-item active" aria-current="page">Editar Iglesias</li>
                 </ol>
               </div>
             </div>
@@ -31,8 +31,9 @@
         <div class="app-content">
           <div class="container-fluid">
             <!--begin::TABLA-->
-            <form action="{{ route('iglesias.store') }}" method="POST">
+            <form action="{{ route('iglesias.update', $iglesia->id_iglesia) }}" method="POST">
                 @csrf
+                @method('PUT')
                 <div class="row g-3">
                     <h5 class="mb-0"><strong>Datos Generales </strong></h5>
                     <hr>
@@ -40,7 +41,7 @@
                     <div class="col-md-4">
                         <label for="nombre" class="form-label">Nombre de la Iglesia: <strong><span class="text-danger">*</span></strong></label>
                         <input type="text" name="nombre" id="nombre" 
-                            class="form-control" value="{{ old('nombre') }}">
+                            class="form-control" value="{{@old('nombre', $iglesia->nombre)}}">
                         @error('nombre')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -49,7 +50,7 @@
                     <div class="col-md-3">
                         <label for="codigo" class="form-label">Codigo: <strong><span class="text-danger">*</span></strong></label>
                         <input type="number" name="codigo" id="codigo" 
-                            class="form-control" value="{{ old('codigo', 0) }}"  min="0"  step="1" >
+                            class="form-control" value="{{ old('codigo', $iglesia->codigo)}}"  min="0"  step="1" >
                         @error('codigo')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -60,9 +61,9 @@
                         <label for="tipo" class="form-label">Tipo: <strong><span class="text-danger">*</span></strong> </label>
                         <select name="tipo" id="tipo" class="form-select" required>
                             <option value="">-- Seleccione un tipo --</option>
-                            <option value="Iglesia" {{ old('tipo') == 'Iglesia' ? 'selected' : '' }}>Iglesia</option>
-                            <option value="Grupo" {{ old('tipo') == 'Grupo' ? 'selected' : '' }}>Grupo</option>
-                            <option value="Filial" {{ old('tipo') == 'Filial' ? 'selected' : '' }}>Filial</option>
+                            <option value="Iglesia" {{ old('tipo', $iglesia->tipo) == 'Iglesia' ? 'selected' : '' }}>Iglesia</option>
+                            <option value="Grupo" {{ old('tipo', $iglesia->tipo) == 'Grupo' ? 'selected' : '' }}>Grupo</option>
+                            <option value="Filial" {{ old('tipo', $iglesia->tipo) == 'Filial' ? 'selected' : '' }}>Filial</option>
                         </select>
 
                         @error('tipo')
@@ -74,8 +75,8 @@
                         <label for="lugar" class="form-label">Lugar: <strong><span class="text-danger">*</span></strong></label>
                         <select name="lugar" id="lugar" class="form-select" required>
                             <option value="">-- Seleccione un lugar--</option>
-                            <option value="ALTIPLANO" {{ old('lugar') == 'ALTIPLANO' ? 'selected' : '' }}>Altiplano</option>
-                            <option value="EL ALTO" {{ old('lugar') == 'EL ALTO' ? 'selected' : '' }}>El Alto</option>
+                            <option value="ALTIPLANO" {{ old('lugar', $iglesia->lugar) == 'ALTIPLANO' ? 'selected' : '' }}>Altiplano</option>
+                            <option value="EL ALTO" {{ old('lugar', $iglesia->lugar) == 'EL ALTO' ? 'selected' : '' }}>El Alto</option>
                         </select>
                         @error('lugar')
                             <small class="text-danger">{{ $message }}</small>
@@ -85,7 +86,7 @@
                     <div class="col-md-2">
                         <label for="feligresia" class="form-label">Cantidad de feligreses:</label>
                         <input type="number" name="feligresia" id="feligresia" 
-                            class="form-control" value="{{ old('feligresia', 0) }}" min="0"  step="1">
+                            class="form-control" value="{{ old('feligresia',$iglesia->feligresia )  }}" min="0"  step="1">
                         @error('feligresia')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -94,7 +95,7 @@
                     <div class="col-md-2">
                         <label for="feligresia_asistente" class="form-label">Asistencia promedio:</label>
                         <input type="number" name="feligresia_asistente" id="feligresia_asistente" 
-                            class="form-control" value="{{ old('feligresia_asistente', 0) }}" min="0"  step="1">
+                            class="form-control" value="{{ old('feligresia_asistente', $iglesia->feligresia_asistente) }}" min="0"  step="1">
                         @error('feligresia_asistente')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -106,7 +107,7 @@
                     <div class="col-md-4">
                         <label for="ciudad" class="form-label">Ciudad: <strong><span class="text-danger">*</span></strong></label>
                         <input type="text" name="ciudad" id="ciudad" 
-                            class="form-control" value="{{ old('ciudad') }}">
+                            class="form-control" value="{{ old('ciudad', $iglesia->ciudad) }}">
                         @error('ciudad')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -115,7 +116,7 @@
                     <div class="col-md-3">
                         <label for="zona" class="form-label">zona: <strong><span class="text-danger">*</span></strong></label>
                         <input type="text" name="zona" id="zona" 
-                            class="form-control" value="{{ old('zona') }}">
+                            class="form-control" value="{{ old('zona', $iglesia->zona )}}">
                         @error('zona')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -124,7 +125,7 @@
                     <div class="col-md-3">
                         <label for="calle" class="form-label">calle:</label>
                         <input type="text" name="calle" id="calle" 
-                            class="form-control" value="{{ old('calle') }}">
+                            class="form-control" value="{{ old('calle', $iglesia->calle) }}">
                         @error('calle')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -133,7 +134,7 @@
                     <div class="col-md-2">
                         <label for="nro" class="form-label">nro:</label>
                         <input type="text" name="nro" id="nro" 
-                            class="form-control" value="{{ old('nro') }}">
+                            class="form-control" value="{{ old('nro', $iglesia->nro)  }}">
                         @error('nro')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -148,8 +149,9 @@
                         <label for="id_distrito" class="form-label">Distrito:</label>
                         <select data-size="9" title="-- Seleccione un distrito --" data-live-search="true" name="distrito_id" id="distrito_id" class="form-control selectpicker show-tick" >
                         @foreach($distritos as $distrito)
-                                <option value="{{ $distrito->id_distrito }}" 
-                                    {{ old('distrito_id') == $distrito->id_distrito ? 'selected' : '' }}>
+                                <option 
+                                    value="{{ $distrito->id_distrito }}"
+                                    {{ (old('distrito_id', $iglesia->distrito_id) == $distrito->id_distrito) ? 'selected' : '' }}>
                                     {{ $distrito->nombre }}
                                 </option>
                             @endforeach
@@ -160,7 +162,7 @@
                     </div>
                     <!-- Botón Guardar -->
                     <div class="col-12 mt-3">
-                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
                         <a href="{{ route('iglesias.index') }}" class="btn btn-secondary">Cancelar</a>
                     </div>
                 </div>

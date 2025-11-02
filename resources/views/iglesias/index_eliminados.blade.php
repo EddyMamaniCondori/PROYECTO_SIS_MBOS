@@ -34,19 +34,14 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Iglesias</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Iglesias Inabilitadas / CERRADAS</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Iglesias</li>
+                  <li class="breadcrumb-item"><a href="{{route('iglesias.index')}}">Iglesias</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Iglesias Inabilitadas</li>
                 </ol>
               </div>
-              <div class="row">
-                <a href="{{route('iglesias.create')}}"><button type="button" class="btn btn-success"> <i class="fa-solid fa-plus"></i> &nbsp Añadir nueva Iglesia </button> </a><br>
-              </div>
-              <div class="row pt-2 pb-2">
-                <a href="{{route('iglesias.indexdelete')}}"><button type="button" class="btn btn-danger"> <i class="bi bi-person-fill-x"></i> &nbsp Iglesias Inhabilitados </button> </a><br>
-            </div>
             </div>
           </div>
         </div>
@@ -68,10 +63,7 @@
                                             <th>Tipo</th>
                                             <th>Lugar</th>
                                             <th>Distrito</th>
-                                            <th>direcion</th>
-                                            <th>feligresia</th>
-                                            <th>feligresia asistente</th>
-                                            
+                                            <th>direcion</th>     
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -91,7 +83,7 @@
                                                 {{$iglesia->lugar}}
                                             </td>
                                             <td>
-                                                 @if (!is_null($iglesia->distrito_id))
+                                                @if (!is_null($iglesia->distrito_id))
                                                     {{ $iglesia->nombre_distrito }}
                                                 @else
                                                     <span class="badge bg-warning mt-1 fs-6">
@@ -99,24 +91,16 @@
                                                     </span>
                                                 @endif
                                             </td>
+
                                             <td> 
                                                 {{$iglesia->ciudad}} &nbsp {{$iglesia->zona}} &nbsp {{$iglesia->calle}} &nbsp {{$iglesia->nro}}
                                             </td>
-                                            <td>
-                                                {{$iglesia->feligresia}}
-                                            </td>
-                                            <td>
-                                                {{$iglesia->feligresia_asistente}}
-                                            </td>
-                                            
-                                            
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
 
-                                                <form action="{{ route('iglesias.edit', $iglesia->id_iglesia)}}" method="get">
-                                                    <button type="submit" class="btn btn-warning">Editar</button>
-                                                </form>
-                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$iglesia->id_iglesia}}">Eliminar</button>
+                            
+                                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$iglesia->id_iglesia}}">Reactivar</button>
+                                                </div>
                                             </td>
                                         </tr>
 
@@ -129,17 +113,22 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <strong style="color: red;">¿Seguro que quieres eliminar a esta iglesia? </strong><br>
-                                                    <strong> Nombre: </strong> {{$iglesia->nombre}} 
+                                                    <strong style="color: green;">¿Seguro que quieres Reactivar a esta iglesia? </strong><br>
+                                                    @if ($iglesia->distrito_id)
+                                                        <p>OBS: la iglesia se habilitara directamente perteneciendo al Distrito &nbsp; <stron> {{$iglesia->nombre_distrito}}</stron> </p>
+                                                    @endif
+                                                    <hr>
+                                                    <strong> Nombre: </strong> {{$iglesia->nombre}}<br>
+                                                    <strong> Tipo: </strong> {{$iglesia->tipo}}<br>
+                                                    <strong> Lugar: </strong> {{$iglesia->lugar}}<br>
+                                                    <hr> 
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                    <form action="{{ route('iglesias.destroy',['iglesia'=>$iglesia->id_iglesia])}}" method="POST">
-                                                        @method('DELETE')
+                                                    <form action="{{ route('iglesias.reactive',['id'=>$iglesia->id_iglesia])}}" method="POST">
                                                         @csrf
-                                                    <button type="submit" class="btn btn-danger">Confirmar</button>
+                                                        <button type="submit" class="btn btn-success">Reactivar</button>
                                                     </form>
-                                                    
                                                 </div>
                                                 </div>
                                             </div>
@@ -154,8 +143,6 @@
                                             <th>Lugar</th>
                                             <th>Distrito</th>
                                             <th>direcion</th>
-                                            <th>feligresia</th>
-                                            <th>feligresia asistente</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </tfoot>

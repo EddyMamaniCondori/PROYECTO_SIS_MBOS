@@ -88,9 +88,18 @@ Route::get('visitas/dashboard', [VisitasController::class, 'dashboard'])
 
 Route::get('iglesias/dashboard_general', [IglesiaController::class, 'dashboard_general'])
     ->name('iglesias.dashboard_general');
-/*ruta extra para iglesias*/ 
+Route::post('iglesias/reactive/{id}', [IglesiaController::class, 'reactive'])
+    ->name('iglesias.reactive');
 
 
+
+
+
+    /*ruta extra para iglesias*/ 
+Route::get('iglesias/indexdelete', [IglesiaController::class, 'index_eliminado'])
+    ->name('iglesias.indexdelete');
+Route::get('iglesias/asignaciones', [IglesiaController::class, 'index_asignaciones'])
+    ->name('iglesias.asignaciones');
     
 Route::get('desafios/mesual', [DesafioMensualController::class, 'index_mes'])
     ->name('desafios.mes');
@@ -99,6 +108,15 @@ Route::post('/desafios/mes/store', [DesafioMensualController::class, 'storeMes']
 
 Route::get('/desafios/mes/{mes}/{anio}', [DesafioMensualController::class, 'show_mes'])
     ->name('desafios.show_mes');
+
+//pruebas
+Route::post('/iglesias/{id}/asignar-distrito', [IglesiaController::class, 'asignarDistrito'])->name('iglesias.asignar');
+Route::post('/iglesias/{id}/cambiar-distrito', [IglesiaController::class, 'cambiarDistrito'])->name('iglesias.cambiar');
+Route::post('/iglesias/{id}/liberar', [IglesiaController::class, 'liberar'])->name('iglesias.liberar');
+
+
+
+
 
 /*RUTAS EXTRAS PARA EL PASTOR */
 Route::get('/pastor_perfil/{id_pastor}', [PastorController::class, 'perfil_pastor'])
