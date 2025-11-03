@@ -12,6 +12,7 @@ class Remesa extends Model
     protected $table = 'remesas';
 
     protected $primaryKey = 'id_remesa';
+    public $timestamps = true;
 
     protected $fillable = [
         'cierre',
@@ -19,11 +20,9 @@ class Remesa extends Model
         'documentacion',
         'fecha_entrega',
         'fecha_limite',
+        'estado_dias',
         'estado',
         'observacion',
-        'mes',
-        'anio',
-        'monto',
     ];
 
 
@@ -34,6 +33,23 @@ class Remesa extends Model
 
     public function iglesias()
     {
+        return $this->belongsToMany(Iglesia::class, 'genera', 'id_remesa', 'id_iglesia')
+                    ->withPivot(['mes', 'año'])
+                    ->withTimestamps();
+    }
+    public function remesaIglesia()
+    {
+        return $this->hasOne(RemesaIglesia::class, 'id_r emesa', 'id_remesa');
+    }
+
+    public function remesaFilial()
+    {
+        return $this->hasOne(RemesaFilial::class, 'id_remesa', 'id_remesa');
+    }
+
+
+    /*public function iglesias()
+    {
         return $this->hasManyThrough(
             Iglesia::class,
             Genera::class,
@@ -42,9 +58,9 @@ class Remesa extends Model
             'id_remesa',   // PK en remesas
             'id_iglesia'   // FK en genera
         );
-    }
+    }*/
 
-    public function gastos()
+    /*public function gastos()
     {
         return $this->hasManyThrough(
             Gasto::class,
@@ -54,5 +70,5 @@ class Remesa extends Model
             'id_remesa',  // PK en remesas
             'id_gasto'    // FK en genera
         );
-    }
+    }*/
 }

@@ -30,8 +30,15 @@ Route::get('/tablas', function () {
 
 Route::get('/remesas/mes/{mes}/{anio}', [RemesaController::class, 'index_mes'])
     ->name('remesas.index_mes');
-Route::get('/remesas/crear/{mes}/{anio}', [RemesaController::class, 'generarRemesasYGastos'])
-    ->name('remesas.crear');
+
+Route::POST('/remesas/filial/', [RemesaController::class, 'llenar_filial'])
+    ->name('remesas.filial');
+
+Route::POST('/remesas/filial/registrar/{id}', [RemesaController::class, 'registrar_remesa_filial'])
+    ->name('remesasfilial.registrar');
+// Ruta para procesar el formulario (POST)
+Route::post('remesas/crear', [RemesaController::class, 'crear'])->name('remesas.crear');
+
 
 /*ruta extra para Pastores*/ 
 Route::get('pastores/indexdelete', [PastorController::class, 'indexdelete'])

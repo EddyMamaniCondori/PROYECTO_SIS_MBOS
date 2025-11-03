@@ -13,17 +13,14 @@ return new class extends Migration
     {
         Schema::create('remesas', function (Blueprint $table) {
             $table->id('id_remesa'); // Clave primaria
-            
             $table->boolean('cierre')->default(false);
             $table->boolean('deposito')->default(false);
             $table->boolean('documentacion')->default(false);
             $table->date('fecha_entrega')->nullable();
-            $table->date('fecha_limite')->nullable();
-            $table->string('estado', 50)->nullable();
+            $table->date('fecha_limite');
+            $table->string('estado_dias', 50)->nullable()->default('0');
+            $table->string('estado', 50)->default('PENDIENTE'); //PENTIENDTE , ENTREGADO
             $table->text('observacion')->nullable();
-            $table->string('mes', 20);
-            $table->integer('anio');
-            $table->decimal('monto', 20, 4)->default(0);
             $table->timestamps(); // created_at y updated_at
         });
     }

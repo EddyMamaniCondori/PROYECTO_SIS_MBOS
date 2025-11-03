@@ -11,25 +11,32 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('genera', function (Blueprint $table) {
-            // Claves primarias compuestas
+        Schema::create('generas', function (Blueprint $table) {
+            // Claves foráneas
             $table->unsignedBigInteger('id_iglesia');
             $table->unsignedBigInteger('id_remesa');
-            $table->unsignedBigInteger('id_gasto');
 
-            // Atributos de la relación
-            $table->string('mes', 20);
-            $table->integer('anio');
-
-            $table->timestamps();
+            // Atributos adicionales
+            $table->tinyInteger('mes')->unsigned()->comment('1=Enero, 2=Febrero, ..., 12=Diciembre');
+            $table->year('anio');
 
             // Clave primaria compuesta
-            $table->primary(['id_iglesia', 'id_remesa', 'id_gasto']);
+            $table->primary(['id_iglesia', 'id_remesa']);
 
-            // Claves foráneas
-            $table->foreign('id_iglesia')->references('id_iglesia')->on('iglesias')->onDelete('cascade');
-            $table->foreign('id_remesa')->references('id_remesa')->on('remesas')->onDelete('cascade');
-            $table->foreign('id_gasto')->references('id_gasto')->on('gastos')->onDelete('cascade');
+
+                    // 🔹 Restricción única (para que no se repita la misma combinación)
+            $table->unique(['id_iglesia', 'id_remesa', 'anio', 'mes'], 'genera_unica_por_mes');
+
+            // Relaciones foráneas
+            $table->foreign('id_iglesia')
+                ->references('id_iglesia')->on('iglesias')
+                ->onDelete('cascade');
+
+            $table->foreign('id_remesa')
+                ->references('id_remesa')->on('remesas')
+                ->onDelete('cascade');
+
+            $table->timestamps();
         });
     }
 
@@ -38,6 +45,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('genera');
+        Schema::dropIfExists('generas');
     }
 };

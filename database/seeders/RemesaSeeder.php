@@ -13,7 +13,6 @@ class RemesaSeeder extends Seeder
      */
     public function run(): void
     {
-        $anio = 2025;
         $meses = [
             'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
             'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'
@@ -27,7 +26,7 @@ class RemesaSeeder extends Seeder
             for ($i = 1; $i <= 2; $i++) {
 
                 // Fecha límite: entre el día 15 y 20
-                $fechaLimite = Carbon::create($anio, $numeroMes, rand(15, 20));
+                $fechaLimite = Carbon::create(2025, $numeroMes, 20);
 
                 // Fecha entrega: de 2 días antes a 2 días después del límite
                 $fechaEntrega = (clone $fechaLimite)->addDays(rand(-2, 2));
@@ -50,9 +49,6 @@ class RemesaSeeder extends Seeder
                     'fecha_limite'   => $fechaLimite->toDateString(),
                     'estado'         => $estado,
                     'observacion'    => "Remesa {$i} correspondiente al mes de {$mes}",
-                    'mes'            => $mes,
-                    'anio'            => $anio,
-                    'monto'          => number_format(rand(5000, 15000) + (rand(0, 9999) / 10000), 4, '.', ''),
                 ];
             }
         }

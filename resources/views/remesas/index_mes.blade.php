@@ -67,19 +67,19 @@
                                             <th>DOC</th>
                                             <th>Fecha entrega</th>
                                             <th>Fecha limite</th>
+                                            <th>estado dias</th>
                                             <th>estado</th>
                                             <th>observaciones</th>
-                                            <th>Monto</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($datos as $dato)
-                                        <tr @if($dato->tipo_igle === 'FILIAL') style="color: red;" @endif>
+                                        <tr @if($dato->tipo_igle === 'Filial') style="color: red;" @endif>
                                             <td>
                                             {{$dato->nombre_distrito}} 
                                             <td>
-                                                {{$dato->nombre_pas}} {{$dato->ape_paterno}}{{$dato->ape_materno}}
+                                                {{$dato->nombre_pas}} &nbsp; {{$dato->ape_paterno}} &nbsp;{{$dato->ape_materno}}
                                             </td>
                                             <td>
                                                 {{$dato->nombre_igle}}
@@ -91,13 +91,26 @@
                                                 {{$dato->tipo_igle}}
                                             </td>
                                             <td>
-                                                {{$dato->cierre}}
+                                                @if ($dato->cierre)
+                                                    <i class="bi bi-check-square-fill" style="color: #28a745;"></i>
+                                                @else
+                                                    <i class="bi bi-file-excel-fill" style="color: red;"></i>
+                                                @endif
+                                                            
                                             </td>
                                             <td>
-                                                {{$dato->deposito}}
+                                                @if ($dato->deposito)
+                                                    <i class="bi bi-check-square-fill" style="color: #28a745;"></i>
+                                                @else
+                                                    <i class="bi bi-file-excel-fill" style="color: red;"></i>
+                                                @endif
                                             </td>
                                             <td>
-                                                {{$dato->documentacion}}
+                                                @if ($dato->documentacion)
+                                                    <i class="bi bi-check-square-fill" style="color: #28a745;"></i>
+                                                @else
+                                                    <i class="bi bi-file-excel-fill" style="color: red;"></i>
+                                                @endif
                                             </td>
                                             <td>
                                                 {{$dato->fecha_entrega}}
@@ -106,88 +119,59 @@
                                                 {{$dato->fecha_limite}}
                                             </td>
                                             <td>
+                                                {{$dato->estado_dias}}
+                                            </td>
+                                            <td>
                                                 {{$dato->estado}}
                                             </td>
                                             <td>
                                                 {{$dato->observacion}}
                                             </td>
-                                            <td>
-                                                {{$dato->monto}}
-                                            </td>
-                                            <td>
-                                                
-                                                <div class="btn-group  justify-content-center" role="group" >
-                                                    <!-- Cerrar Mes -->
-                                                    <button type="button" 
-                                                            class="btn btn-danger"
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#confirmModal-{{ $dato->id_remesa }}"
-                                                            title="Cerrar mes">
-                                                        <i class="bi bi-x-circle"></i> Registrar
-                                                    </button>
 
+                                            <td>
+                                                <div class="btn-group  justify-content-center" role="group" >
+
+                                                    <button type="button" class="btn btn-warning">Editar</button>
+                                                    <button type="button" class="btn btn-success">ver</button>
+
+                                                   @if($dato->tipo_igle == 'Filial')
+                                                       <form action="{{ route('remesas.filial') }}" method="POST">@csrf
+
+                                                          <input type="hidden" name="id_iglesia" id="id_iglesia" value="{{ $dato->id_iglesia }}">
+                                                          <input type="hidden" name="anio" id="anio" value="{{ $anio }}">
+                                                          <input type="hidden" name="distrito" id="distrito" value="{{ $dato->nombre_distrito}}">
+                                                          <button type="submit" class="btn btn-success">
+                                                              <i class="bi bi-file-earmark-bar-graph-fill"></i> Registrar
+                                                          </button>
+                                                      </form>
+
+                                                    @else
+                                                        <button type="button" 
+                                                                class="btn btn-primary btn-abrir-modal"
+                                                                data-id_remesa="{{ $dato->id_remesa }}"
+                                                                data-distrito="{{ $dato->nombre_distrito }}"
+                                                                data-iglesia="{{ $dato->nombre_igle }}"
+                                                                data-pastor="{{ $dato->nombre_pas }} {{ $dato->ape_paterno }} {{ $dato->ape_materno }}"
+                                                                data-tipo="{{ $dato->tipo_igle }}"
+                                                                data-fecha_entrega="{{ $dato->fecha_entrega }}"
+                                                                data-cierre="{{ $dato->cierre }}"
+                                                                data-deposito="{{ $dato->deposito }}"
+                                                                data-documentacion="{{ $dato->documentacion }}"
+                                                                data-monto="{{ $dato->monto ?? '' }}"
+                                                                title="Registrar"
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#confirmModal"
+                                                        >
+                                                            <i class="bi bi-x-circle"></i> Registrar
+                                                        </button>
+                                                    @endif
+
+                                                    
                                                 </div>
                                             </td>
 
                                         </tr>
 
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="confirmModal-{{ $dato->id_remesa }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Complete los datos</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <center><strong style="color: green;">Verifique los datos</strong></center><br>
-
-                                                    <strong>Distrito:</strong> {{ $dato->nombre_distrito }} <br>
-                                                    <strong>Iglesia:</strong> {{ $dato->nombre_igle }} <br>
-                                                    <strong>Pastor:</strong> {{ $dato->nombre_pas }} {{ $dato->ape_paterno }} {{ $dato->ape_materno }}
-                                                    <hr>
-
-                                                    <label for="fecha_entrega" class="form-label">Fecha de entrega:</label>
-                                                    <input type="date" name="fecha_entrega" id="fecha_entrega" class="form-control" required>
-                                                    <br>
-
-                                                    <div class="form-check form-switch">
-                                                        <input type="hidden" name="cierre" value="false">
-                                                        <input class="form-check-input" type="checkbox" role="switch" id="switchCierre" name="cierre" value="true">
-                                                        <label class="form-check-label" for="switchCierre">Cierre:</label>
-                                                    </div>
-
-                                                    <div class="form-check form-switch">
-                                                        <input type="hidden" name="deposito" value="false">
-                                                        <input class="form-check-input" type="checkbox" role="switch" id="switchDeposito" name="deposito" value="true">
-                                                        <label class="form-check-label" for="switchDeposito">Depósito:</label>
-                                                    </div>
-
-                                                    <div class="form-check form-switch">
-                                                        <input type="hidden" name="documentacion" value="false">
-                                                        <input class="form-check-input" type="checkbox" role="switch" id="switchDocumentacion" name="documentacion" value="true">
-                                                        <label class="form-check-label" for="switchDocumentacion">Documentación:</label>
-                                                    </div>
-
-                                                    <div class="mt-3">
-                                                        <label for="monto" class="form-label">Monto:</label>
-                                                        <input type="number" name="monto" id="monto" class="form-control" step="0.01" required>
-                                                    </div>
-
-                                                    <div class="mt-3">
-                                                        <label for="descripcion" class="form-label">Descripción:</label>
-                                                        <input type="text" name="descripcion" id="descripcion" class="form-control">
-                                                    </div>
-                                                </div>
-
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                    <button type="submit" class="btn btn-success">Confirmar</button>
-                                                </div>
-
-                                                </div>
-                                            </div>
-                                            </div>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
@@ -202,9 +186,9 @@
                                             <th>DOC</th>
                                             <th>Fecha entrega</th>
                                             <th>Fecha limite</th>
+                                            <th>estado dias</th>
                                             <th>estado</th>
                                             <th>observaciones</th>
-                                            <th>Monto</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </tfoot>
@@ -218,6 +202,67 @@
           </div>
           <!--end::Container-->
         </div>
+
+
+<!-- Modal único reutilizable -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="formRemesa" method="POST" action="">
+      @csrf
+      <input type="hidden" name="id_remesa" id="modal_id_remesa">
+
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="confirmModalLabel">Complete los datos</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <center><strong style="color: green;">Verifique los datos</strong></center><br>
+
+          <p><strong>Distrito:</strong> <span id="modal_distrito"></span><br>
+          <strong>Iglesia:</strong> <span id="modal_iglesia"></span><br>
+          <strong>Pastor:</strong> <span id="modal_pastor"></span></p>
+          <hr>
+
+          <label for="fecha_entrega" class="form-label">Fecha de entrega:</label>
+          <input type="date" name="fecha_entrega" id="modal_fecha_entrega" class="form-control" value="{{ date('Y-m-d') }}" required>
+
+          <br>
+
+          <div class="form-check form-switch">
+            <input type="hidden" name="cierre" value="false">
+            <input class="form-check-input" type="checkbox" role="switch" id="modal_switchCierre" name="cierre" value="true">
+            <label class="form-check-label" for="modal_switchCierre">Cierre:</label>
+          </div>
+
+          <div class="form-check form-switch">
+            <input type="hidden" name="deposito" value="false">
+            <input class="form-check-input" type="checkbox" role="switch" id="modal_switchDeposito" name="deposito" value="true">
+            <label class="form-check-label" for="modal_switchDeposito">Depósito:</label>
+          </div>
+
+          <div class="form-check form-switch">
+            <input type="hidden" name="documentacion" value="false">
+            <input class="form-check-input" type="checkbox" role="switch" id="modal_switchDocumentacion" name="documentacion" value="true">
+            <label class="form-check-label" for="modal_switchDocumentacion">Documentación:</label>
+          </div>
+
+          <div class="mt-3">
+            <label for="descripcion" class="form-label">Descripción:</label>
+            <input type="text" name="descripcion" id="modal_descripcion" class="form-control">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="submit" class="btn btn-success">Confirmar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
         @endsection
 
 
@@ -249,6 +294,36 @@
     });
 </script>
 
+<script>
+$(document).ready(function(){
+    $('#confirmModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+
+        // Leer atributos data
+        var id_remesa = button.data('id_remesa');
+        var distrito = button.data('distrito');
+        var iglesia = button.data('iglesia');
+        var pastor = button.data('pastor');
+        var fecha_entrega = button.data('fecha_entrega');
+        var cierre = button.data('cierre');
+        var deposito = button.data('deposito');
+        var documentacion = button.data('documentacion');
+        var modal = $(this);
+
+        // Llenar campos estáticos
+        modal.find('#modal_id_remesa').val(id_remesa); //USA
+        modal.find('#modal_distrito').text(distrito); //usa
+        modal.find('#modal_iglesia').text(iglesia); // usa
+        modal.find('#modal_pastor').text(pastor); // usa
+      // Fecha entrega (usa fecha actual si no existe fecha_entrega)
+        modal.find('#modal_fecha_entrega').val(fecha_entrega || new Date().toISOString().split('T')[0]);
+        // Checkbox valores
+        modal.find('#modal_switchCierre').prop('checked', cierre == 1 || cierre === true);
+        modal.find('#modal_switchDeposito').prop('checked', deposito == 1 || deposito === true);
+        modal.find('#modal_switchDocumentacion').prop('checked', documentacion == 1 || documentacion === true);
+    });
+});
+</script>
 
 
 @endpush

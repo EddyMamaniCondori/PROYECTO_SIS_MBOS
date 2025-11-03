@@ -9,32 +9,28 @@ class Genera extends Model
 {
     use HasFactory;
 
-    protected $table = 'genera';
+    protected $table = 'generas';
+    public $timestamps = true;
+    public $incrementing = false; // porque la clave es compuesta
 
-    public $incrementing = false; // clave primaria no autoincremental
-    protected $primaryKey = null; // porque es compuesta
+    protected $primaryKey = null; // No hay una sola PK
 
     protected $fillable = [
         'id_iglesia',
         'id_remesa',
-        'id_gasto',
         'mes',
         'anio',
     ];
 
-    public function iglesia() : BelongsTo
+    // 🔹 Relaciones
+    public function iglesia()
     {
         return $this->belongsTo(Iglesia::class, 'id_iglesia', 'id_iglesia');
     }
 
-    public function remesa() : BelongsTo
+    public function remesa()
     {
         return $this->belongsTo(Remesa::class, 'id_remesa', 'id_remesa');
-    }
-
-    public function gasto() : BelongsTo
-    {
-        return $this->belongsTo(Gasto::class, 'id_gasto', 'id_gasto');
     }
 
 }

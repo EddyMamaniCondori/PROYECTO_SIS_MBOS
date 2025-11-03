@@ -60,37 +60,16 @@ class Iglesia extends Model
         return $this->hasMany(DesafioMensual::class, 'iglesia_id', 'id_iglesia');
     }
 
-     // Relación con Genera (intermedia)
-    public function genera()
-    {
-        return $this->hasMany(Genera::class, 'id_iglesia', 'id_iglesia');
-    }
-
-    // Obtener todas las remesas a través de genera
     public function remesas()
     {
-        return $this->hasManyThrough(
-            Remesa::class,
-            Genera::class,
-            'id_iglesia',    // FK en genera
-            'id_remesa',     // PK en remesas
-            'id_iglesia',    // PK en iglesias
-            'id_remesa'      // FK en genera
-        );
+        return $this->belongsToMany(Remesa::class, 'genera', 'id_iglesia', 'id_remesa')
+                    ->withPivot(['mes', 'año'])
+                    ->withTimestamps();
     }
 
-    // Obtener todos los gastos a través de genera
-    public function gastos()
+    public function puntualidades()
     {
-        return $this->hasManyThrough(
-            Gasto::class,
-            Genera::class,
-            'id_iglesia',  // FK en genera
-            'id_gasto',    // PK en gastos
-            'id_iglesia',  // PK en iglesias
-            'id_gasto'     // FK en genera
-        );
+        return $this->hasMany(Puntualidad::class, 'id_iglesia', 'id_iglesia');
     }
-
     
 }

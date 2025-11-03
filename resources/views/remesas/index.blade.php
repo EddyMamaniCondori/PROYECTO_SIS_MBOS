@@ -57,10 +57,8 @@
                         11 => 'Noviembre',
                         12 => 'Diciembre'
                     ];
-
                     // Sumar +1 al mes actual
-                    $sig_mes_num = $ultimo->orden_mes + 1;
-
+                    $sig_mes_num = $ultimo->mes + 1;
                     // Si pasa de 12, volver a 1 (enero)
                     if($sig_mes_num > 12){
                         $sig_mes_num = 1;
@@ -72,11 +70,46 @@
 
             
               <div class="row">
-                        <a href="{{ route('remesas.crear', ['mes' => $sig_mes_num, 'anio' => $ultimo->anio]) }}">
-                        <button type="button" class="btn btn-primary">
-                            <i class="fa-solid fa-plus"></i> &nbsp; Habilitar Mes de {{ $sig_mes_nombre }}
-                        </button>
-                    </a>
+                    <!-- Button trigger modal -->
+                    <div class="col-4">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <i class="fa-solid fa-plus"></i> &nbsp; Habilitar Mes de {{ $sig_mes_nombre }} - {{ $ultimo->anio }}
+                    </button>
+                    </div>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Habilitar Remesas de {{ $sig_mes_nombre }} - {{ $ultimo->anio }}</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="{{ route('remesas.crear') }}" method="POST"> <!-- Agregar method POST -->
+                            @csrf
+                                <div class="modal-body">
+                                        <div class="col-md-4">
+                                            <label for="fecha_limite" class="form-label">Fecha límite: <span class="text-danger">*</span></label>
+                                            <input 
+                                                type="date" 
+                                                name="fecha_limite" 
+                                                id="fecha_limite" 
+                                                class="form-control"
+                                                min="{{ $ultimo->anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-01"
+                                                max="{{ $ultimo->anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-{{ cal_days_in_month(CAL_GREGORIAN, $sig_mes_num, $ultimo->anio) }}"
+                                                required
+                                            >
+                                        </div>
+                                        <input type="hidden" name="mes" value="{{ $sig_mes_num }}">
+                                        <input type="hidden" name="anio" value="{{ $ultimo->anio }}">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    <button type="submit" class="btn btn-primary">Confirmar</button>
+                                </div>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
           </div>
@@ -96,6 +129,7 @@
                                         <tr>
                                             <th>Mes</th>
                                             <th>Año</th>
+                                            <th>Fecha limite</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -103,9 +137,13 @@
                                         @foreach ($meses as $mes)
                                         <tr>
                                             <td>
-                                            {{$mes->mes}} 
+                                            {{$mes->nombre_mes}} 
                                             <td>
                                                 {{$mes->anio}}
+                                            </td>
+
+                                            <td>
+                                                {{$mes->fecha_limite}}
                                             </td>
                                             <td>
                                                 
@@ -178,6 +216,7 @@
                                         <tr>
                                             <th>Mes</th>
                                             <th>Año</th>
+                                            <th>Fecha limite</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </tfoot>
@@ -205,6 +244,7 @@
         $('#example').DataTable({
             scrollX: true,
             ordering: false,
+            pageLength: 12, 
             language: {
                 search: "Buscar:",   // Cambia el texto de "Search"
                 lengthMenu: "Mostrar _MENU_ registros por página",
