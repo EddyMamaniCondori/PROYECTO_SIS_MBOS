@@ -279,6 +279,10 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
+                    <a href="{{ route('remesas.indeximport')  }} " class="nav-link">
+                      <i class="bi bi-cash-coin"></i>
+                      <p> Importar Remesas</p>
+                    </a>
                     <a href="{{ route('remesas.index')  }} " class="nav-link">
                       <i class="bi bi-cash-coin"></i>
                       <p> Remesas</p>

@@ -27,7 +27,17 @@ Route::get('/panel', function () {
 Route::get('/tablas', function () {
     return view('pruebas/table');
 });
+/**
+ *_________________IMPORTACION Y EXPOTACION DE ARCHIVOS EXCEL 
+ * 
+ */
+Route::post('/remesas/importar', [RemesaExcelController::class, 'import'])->name('remesas.import');
 
+Route::get('/remesas/index_import/', [RemesaExcelController::class, 'index'])
+    ->name('remesas.indeximport');
+/**
+ * 
+ */
 Route::get('/remesas/mes/{mes}/{anio}', [RemesaController::class, 'index_mes'])
     ->name('remesas.index_mes');
 
