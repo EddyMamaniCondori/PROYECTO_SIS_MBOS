@@ -12,7 +12,7 @@ class GeneraSeeder extends Seeder
      */
     public function run(): void
     {
-        $anio = 2025;
+        $anio = 2024;
 
         $genera = [
             // Enero
@@ -54,6 +54,12 @@ class GeneraSeeder extends Seeder
             // Octubre
             ['id_iglesia' => 1, 'id_remesa' => 19, 'mes' => 10, 'anio' => $anio],
             ['id_iglesia' => 2, 'id_remesa' => 20, 'mes' => 10, 'anio' => $anio],
+
+            ['id_iglesia' => 1, 'id_remesa' => 21, 'mes' => 11, 'anio' => $anio],
+            ['id_iglesia' => 2, 'id_remesa' => 22, 'mes' => 11, 'anio' => $anio],
+
+            ['id_iglesia' => 1, 'id_remesa' => 23, 'mes' => 12, 'anio' => $anio],
+            ['id_iglesia' => 2, 'id_remesa' => 24, 'mes' => 12, 'anio' => $anio],
         ];
 
         DB::table('generas')->insert($genera);

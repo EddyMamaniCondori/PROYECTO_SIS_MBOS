@@ -331,6 +331,7 @@ class IglesiaController extends Controller
     {
         DB::beginTransaction();
         try {
+            
             $iglesia = Iglesia::findOrFail($id);
             $distritoAnterior = Distrito::find($iglesia->distrito_id);
             $distritoNuevo = Distrito::findOrFail($request->distrito_id);

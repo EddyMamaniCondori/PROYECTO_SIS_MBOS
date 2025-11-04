@@ -15,7 +15,7 @@ class RemesaSeeder extends Seeder
     {
         $meses = [
             'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
-            'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre'
+            'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ];
 
         $remesas = [];

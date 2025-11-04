@@ -8,10 +8,11 @@ class Mes extends Model
 {
      use HasFactory;
 
-    protected $table = 'meses';
+    protected $table = 'mes';
     public $timestamps = false;
     public $incrementing = false;
-    protected $primaryKey = null; // Clave compuesta
+
+    protected $primaryKey = ['id_puntualidad', 'mes']; // Clave compuesta (solo informativo)
 
     protected $fillable = [
         'id_puntualidad',

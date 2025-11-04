@@ -59,6 +59,7 @@
                                         <tr>
                                             <th>Distrito</th>
                                             <th>Pastor</th>
+                                            <th>codigo</th>
                                             <th>Iglesia</th>
                                             <th>tipo</th>
                                             <th>lugar</th>
@@ -80,6 +81,9 @@
                                             {{$dato->nombre_distrito}} 
                                             <td>
                                                 {{$dato->nombre_pas}} &nbsp; {{$dato->ape_paterno}} &nbsp;{{$dato->ape_materno}}
+                                            </td>
+                                            <td>
+                                                {{$dato->codigo}}
                                             </td>
                                             <td>
                                                 {{$dato->nombre_igle}}
@@ -164,6 +168,7 @@
                                                         >
                                                             <i class="bi bi-x-circle"></i> Registrar
                                                         </button>
+
                                                     @endif
 
                                                     
@@ -178,6 +183,7 @@
                                         <tr>
                                             <th>Distrito</th>
                                             <th>Pastor</th>
+                                            <th>codigo</th>
                                             <th>Iglesia</th>
                                             <th>tipo</th>
                                             <th>lugar</th>
@@ -207,10 +213,11 @@
 <!-- Modal único reutilizable -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form id="formRemesa" method="POST" action="">
-      @csrf
-      <input type="hidden" name="id_remesa" id="modal_id_remesa">
-
+    <form id="formRemesa" method="POST">
+        @csrf
+        <input type="hidden" name="id_remesa" id="modal_id_remesa">
+        <input type="hidden" name="mes" id="mes" value="{{$mes}}">
+        <input type="hidden" name="anio" id="value" value="{{$anio}}">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5" id="confirmModalLabel">Complete los datos</h1>
@@ -299,7 +306,7 @@ $(document).ready(function(){
     $('#confirmModal').on('show.bs.modal', function (event) {
         var button = $(event.relatedTarget);
 
-        // Leer atributos data
+        // Leer atributos data-* del botón
         var id_remesa = button.data('id_remesa');
         var distrito = button.data('distrito');
         var iglesia = button.data('iglesia');
@@ -308,16 +315,24 @@ $(document).ready(function(){
         var cierre = button.data('cierre');
         var deposito = button.data('deposito');
         var documentacion = button.data('documentacion');
+
         var modal = $(this);
 
-        // Llenar campos estáticos
-        modal.find('#modal_id_remesa').val(id_remesa); //USA
-        modal.find('#modal_distrito').text(distrito); //usa
-        modal.find('#modal_iglesia').text(iglesia); // usa
-        modal.find('#modal_pastor').text(pastor); // usa
-      // Fecha entrega (usa fecha actual si no existe fecha_entrega)
+        // ✅ Actualizar acción del formulario con la ruta dinámica
+        var actionUrl = "{{ route('remesasiglesia.registrar', ':id_remesa') }}";
+        actionUrl = actionUrl.replace(':id_remesa', id_remesa);
+        modal.find('#formRemesa').attr('action', actionUrl);
+
+        // ✅ Rellenar campos visibles
+        modal.find('#modal_id_remesa').val(id_remesa);
+        modal.find('#modal_distrito').text(distrito);
+        modal.find('#modal_iglesia').text(iglesia);
+        modal.find('#modal_pastor').text(pastor);
+
+        // ✅ Fecha (por defecto hoy si está vacía)
         modal.find('#modal_fecha_entrega').val(fecha_entrega || new Date().toISOString().split('T')[0]);
-        // Checkbox valores
+
+        // ✅ Checkboxes
         modal.find('#modal_switchCierre').prop('checked', cierre == 1 || cierre === true);
         modal.find('#modal_switchDeposito').prop('checked', deposito == 1 || deposito === true);
         modal.find('#modal_switchDocumentacion').prop('checked', documentacion == 1 || documentacion === true);

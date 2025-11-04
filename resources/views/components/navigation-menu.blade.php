@@ -288,34 +288,59 @@
                       <p> Remesas</p>
                     </a>
                     <a href="{{ route('estudiantes.index')  }}" class="nav-link">
-                      <i class="bi bi-stars"></i>
-                      <p>Puntualidad</p>
-                    </a>
-                    <a href="{{ route('estudiantes.index')  }}" class="nav-link">
                       <i class="bi bi-file-earmark-bar-graph"></i>
                       <p>Informe</p>
+                    </a>
+                  </li>
+
+                </ul>
+              </li>
+                  <li class="nav-item">
+                    <a href="{{ route('remesas.puntualidades')  }}" class="nav-link">
+                      <i class="bi bi-stopwatch"></i>
+                      <p> Puntualidad</p>
+                    </a>
+                  </li>
+
+                  <li class="nav-item">
+                    <a href="{{ route('remesas.distrital.dashboard')  }}" class="nav-link">
+                      <i class="bi bi-stopwatch"></i>
+                      <p> DASHBOAR DISTRIAL AQUI!!!!</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="{{ route('remesas.distrital.dash')  }}" class="nav-link">
+                      <i class="bi bi-stopwatch"></i>
+                      <p> DASHBOAR POR DISTRITOS</p>
+                    </a>
+                  </li>
+
+                  <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon bi bi-pencil-square"></i>
+                  <p>
+                    REPORTES DE FILIALES
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <a href="{{ route('estudiantes.dashboard')  }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Reporte Ofrendaz</p>
+                    </a>
+                    <a href="{{ route('estudiantes.index')  }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Reporte Diezmos</p>
+                    </a>
+                    <a href="{{ route('estudiantes.index')  }}" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Reporte Remesas</p>
                     </a>
                   </li>
                 </ul>
               </li>
 
-              
-              <li class="nav-item">
-                    
-                  </li>
-
-                  <li class="nav-item">
-                    <a href="./examples/lockscreen.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p> Egresos</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./examples/lockscreen.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p> Reportes</p>
-                    </a>
-                  </li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="nav-icon bi bi-box-arrow-in-right"></i>
@@ -325,13 +350,7 @@
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-
-                  
-
-
-
-
-                                    <li class="nav-item">
+                  <li class="nav-item">
                     <a href="#" class="nav-link">
                       <i class="nav-icon bi bi-box-arrow-in-right"></i>
                       <p>

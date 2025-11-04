@@ -59,11 +59,12 @@
                     ];
                     // Sumar +1 al mes actual
                     $sig_mes_num = $ultimo->mes + 1;
+                    $anio = $ultimo->anio;
                     // Si pasa de 12, volver a 1 (enero)
                     if($sig_mes_num > 12){
                         $sig_mes_num = 1;
+                        $anio = $anio + 1;
                     }
-
                     // Obtener el nombre del siguiente mes
                     $sig_mes_nombre = $meses_array[$sig_mes_num];
                 @endphp
@@ -73,7 +74,7 @@
                     <!-- Button trigger modal -->
                     <div class="col-4">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <i class="fa-solid fa-plus"></i> &nbsp; Habilitar Mes de {{ $sig_mes_nombre }} - {{ $ultimo->anio }}
+                        <i class="fa-solid fa-plus"></i> &nbsp; Habilitar Mes de {{ $sig_mes_nombre }} - {{ $anio }}
                     </button>
                     </div>
                     <!-- Modal -->
@@ -81,7 +82,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                             <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="exampleModalLabel">Habilitar Remesas de {{ $sig_mes_nombre }} - {{ $ultimo->anio }}</h1>
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Habilitar Remesas de {{ $sig_mes_nombre }} - {{ $anio }}</h1>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <form action="{{ route('remesas.crear') }}" method="POST"> <!-- Agregar method POST -->
@@ -94,13 +95,13 @@
                                                 name="fecha_limite" 
                                                 id="fecha_limite" 
                                                 class="form-control"
-                                                min="{{ $ultimo->anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-01"
-                                                max="{{ $ultimo->anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-{{ cal_days_in_month(CAL_GREGORIAN, $sig_mes_num, $ultimo->anio) }}"
+                                                min="{{ $anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-01"
+                                                max="{{ $anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-{{ cal_days_in_month(CAL_GREGORIAN, $sig_mes_num, $anio) }}"
                                                 required
                                             >
                                         </div>
                                         <input type="hidden" name="mes" value="{{ $sig_mes_num }}">
-                                        <input type="hidden" name="anio" value="{{ $ultimo->anio }}">
+                                        <input type="hidden" name="anio" value="{{ $anio }}">
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

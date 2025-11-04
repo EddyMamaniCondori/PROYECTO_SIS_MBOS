@@ -12,8 +12,11 @@ class Puntualidad extends Model
     protected $primaryKey = 'id_puntualidad';
     public $timestamps = true;
 
-    protected $fillable = ['año'];
-
+    protected $fillable = [
+        'anio',
+        'id_iglesia',
+        // agrega aquí otros campos si los tienes en la tabla
+    ];
     // 🔹 Relación 1:N con Mes
     public function meses()
     {

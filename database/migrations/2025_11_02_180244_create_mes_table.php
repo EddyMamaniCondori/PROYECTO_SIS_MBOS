@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('mes', function (Blueprint $table) {
             $table->unsignedBigInteger('id_puntualidad');
-            $table->string('mes', 20);
+            $table->tinyInteger('mes');
 
             $table->enum('tipo', ['0', '1', '2'])->default('0');
 

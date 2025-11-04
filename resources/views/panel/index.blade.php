@@ -169,6 +169,7 @@
               <!--end::Col-->
             </div>
             <!--end::Row-->
+            
             <!--begin::Row-->
             <div class="row">
               <!-- Start col -->

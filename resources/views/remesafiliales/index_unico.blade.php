@@ -45,15 +45,14 @@
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="card shadow-sm border-0 rounded-3 mb-3">
+                        <div class="card shadow-sm border-0 rounded-3 ">
+                                <center><h2 class=" text-primary mt-3">{{ $iglesia->nombre }}</h2></center>
                             <div class="card-body">
                                 <hr>
-
-                                <h5 class="card-title text-primary mb-2">{{ $iglesia->nombre }}</h5>
-                                <p class="mb-1"><strong>Codigo:</strong> {{ $iglesia->codigo }}
-                                <p class="mb-1"><strong>Tipo:</strong> {{ $iglesia->tipo }}
-                                <p class="mb-1"><strong>Dirección:</strong> {{ $iglesia->direccion ?? 'Sin registrar' }}
-                                <p class="mb-1"><strong>Distrito:</strong> {{ $iglesia->distrito ?? '—' }}
+                                <p class="mb-1"><strong>Codigo:</strong> {{ $iglesia->codigo }}</p>
+                                <p class="mb-1"><strong>Tipo:</strong> {{ $iglesia->tipo }}</p>
+                                <p class="mb-1"><strong>Dirección:</strong> {{ $iglesia->direccion ?? 'Sin registrar' }}</p>
+                                <p class="mb-1"><strong>Distrito:</strong> {{$distrito }}</p>
                                 <p class="mb-0"></p>
                                     <strong>Estado:</strong> 
                                     <span class="badge {{ $iglesia->estado ? 'bg-success' : 'bg-danger' }}">
@@ -186,7 +185,10 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <center><strong style="color: green;"> {{$dato->nombre_mes}} - {{$dato->anio}}</strong></center>
-
+                                                    <input type="hidden" name="id_iglesia" id="id_iglesia" class="form-control" value="{{ $iglesia->id_iglesia }}">
+                                                    <input type="hidden" name="distrito" id="distrito" class="distrito" value="{{ $distrito}}">
+                                                    
+                                                    
                                                     <hr>
                                                     <label for="fecha_entrega" class="form-label">Fecha de entrega:</label>
                                                     <input type="date" name="fecha_entrega" id="fecha_entrega" class="form-control" required value="{{$dato->fecha_entrega}}">

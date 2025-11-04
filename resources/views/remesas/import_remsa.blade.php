@@ -44,6 +44,7 @@
               </div>
             </div>
             <div class="row">
+                <div class="col">
                     <form action="{{ route('remesas.import') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="mb-3">
@@ -52,8 +53,12 @@
                         </div>
                         <button type="submit" class="btn btn-success">Importar</button>
                     </form>
-
+                </div>
+                <div class="col">
+                    <a href="{{ route('remesas.procesar', ['anio' => 2025]) }}" class="btn btn-primary">Procesar Remesas</a>
+                </div>
             </div>
+            
           </div>
         </div>
         <!--contenido-->
@@ -62,59 +67,92 @@
             <!--begin::TABLA-->
             <div class="card mb-4">
                             <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                Tabla de Remesas
+                                <div class="row">
+                                    <div class="col-9">
+                                        <i class="bi bi-table"></i>
+                                    Tabla de Remesas importadas  
+                                    </div>
+                                    <div class="col">
+                                        <span>
+                                            Total registros: {{ count($remesas) }}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <table id="example" class="display">
                                     <thead>
                                         <tr>
-                                            <th>Distrito</th>
-                                            <th>Pastor</th>
+                                            <th>Codigo</th>
                                             <th>Iglesia</th>
-                                            <th>tipo</th>
-                                            <th>lugar</th>
-                                            <th>CIE</th>
-                                            <th>DEP</th>
-                                            <th>DOC</th>
-                                            <th>Fecha entrega</th>
-                                            <th>Fecha limite</th>
-                                            <th>estado dias</th>
-                                            <th>estado</th>
-                                            <th>observaciones</th>
+                                            <th>Eenero</th>
+                                            <th>Febrero</th>
+                                            <th>Marzo</th>
+                                            <th>Abril</th>
+                                            <th>Mayo</th>
+                                            <th>Junio</th>
+                                            <th>Julio</th>
+                                            <th>Agosto</th>
+                                            <th>septiembre</th>
+                                            <th>Octubre</th>
+                                            <th>Noviembre</th>
+                                            <th>Diciembre</th>
+                                            <th>Total</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
-
-                                            <td>
+                                        @foreach ($remesas as $remesa)
+                                        <tr>
+                                            <td>{{$remesa->codigo}}</td>
+                                            <td>{{$remesa->nombre}}</td>
+                                            <td>{{$remesa->valor_1}}</td>
+                                            <td>{{$remesa->valor_2}}</td>
+                                            <td>{{$remesa->valor_3}}</td>
+                                            <td>{{$remesa->valor_4}}</td>
+                                            <td>{{$remesa->valor_5}}</td>
+                                            <td>{{$remesa->valor_6}}</td>
+                                            <td>{{$remesa->valor_7}}</td>
+                                            <td>{{$remesa->valor_8}}</td>
+                                            <td>{{$remesa->valor_9}}</td>
+                                            <td>{{$remesa->valor_10}}</td>
+                                            <td>{{$remesa->valor_11}}</td>
+                                            <td>{{$remesa->valor_12}}</td>
+                                            <td>{{$remesa->total}}</td>
+                                             <td>
                                                 <div class="btn-group  justify-content-center" role="group" >
 
                                                     <button type="button" class="btn btn-warning">Editar</button>
                                                     <button type="button" class="btn btn-success">ver</button>
+
+                                                    <form action="{{ route('remesasimport.destroy',['id'=>$remesa->id])}}" method="POST">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                     <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                    </form>
+                                                   
                                                 </div>
                                             </td>
-
                                         </tr>
-
-                                        
+                                        @endforeach 
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Distrito</th>
-                                            <th>Pastor</th>
+                                            <th>Codigo</th>
                                             <th>Iglesia</th>
-                                            <th>tipo</th>
-                                            <th>lugar</th>
-                                            <th>CIE</th>
-                                            <th>DEP</th>
-                                            <th>DOC</th>
-                                            <th>Fecha entrega</th>
-                                            <th>Fecha limite</th>
-                                            <th>estado dias</th>
-                                            <th>estado</th>
-                                            <th>observaciones</th>
+                                            <th>Eenero</th>
+                                            <th>Febrero</th>
+                                            <th>Marzo</th>
+                                            <th>Abril</th>
+                                            <th>Mayo</th>
+                                            <th>Junio</th>
+                                            <th>Julio</th>
+                                            <th>Agosto</th>
+                                            <th>septiembre</th>
+                                            <th>Octubre</th>
+                                            <th>Noviembre</th>
+                                            <th>Diciembre</th>
+                                            <th>Total</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </tfoot>

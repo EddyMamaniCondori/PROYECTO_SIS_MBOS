@@ -12,6 +12,10 @@ use App\Http\Controllers\EstudiantesController;
 use App\Http\Controllers\InstructoresController;
 use App\Http\Controllers\DesafioMensualController;
 use App\Http\Controllers\RemesaController;
+use App\Http\Controllers\RemesaExcelController;
+use App\Http\Controllers\PendientesController;
+use App\Http\Controllers\PuntualidadController;
+use App\Http\Controllers\RemesasDashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -28,6 +32,28 @@ Route::get('/tablas', function () {
     return view('pruebas/table');
 });
 /**
+ *_________________PUNTUALIDADES
+ * 
+ */
+Route::get('/remesas/puntualidades/', [PuntualidadController::class, 'index'])
+    ->name('remesas.puntualidades');
+/**
+ *_________________PENDIENTES
+ * 
+ */
+
+Route::get('remesas/pendientes', [PendientesController::class, 'index'])
+    ->name('remesas.pendientes');
+
+
+Route::get('remesas/distrital/dashboard', [RemesasDashboardController::class, 'index'])
+    ->name('remesas.distrital.dashboard');
+
+Route::get('remesas/distrital/dash', [RemesasDashboardController::class, 'index_distrital'])
+    ->name('remesas.distrital.dash');
+
+
+/**
  *_________________IMPORTACION Y EXPOTACION DE ARCHIVOS EXCEL 
  * 
  */
@@ -35,6 +61,13 @@ Route::post('/remesas/importar', [RemesaExcelController::class, 'import'])->name
 
 Route::get('/remesas/index_import/', [RemesaExcelController::class, 'index'])
     ->name('remesas.indeximport');
+
+Route::delete('/remesas/importar/destroy/{id}', [RemesaExcelController::class, 'destroy'])->name('remesasimport.destroy');
+
+
+
+Route::get('/remesas/procesar/{anio}', [RemesaExcelController::class, 'procesarRemesas'])->name('remesas.procesar');
+
 /**
  * 
  */
@@ -44,8 +77,15 @@ Route::get('/remesas/mes/{mes}/{anio}', [RemesaController::class, 'index_mes'])
 Route::POST('/remesas/filial/', [RemesaController::class, 'llenar_filial'])
     ->name('remesas.filial');
 
+
 Route::POST('/remesas/filial/registrar/{id}', [RemesaController::class, 'registrar_remesa_filial'])
     ->name('remesasfilial.registrar');
+
+Route::POST('/remesas/iglesia/registrar/{id_remesa}', [RemesaController::class, 'registrar_remesa_iglesia'])
+    ->name('remesasiglesia.registrar');
+
+
+
 // Ruta para procesar el formulario (POST)
 Route::post('remesas/crear', [RemesaController::class, 'crear'])->name('remesas.crear');
 
