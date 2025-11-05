@@ -266,35 +266,59 @@
                   </li>
                 </ul>
               </li>
+
               <li class="nav-header">FINANCIERO</li>
+                <!--PANEL-->
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="bi bi-wallet2"></i>
+                    <p>
+                      Panel de Control
+                      <i class="nav-arrow bi bi-chevron-right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{{ route('remesas.distrital.dashboard')  }}" class="nav-link">
+                        <i class="bi bi-speedometer2"></i>
+                        <p> Dashboard Distrital General</p>
+                      </a>
+                      <a href="{{ route('remesas.distrital.dash')  }}" class="nav-link">
+                        <i class="bi bi-graph-up"></i>
+                        <p> Dashboard Distrital</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--REMESAS-->
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="bi bi-wallet2"></i>
+                    <p>
+                      Remesas
+                      <i class="nav-arrow bi bi-chevron-right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{{ route('remesas.indeximport')  }} " class="nav-link">
+                        <i class="bi bi-upload"></i>
+                        <p> Importar Remesas</p>
+                      </a>
+                      <a href="{{ route('remesas.index')  }} " class="nav-link">
+                        <i class="bi bi-list-check"></i>
+                        <p> Gestionar Remesas</p>
+                      </a>
+                      <a href="#" class="nav-link">
+                        <i class="bi bi-file-earmark-bar-graph"></i>
+                        <p>Informe de Remesas</p>
+                      </a>
+                    </li>
 
+                  </ul>
+                </li>
+                <!--REMESAS-->
 
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="bi bi-wallet2"></i>
-                  <p>
-                    Remesas
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="{{ route('remesas.indeximport')  }} " class="nav-link">
-                      <i class="bi bi-cash-coin"></i>
-                      <p> Importar Remesas</p>
-                    </a>
-                    <a href="{{ route('remesas.index')  }} " class="nav-link">
-                      <i class="bi bi-cash-coin"></i>
-                      <p> Remesas</p>
-                    </a>
-                    <a href="{{ route('estudiantes.index')  }}" class="nav-link">
-                      <i class="bi bi-file-earmark-bar-graph"></i>
-                      <p>Informe</p>
-                    </a>
-                  </li>
-
-                </ul>
-              </li>
                   <li class="nav-item">
                     <a href="{{ route('remesas.puntualidades')  }}" class="nav-link">
                       <i class="bi bi-stopwatch"></i>
@@ -303,43 +327,59 @@
                   </li>
 
                   <li class="nav-item">
-                    <a href="{{ route('remesas.distrital.dashboard')  }}" class="nav-link">
+                    <a href="{{ route('blancos.index')  }}" class="nav-link">
                       <i class="bi bi-stopwatch"></i>
-                      <p> DASHBOAR DISTRIAL AQUI!!!!</p>
+                      <p> Blanco de remesas</p>
                     </a>
                   </li>
-                  <li class="nav-item">
-                    <a href="{{ route('remesas.distrital.dash')  }}" class="nav-link">
-                      <i class="bi bi-stopwatch"></i>
-                      <p> DASHBOAR POR DISTRITOS</p>
-                    </a>
-                  </li>
+                
+                <!--PENDIENTES-->
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="bi bi-stopwatch"></i>
+                    <p>
+                      Pendientes
+                      <i class="nav-arrow bi bi-chevron-right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{{ route('remesas.pendientes')}} " class="nav-link">
+                        <i class="bi bi-stopwatch"></i>
+                        <p> anuales</p>
+                      </a>
+                      <a href="{{ route('remesas.pendientes.mensual')}} " class="nav-link">
+                        <i class="bi bi-stopwatch"></i>
+                        <p> Mensual</p>
+                      </a>
+                      <a href="{{ route('remesas.pendientes.distrital')}}" class="nav-link">
+                        <i class="bi bi-stopwatch"></i>
+                        <p>Distrital</p>
+                      </a>
+                    </li>
 
-                  <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-pencil-square"></i>
-                  <p>
-                    REPORTES DE FILIALES
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="{{ route('estudiantes.dashboard')  }}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Reporte Ofrendaz</p>
-                    </a>
-                    <a href="{{ route('estudiantes.index')  }}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Reporte Diezmos</p>
-                    </a>
-                    <a href="{{ route('estudiantes.index')  }}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Reporte Remesas</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
+                  </ul>
+                </li>
+                <!--PENDIENTES-->
+                <!--REPORTE FILIALES-->  
+                <li class="nav-item">
+                  <a href="#" class="nav-link">
+                    <i class="nav-icon bi bi-pencil-square"></i>
+                    <p>
+                      REPORTES DE FILIALES
+                      <i class="nav-arrow bi bi-chevron-right"></i>
+                    </p>
+                  </a>
+                  <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                      <a href="{{ route('estudiantes.dashboard')  }}" class="nav-link">
+                        <i class="nav-icon bi bi-circle"></i>
+                        <p>Reporte Fondo Local</p>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <!--REPORTE FILIALES--> 
 
               <li class="nav-item">
                 <a href="#" class="nav-link">

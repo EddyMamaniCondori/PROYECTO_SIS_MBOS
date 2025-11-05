@@ -56,4 +56,10 @@ class Distrito extends Model
         return $this->belongsTo(Grupo::class, 'id_grupo', 'id_grupo');
     }
 
+    public function blancos()
+    {
+        return $this->hasMany(BlancoRemesa::class, 'id_distrito', 'id_distrito');
+    }
+
+
 }

@@ -59,7 +59,10 @@ class Pastor extends Model
     {
         return $this->hasMany(DesafioMensual::class, 'pastor_id', 'id_pastor');
     }
-
+    public function blancos()
+    {
+        return $this->hasMany(BlancoRemesa::class, 'id_pastor', 'id_pastor');
+    }
 
     /************************************************************
     * Accesor: Estado de ordenación en texto
@@ -74,4 +77,5 @@ class Pastor extends Model
     {
         return self::with('persona')->get();
     }
+
 }

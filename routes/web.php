@@ -16,7 +16,7 @@ use App\Http\Controllers\RemesaExcelController;
 use App\Http\Controllers\PendientesController;
 use App\Http\Controllers\PuntualidadController;
 use App\Http\Controllers\RemesasDashboardController;
-
+use App\Http\Controllers\BlancoController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -31,6 +31,13 @@ Route::get('/panel', function () {
 Route::get('/tablas', function () {
     return view('pruebas/table');
 });
+
+/**
+ *_________________BANCOS
+ * 
+ */
+Route::get('/blancos/index/', [BlancoController::class, 'index'])
+    ->name('blancos.index');
 /**
  *_________________PUNTUALIDADES
  * 
@@ -41,16 +48,26 @@ Route::get('/remesas/puntualidades/', [PuntualidadController::class, 'index'])
  *_________________PENDIENTES
  * 
  */
-
 Route::get('remesas/pendientes', [PendientesController::class, 'index'])
     ->name('remesas.pendientes');
+Route::post('/remesas/pendientes/anual/filtro', [PendientesController::class, 'filtro_anual'])->name('remesas.pendiente.anual.filtro');
+Route::get('remesas/pendientes/mensual', [PendientesController::class, 'index_mensual'])
+    ->name('remesas.pendientes.mensual');
 
+Route::get('remesas/pendientes/distrital', [PendientesController::class, 'index_distrital'])
+    ->name('remesas.pendientes.distrital');
+
+/**
+ *_______________GRAFICOS DE REMESAS
+ * 
+ */
 
 Route::get('remesas/distrital/dashboard', [RemesasDashboardController::class, 'index'])
     ->name('remesas.distrital.dashboard');
 
 Route::get('remesas/distrital/dash', [RemesasDashboardController::class, 'index_distrital'])
     ->name('remesas.distrital.dash');
+
 
 
 /**
@@ -190,3 +207,4 @@ Route::resource('estudiantes', EstudiantesController::class);
 Route::resource('instructores', InstructoresController::class);
 Route::resource('desafios', DesafioMensualController::class);
 Route::resource('remesas', RemesaController::class);
+Route::resource('blancos', BlancoController::class);
