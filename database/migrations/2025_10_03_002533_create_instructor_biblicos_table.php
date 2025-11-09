@@ -18,12 +18,11 @@ return new class extends Migration
             $table->string('ape_materno')->nullable();
             $table->enum('sexo', ['M','F']);
             $table->date('fecha_nacimiento')->nullable();
-            $table->integer('edad')->nullable();
             $table->string('celular')->nullable();
-
+            $table->date('fecha_registro')->nullable();
             // Relación con Iglesia
-            $table->unsignedBigInteger('iglesia_id');
-            $table->foreign('iglesia_id')
+            $table->unsignedBigInteger('id_iglesia');
+            $table->foreign('id_iglesia')
                   ->references('id_iglesia')
                   ->on('iglesias')
                   ->onDelete('cascade');

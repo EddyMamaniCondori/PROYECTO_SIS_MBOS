@@ -34,7 +34,7 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Estudiantes Biblicos</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Estudiantes Biblicos - {{$anioActual}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -42,7 +42,7 @@
                 </ol>
               </div>
               <div class="row">
-                <a href="{{route('estudiantes.create')}}"><button type="button" class="btn btn-primary"> <i class="fa-solid fa-plus"></i> &nbsp Añadir nuevo Estudiante Biblico</button> </a><br>
+                <a href="{{route('estudiantes.create')}}"><button type="button" class="btn btn-primary"> <i class="fa-solid fa-plus"></i> &nbsp Nuevo registro</button> </a><br>
               </div>
             </div>
           </div>
@@ -60,16 +60,16 @@
                                 <table id="example" class="display">
                                     <thead>
                                         <tr>
-                                            <th>nombre Completo</th>
-                                            <th>sexo</th>
-                                            <th>opcion de contacto</th>
-                                            <th>edad</th>
-                                            <th>celular</th>
-                                            <th>estado civil</th>
-                                            <th>ci</th>
-                                            <th>curso biblico usado</th>
-                                            <th>bautizado</th>
-                                            <th>iglesia</th>
+                                            <th>Nombre</th>
+                                            <th>Sexo</th>
+                                            <th>Contacto</th>
+                                            <th>Edad</th>
+                                            <th>Celular</th>
+                                            <th>Estado civil</th>
+                                            <th>Ci</th>
+                                            <th>Curso biblico</th>
+                                            <th>Bautizado</th>
+                                            <th>Iglesia</th>
                                             <th>acciones</th>
                                         </tr>
                                     </thead>
@@ -103,21 +103,23 @@
                                             </td>
                                             <td> 
                                                 @if($estudiante->bautizado)
-                                                    Si esta bautizado
+                                                    <i class="bi bi-check2-circle" style="color: green;"></i>
                                                 @else
-                                                    No esta bautizado
+                                                    <i class="bi bi-x-circle" style="color: red"></i>
                                                 @endif
                                             </td>
                                             <td> 
-                                                {{$estudiante->iglesia_id}} &nbsp {{$estudiante->nombre_iglesia}}
+                                                {{$estudiante->nombre_iglesia}}
                                             </td>
                                             
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
 
-                                                <form action="" method="get">
-                                                    <button type="submit" class="btn btn-warning">Editar</button>
-                                                </form>
+                                            
+                                                <a href="{{ route('estudiantes.edit', $estudiante->id_est) }}" class="btn btn-warning">
+                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                </a>
+
                                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$estudiante->id_est}}">Eliminar</button>
                                             </td>
                                         </tr>
@@ -126,10 +128,10 @@
                                                 <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de Confirmacion</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    
                                                 </div>
                                                 <div class="modal-body">
-                                                    <strong style="color: red;">¿Seguro que quieres eliminar a este bautiso? </strong><br>
+                                                    <strong style="color: red;">¿Seguro que quieres eliminar Estudiante de la biblia?. Despues no podra volver a recuperarlo </strong><br>
                                                     <strong> Nombre: </strong> {{$estudiante->id_est}} &nbsp {{$estudiante->nombre}} &nbsp {{$estudiante->ape_paterno}} &nbsp {{$estudiante->ape_materno}} 
                                                 </div>
                                                 <div class="modal-footer">
@@ -139,8 +141,6 @@
                                                         @csrf
                                                         <button type="submit" class="btn btn-danger">Confirmar</button>
                                                     </form>
-
-                                                    
                                                 </div>
                                                 </div>
                                             </div>

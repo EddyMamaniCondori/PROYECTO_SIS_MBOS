@@ -21,34 +21,50 @@ class DesafioMensualRequest extends FormRequest
      */
     public function rules(): array
     {
-         return [
-            'mes' => 'required|string|max:20',
-            'anio' => 'required|integer|min:2000|max:2100',
-            'desafio_visitacion' => 'required|integer|min:0',
-            'desafio_bautiso' => 'required|integer|min:0',
-            'desafio_inst_biblicos' => 'required|integer|min:0',
-            'desafios_est_biblicos' => 'required|integer|min:0',
-            'visitas_alcanzadas' => 'required|integer|min:0',
-            'bautisos_alcanzados' => 'required|integer|min:0',
-            'instructores_alcanzados' => 'required|integer|min:0',
-            'estudiantes_alcanzados' => 'required|integer|min:0',
-            'iglesia_id' => 'required|exists:iglesias,id_iglesia',
-            'pastor_id' => 'required|exists:pastors,id_pastor',
-        ];
+        $anioActual = now()->year;
+        $primerDiaAnioActual = now()->startOfYear()->format('Y-m-d'); // 2025-01-01
 
         return [
+            'mes' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:12'
+            ],
+            'anio' => [
+                'required',
+                'integer',
+                'min:' . $anioActual, // No permite años anteriores al actual
+            ],
+            'fecha_limite' => [
+                'required',
+                'date',
+                'after_or_equal:' . $primerDiaAnioActual, // No permite fechas de años anteriores
+            ],
+        ];
+
+    }
+     /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
             'mes.required' => 'El mes es obligatorio.',
+            'mes.integer' => 'El mes debe ser un número entero.',
+            'mes.min' => 'El mes debe ser al menos 1 (Enero).',
+            'mes.max' => 'El mes no puede ser mayor a 12 (Diciembre).',
+            
             'anio.required' => 'El año es obligatorio.',
-            'anio.min' => 'El año no puede ser menor a 2000.',
-            'anio.max' => 'El año no puede ser mayor a 2100.',
-            'desafio_visitacion.required' => 'Debe ingresar el desafío de visitación.',
-            'desafio_bautiso.required' => 'Debe ingresar el desafío de bautismo.',
-            'desafio_inst_biblicos.required' => 'Debe ingresar el desafío de instructores bíblicos.',
-            'desafios_est_biblicos.required' => 'Debe ingresar el desafío de estudiantes bíblicos.',
-            'iglesia_id.required' => 'Debe seleccionar una iglesia.',
-            'iglesia_id.exists' => 'La iglesia seleccionada no existe.',
-            'pastor_id.required' => 'Debe seleccionar un pastor.',
-            'pastor_id.exists' => 'El pastor seleccionado no existe.',
+            'anio.integer' => 'El año debe ser un número entero.',
+            'anio.min' => 'El año no puede ser anterior al año actual (' . now()->year . ').',
+            
+            'fecha_limite.required' => 'La fecha límite es obligatoria.',
+            'fecha_limite.date' => 'La fecha límite debe ser una fecha válida.',
+            'fecha_limite.after_or_equal' => 'La fecha límite no puede ser de un año anterior al actual.',
         ];
     }
+
 }

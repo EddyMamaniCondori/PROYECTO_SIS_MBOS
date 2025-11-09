@@ -22,14 +22,15 @@ class EstudianteBiblico extends Model
         'estado_civil',
         'ci',
         'curso_biblico_usado',
+        'fecha_registro',
         'bautizado',
-        'iglesia_id',
+        'id_iglesia',
     ];
 
     // Relación: un estudiante bíblico pertenece a una iglesia
     public function iglesia() : BelongsTo
     {
-        return $this->belongsTo(Iglesia::class, 'iglesia_id', 'id_iglesia');
+        return $this->belongsTo(Iglesia::class, 'id_iglesia', 'id_iglesia');
     }
 
     // Un estudiante bíblico tiene muchos controles de estudio

@@ -141,6 +141,7 @@
                             @enderror
                         </div>
                         <div>
+                            <a href="{{route('pastores.index')}}"><button type="button" class="btn btn-secondary"> Cancelar </button></a>
                             <button type="submit" class="btn btn-primary"> Guardar </button>
                         </div>
                     </div>

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Iglesia; 
 use App\Models\Visita; 
 use App\Http\Requests\VisitaRequest;
-
+use App\Http\Requests\UpdateVisitasRequest;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -18,17 +18,20 @@ class VisitasController extends Controller
      */
     public function index()
     {
-        $visitas = Visita::join('iglesias as xi', 'visitas.iglesia_id', '=', 'xi.id_iglesia')
-                ->join('personas as xp', 'visitas.pastor_id', '=', 'xp.id_persona')
+        $anioActual = now()->year; //muestro los estudiantes del año actual
+
+        $id_distrito = 11; // todos los estudiantes del distrito Bolivar
+
+        $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
                 ->select(
                     'visitas.*',
-                    'xp.nombre as nombre_p',
-                    'xp.ape_paterno as ape_paterno_p',
-                    'xp.ape_materno as ape_materno_p',
                     'xi.nombre as nombre_iglesia'
                 )
+                ->whereYear('visitas.fecha_visita', $anioActual) // mismo año
+                ->where('xi.estado', true) // iglesias activas
+                ->where('xi.distrito_id', $id_distrito) // solo distrito 11
                 ->get();
-        return view('visitas.index', ['visitas' => $visitas]);
+        return view('visitas.index', compact('visitas', 'anioActual'));
     }
 
     /**
@@ -36,7 +39,13 @@ class VisitasController extends Controller
      */
     public function create()
     {
-        $iglesias = Iglesia::all();
+        $id_distrito = 11;
+
+        $iglesias = Iglesia::where('estado', true)
+            ->where('distrito_id', $id_distrito)
+            ->orderBy('nombre') // opcional: para que salgan ordenadas alfabéticamente
+            ->get();
+
         return view('visitas.create', compact('iglesias'));
     }
 
@@ -71,15 +80,30 @@ class VisitasController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $id_distrito = 11;
+        $visita = Visita::find($id);
+        $iglesias = Iglesia::where('estado', true)
+            ->where('distrito_id', $id_distrito)
+            ->orderBy('nombre') // opcional: para que salgan ordenadas alfabéticamente
+            ->get();
+        return view('visitas.edit', compact('visita','iglesias'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateVisitasRequest $request, string $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $visita = Visita::findOrFail($id);
+            $visita->update($request->validated());
+            DB::commit();
+            return redirect()->route('visitas.index')->with('success', 'Visita actualizado correctamente.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -87,7 +111,27 @@ class VisitasController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            // Buscar estudiante, si no existe lanzar excepción o manejar error
+            $visita = Visita::find($id);
+
+            if (!$visita) {
+                return redirect()->route('visitas.index')
+                    ->with('error', 'Visita no encontrado');
+            }
+
+            $visita->delete();
+
+            DB::commit();
+            return redirect()->route('visitas.index')->with('success', 'Visita Eliminado Correctamente');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->route('visitas.index')
+                ->with('error', 'Error al Eliminar la visita: ' . $e->getMessage());
+        }
     }
 
     public function dashboard()
@@ -123,4 +167,31 @@ class VisitasController extends Controller
         //dd($meses, $desafios, $alcanzados);
         return view('visitas.dashboard', compact('meses','desafios','alcanzados'));
     }
+
+
+
+
+
+
+
+
+
+    public function index_asignacion_desafios()
+    {
+        $anioActual = now()->year; //muestro los estudiantes del año actual
+
+        $id_distrito = 11; // todos los estudiantes del distrito Bolivar
+
+        $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
+                ->select(
+                    'visitas.*',
+                    'xi.nombre as nombre_iglesia'
+                )
+                ->whereYear('visitas.fecha_visita', $anioActual) // mismo año
+                ->where('xi.estado', true) // iglesias activas
+                ->where('xi.distrito_id', $id_distrito) // solo distrito 11
+                ->get();
+        return view('visitas.index', compact('visitas', 'anioActual'));
+    }
+
 }

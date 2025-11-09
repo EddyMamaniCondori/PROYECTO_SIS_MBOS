@@ -12,22 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bautisos', function (Blueprint $table) {
-            $table->id('id_bautiso'); // PK
-            $table->string('nombre');
-            $table->string('ape_paterno');
-            $table->string('sexo');
-            $table->string('ape_materno');
-            $table->date('fecha_nacimiento')->nullable();
-            $table->date('fecha_bautizo');
-            $table->boolean('estudiante_biblico')->default(false);
+            $table->id('id_bautiso');
+            $table->enum('tipo', ['bautizo', 'profesion de fe', 'rebautismo']);
+            $table->date('fecha_bautizo')->nullable();
+            
 
-            // Relación con Iglesia (N:1)
-            $table->unsignedBigInteger('iglesia_id');
-            $table->foreign('iglesia_id')
+            $table->unsignedBigInteger('id_iglesia');
+            $table->foreign('id_iglesia')
                   ->references('id_iglesia')
                   ->on('iglesias')
-                  ->onDelete('cascade');
-            $table->timestamps();      
+                  ->onDelete('cascade');  
+            $table->timestamps();
         });
     }
 

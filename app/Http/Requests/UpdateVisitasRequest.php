@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class VisitaRequest extends FormRequest
+class UpdateVisitasRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,7 +28,7 @@ class VisitaRequest extends FormRequest
                 'after_or_equal:' . now()->subYears(1)->format('Y-m-d'),
                 'before_or_equal:' . now()->format('Y-m-d'),
             ],
-            'hora' => 'nullable|date_format:H:i',
+            'hora' => 'nullable|date_format:H:i:s',
             'nombre_visitado' => 'required|string|max:150',
             'cant_present' => 'required|integer|min:1',
             'telefono' => 'nullable|regex:/^[6-7][0-9]{7}$/',
@@ -37,8 +37,7 @@ class VisitaRequest extends FormRequest
             'id_iglesia' => 'required|exists:iglesias,id_iglesia',
         ];
     }
-
-     public function messages(): array
+    public function messages(): array
     {
         return [
                 // fecha_visita

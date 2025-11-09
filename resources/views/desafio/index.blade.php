@@ -34,11 +34,11 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Bautisos</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Desafios Distritales - {{$anioActual}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Bautisos - {{$año}}</li>
+                  <li class="breadcrumb-item active" aria-current="page">Desafios Distritales</li>
                 </ol>
               </div>
             </div>
@@ -51,60 +51,49 @@
             <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                Tabla de Bautisos
+                                Tabla de Desafios Mensuales
                             </div>
                             <div class="card-body">
                                 <table id="example" class="display">
                                     <thead>
-                                        <tr>
-                                            <th>Distrtio</th>
-                                            <th>bautizos</th>
-                                            <th>profesion de fe</th>
-                                            <th>rebautismos</th>
-                                            <th>total</th>
+                                         <tr>
+                                            <th>Distrito</th>
+                                            <th>Pastor</th>
+                                            <th>anio</th>
                                             <th>acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($distritos as $bautiso)
+                                        @foreach ($desafios as $desafio)
                                         <tr>
                                             <td>
-                                            {{$bautiso->nombre_distrito}} 
+                                                {{ $desafio->id_desafio }}  /{{ $desafio->id_distrito }}   {{ $desafio->nombre_distrito }}  
                                             </td>
                                             <td>
-                                                {{$bautiso->nro_bautizo}}
+                                                {{ $desafio->nombre_p }} {{ $desafio->ape_paterno_p }}  {{ $desafio->ape_materno_p }}
                                             </td>
-                                            <td>
-                                                {{$bautiso->nro_profesion_fe}}
-                                            </td>
-                                            <td>
-                                                {{$bautiso->nro_rebautismo}}
-                                            </td>
-                                            <td> 
-                                                {{$bautiso->total}}
-                                            </td>
+                                            <td class="text-center">
+                                                {{ $desafio->anio}}
+                                            </td>      
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                <form action="" method="get">
-                                                    <button type="submit" class="btn btn-warning"><i class="bi bi-graph-up"></i>Avance</button>
-                                                </form>
+                                                    <form action="#" method="GET">
+                                                        <button type="submit" class="btn btn-primary"> <i class="bi bi-graph-up"></i> Ver Avance</button>
+                                                    </form>
 
-                                                <form action="{{ route('bautisos.show', $bautiso->id_distrito) }}" method="GET">
-                                                    <button type="submit" class="btn btn-success">
-                                                        <i class="bi bi-file-earmark-plus"></i> Registrar
-                                                    </button>
-                                                </form>
+                                                    <a href="{{ route('desafios.index_distrital', $desafio->id_desafio) }}" class="btn btn-success">
+                                                        <i class="bi bi-pencil-square"></i> Asignar
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Distrtio</th>
-                                            <th>bautizos</th>
-                                            <th>profesion de fe</th>
-                                            <th>rebautismos</th>
-                                            <th>total</th>
+                                            <th>Distrito</th>
+                                            <th>Pastor</th>
+                                            <th>anio</th>
                                             <th>acciones</th>
                                         </tr>
                                     </tfoot>

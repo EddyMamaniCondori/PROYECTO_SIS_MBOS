@@ -17,7 +17,7 @@ class BlancoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() 
     {
         $anioActual = now()->year;
 

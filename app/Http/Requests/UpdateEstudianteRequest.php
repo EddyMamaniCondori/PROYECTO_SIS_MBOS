@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class EstudianteRequest extends FormRequest
+class UpdateEstudianteRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,7 @@ class EstudianteRequest extends FormRequest
             'ape_materno' => 'string|max:100',
             'sexo' => 'required',
             'opcion_contacto' => 'nullable|string|max:255',
-            'edad' => 'nullable|integer|min:0|max:100',
+            'edad' => 'nullable|integer|min:0|max:120',
             'celular' => 'nullable|regex:/^[6-7][0-9]{7}$/',
             'estado_civil' => 'required|string|max:50',
             'ci' => 'nullable|string|max:20',
@@ -35,6 +35,7 @@ class EstudianteRequest extends FormRequest
             'bautizado' => 'required|boolean',
             'id_iglesia' => 'required|exists:iglesias,id_iglesia',
         ];
+        
     }
     public function messages(): array
     {
@@ -57,7 +58,7 @@ class EstudianteRequest extends FormRequest
 
             'edad.integer' => 'La edad debe ser un número entero.',
             'edad.min' => 'La edad no puede ser negativa.',
-            'edad.max' => 'La edad no puede superar los 100 años.',
+            'edad.max' => 'La edad no puede superar los 120 años.',
 
             'celular.regex' => 'El número de celular debe tener 8 dígitos y comenzar con 6 o 7.',
 

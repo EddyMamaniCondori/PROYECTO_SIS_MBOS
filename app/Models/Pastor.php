@@ -48,21 +48,20 @@ class Pastor extends Model
                     ->withTimestamps();
     }
 
-    // Relación: un pastor tiene muchas visitas
-    public function visitas() : HasMany
+    public function desafios() //se usa
     {
-        return $this->hasMany(Visita::class, 'pastor_id', 'id_pastor');
+        return $this->hasMany(Desafio::class, 'id_pastor', 'id_pastor');
     }
 
-    // Relación: un pastor tiene muchos desafíos mensuales
-    public function desafiosMensuales() : HasMany
-    {
-        return $this->hasMany(DesafioMensual::class, 'pastor_id', 'id_pastor');
-    }
+
+
+
     public function blancos()
     {
         return $this->hasMany(BlancoRemesa::class, 'id_pastor', 'id_pastor');
     }
+
+
 
     /************************************************************
     * Accesor: Estado de ordenación en texto
@@ -77,5 +76,7 @@ class Pastor extends Model
     {
         return self::with('persona')->get();
     }
+
+    
 
 }

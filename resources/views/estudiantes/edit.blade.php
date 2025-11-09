@@ -18,12 +18,12 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Crear Estudiant Biblico</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Editar Estudiant Biblico</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
                   <li class="breadcrumb-item"><a href="{{ route('estudiantes.index')}}">Estudiantes Biblicos</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Crear Estudiante Biblico</li>
+                  <li class="breadcrumb-item active" aria-current="page">Editar Estudiante Biblico</li>
                 </ol>
               </div>
             </div>
@@ -33,16 +33,16 @@
         <div class="app-content">
           <div class="container-fluid">
             <!--begin::TABLA-->
-            <form action="{{ route('estudiantes.store')}}" method="POST" > <!--en actiion va que accion vamos ha acer con este formulario una ves de click en guardar-->
+            <form action="{{ route('estudiantes.update', $estudiante->id_est)}}" method="POST" > <!--en actiion va que accion vamos ha acer con este formulario una ves de click en guardar-->
                     @csrf
-                
+                    @method('PUT') 
                     <div class="row g-3">
                         <h5 class="mb-0"><strong>Datos Generales</strong></h5>
                         <hr>
                         <!-- Nombre -->
                         <div class="col-md-4">
                             <label for="nombre" class="form-label">Nombre:  <span class="text-danger">*</span> </label>
-                            <input type="text" name="nombre" id="nombre" class="form-control" value="{{ old('nombre') }}">
+                            <input type="text" name="nombre" id="nombre" class="form-control" value="{{ old('nombre', $estudiante->nombre) }}">
                             @error('nombre')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -50,7 +50,7 @@
                         <!-- Apellido Paterno -->
                         <div class="col-md-4">
                             <label for="ape_paterno" class="form-label">Apellido Paterno: <span class="text-danger">*</span> </label>
-                            <input type="text" name="ape_paterno" id="ape_paterno" class="form-control" value="{{ old('ape_paterno') }}">
+                            <input type="text" name="ape_paterno" id="ape_paterno" class="form-control" value="{{ old('ape_paterno', $estudiante->ape_paterno) }}">
                             @error('ape_paterno')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -59,7 +59,7 @@
                         <!-- Apellido Materno -->
                         <div class="col-md-4">
                             <label for="ape_materno" class="form-label">Apellido Materno:</label>
-                            <input type="text" name="ape_materno" id="ape_materno" class="form-control" value="{{ old('ape_materno') }}">
+                            <input type="text" name="ape_materno" id="ape_materno" class="form-control" value="{{ old('ape_materno', $estudiante->ape_materno) }}">
                             @error('ape_materno')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -70,8 +70,8 @@
                             <label for="sexo" class="form-label">Sexo: <span class="text-danger">*</span> </label>
                             <select name="sexo" id="sexo" class="form-select">
                                 <option value="">-- Seleccione --</option>
-                                <option value="M" {{ old('sexo') == 'M' ? 'selected' : '' }}>Masculino</option>
-                                <option value="F" {{ old('sexo') == 'F' ? 'selected' : '' }}>Femenino</option>
+                                <option value="M" {{ old('sexo', $estudiante->sexo) == 'M' ? 'selected' : '' }}>Masculino</option>
+                                <option value="F" {{ old('sexo', $estudiante->sexo) == 'F' ? 'selected' : '' }}>Femenino</option>
                             </select>
                             @error('sexo')
                                 <small class="text-danger">{{ $message }}</small>
@@ -80,7 +80,7 @@
                                                 <!-- CI -->
                         <div class="col-md-4">
                             <label for="ci" class="form-label">Cédula de Identidad:</label>
-                            <input type="text" name="ci" id="ci" class="form-control" value="{{ old('ci') }}">
+                            <input type="text" name="ci" id="ci" class="form-control" value="{{ old('ci', $estudiante->ci) }}">
                             @error('ci')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -91,9 +91,9 @@
                             <label for="estado_civil" class="form-label">Estado Civil: <span class="text-danger">*</span></label>
                             <select name="estado_civil" id="estado_civil" class="form-control" required>
                                 <option value="">-- Seleccione --</option>
-                                <option value="SOLTERO" {{ old('estado_civil') == 'SOLTERO' ? 'selected' : '' }}>Soltero</option>
-                                <option value="CASADO" {{ old('estado_civil') == 'CASADO' ? 'selected' : '' }}>Casado</option>
-                                <option value="DIVORCIADO" {{ old('estado_civil') == 'DIVORCIADO' ? 'selected' : '' }}>Divorciado</option>
+                                <option value="SOLTERO" {{ old('estado_civil', $estudiante->estado_civil) == 'SOLTERO' ? 'selected' : '' }}>SOLTERO</option>
+                                <option value="CASADO" {{ old('estado_civil', $estudiante->estado_civil) == 'CASADO' ? 'selected' : '' }}>CASADO</option>
+                                <option value="DIVORCIADO" {{ old('estado_civil', $estudiante->estado_civil) == 'DIVORCIADO' ? 'selected' : '' }}>DIVORCIADO</option>
                             </select>
                             @error('estado_civil')
                                 <small class="text-danger">{{ $message }}</small>
@@ -106,7 +106,7 @@
                         <!-- Opción de contacto -->
                         <div class="col-md-5">
                             <label for="opcion_contacto" class="form-label">Opción de contacto <span class="text-primary">(correo, telefono, etc.)</span> :</label>
-                            <input type="text" name="opcion_contacto" id="opcion_contacto" class="form-control" value="{{ old('opcion_contacto') }}">
+                            <input type="text" name="opcion_contacto" id="opcion_contacto" class="form-control" value="{{ old('opcion_contacto', $estudiante->opcion_contacto) }}">
                             @error('opcion_contacto')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -115,7 +115,7 @@
                         <!-- Edad -->
                         <div class="col-md-2">
                             <label for="edad" class="form-label">Edad:</label>
-                            <input type="number" name="edad" id="edad" class="form-control" value="{{ old('edad') }}" min="0">
+                            <input type="number" name="edad" id="edad" class="form-control" value="{{ old('edad', $estudiante->edad) }}" min="0">
                             @error('edad')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -124,7 +124,7 @@
                         <!-- Celular -->
                         <div class="col-md-3">
                             <label for="celular" class="form-label">Celular: <span class="text-danger">*</span> </label>
-                            <input type="text" name="celular" id="celular" class="form-control" value="{{ old('celular') }}">
+                            <input type="text" name="celular" id="celular" class="form-control" value="{{ old('celular', $estudiante->celular) }}">
                             @error('celular')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -142,7 +142,7 @@
 
                             <input list="lista_cursos" name="curso_biblico_usado" id="curso_biblico_usado"
                                 class="form-control" required
-                                value="{{ old('curso_biblico_usado') }}"
+                                value="{{ old('curso_biblico_usado', $estudiante->curso_biblico_usado) }}"
                                 placeholder="Seleccione o escriba el curso...">
 
                             <datalist id="lista_cursos">
@@ -160,8 +160,8 @@
                         <div class="col-md-6">
                             <label for="bautizado" class="form-label">¿Bautizado?: <span class="text-danger">*</span> </label>
                             <select name="bautizado" id="bautizado" class="form-select">
-                                <option value="0" {{ old('bautizado') == 0 ? 'selected' : '' }}>No</option>
-                                <option value="1" {{ old('bautizado') == 1 ? 'selected' : '' }}>Sí</option>
+                                <option value="0" {{ old('bautizado', $estudiante->bautizado) == 0 ? 'selected' : '' }}>No</option>
+                                <option value="1" {{ old('bautizado', $estudiante->bautizado) == 1 ? 'selected' : '' }}>Sí</option>
                             </select>
                             @error('bautizado')
                                 <small class="text-danger">{{ $message }}</small>
@@ -170,11 +170,11 @@
                         
                         <div class="col-md-6 mt-3" id="selectIglesia">
                             <label for="id_iglesia" class="form-label">Iglesia: <span class="text-danger">*</span> </label>
-                            <select data-size="9" title="-- Seleccione un Iglesia --" data-live-search="true" name="id_iglesia" id="id_iglesia" class="form-control selectpicker show-tick" >                         
+                            <select data-size="9" title="-- Seleccione una iglesia --" data-live-search="true" name="id_iglesia" id="id_iglesia" class="form-control selectpicker show-tick" >                         
                                 <option value="">-- Seleccione una iglesia --</option>
                                 @foreach($iglesias as $iglesia)
                                     <option value="{{ $iglesia->id_iglesia }}" 
-                                        {{ old('id_iglesia') == $iglesia->id_iglesia ? 'selected' : '' }}>
+                                        {{ (old('id_iglesia', $estudiante->id_iglesia ?? '') == $iglesia->id_iglesia) ? 'selected' : '' }}>
                                         {{ $iglesia->nombre }}
                                     </option>
                                 @endforeach

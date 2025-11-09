@@ -8,22 +8,32 @@ use App\Models\Iglesia;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Http\Requests\EstudianteRequest;
-
+use App\Http\Requests\UpdateEstudianteRequest;
 
 class EstudiantesController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource. //TODO HECHO YA PARA LE DISTRITO 11
      */
     public function index()
     {
-        $estudiantes = EstudianteBiblico::join('iglesias as xi', 'estudiante_biblicos.iglesia_id', '=', 'xi.id_iglesia')
-                ->select(
-                    'estudiante_biblicos.*',
-                    'xi.nombre as nombre_iglesia' // alias para que no choque con bautisos.nombre
-                )
-                ->get();
-        return view('estudiantes.index', ['estudiantes' => $estudiantes]);
+        // 1️⃣ Definir el año actual y el distrito
+        $anioActual = now()->year;
+        $id_distrito = 11; // todos los estudiantes del distrito Bolivar
+
+        // 2️⃣ Consultar estudiantes bíblicos con los filtros
+        $estudiantes = EstudianteBiblico::join('iglesias as xi', 'estudiante_biblicos.id_iglesia', '=', 'xi.id_iglesia')
+            ->select(
+                'estudiante_biblicos.*',
+                'xi.nombre as nombre_iglesia'
+            )
+            ->whereYear('estudiante_biblicos.fecha_registro', $anioActual) // mismo año
+            ->where('xi.estado', true) // iglesias activas
+            ->where('xi.distrito_id', $id_distrito) // solo distrito 11
+            ->get();
+
+        // 3️⃣ Enviar datos a la vista
+        return view('estudiantes.index', compact('estudiantes', 'anioActual'));
     }
 
     /**
@@ -31,7 +41,16 @@ class EstudiantesController extends Controller
      */
     public function create()
     {
-        $iglesias = Iglesia::all();
+        // Definimos el distrito actual
+        $id_distrito = 11;
+
+        // Obtenemos solo las iglesias activas del distrito 11
+        $iglesias = Iglesia::where('estado', true)
+            ->where('distrito_id', $id_distrito)
+            ->orderBy('nombre') // opcional: para que salgan ordenadas alfabéticamente
+            ->get();
+
+        // Retornamos la vista con los datos
         return view('estudiantes.create', compact('iglesias'));
     }
 
@@ -42,14 +61,23 @@ class EstudiantesController extends Controller
     {
         try {
             DB::beginTransaction();
-            $estudiante = EstudianteBiblico::create($request->validated()); // se crea el registro 
+
+            // Obtenemos la fecha actual, por ejemplo con Carbon:
+            $fechaHoy = \Carbon\Carbon::now(); // puedes usar también now() si lo tienes importado
+            
+            // Creamos el registro incluyendo la fecha_registro
+            $estudiante = EstudianteBiblico::create(array_merge(
+                $request->validated(),
+                ['fecha_registro' => $fechaHoy]
+            ));
+            
             DB::commit();
+            return redirect()->route('estudiantes.index')->with('success', 'Estudiante creado correctamente.');
+
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Error al crear el estudiante biblico: ' . $e->getMessage()], 500);
         }
-
-        return redirect()->route('estudiantes.index')->with('success','Estudiante registrado Correctamente');
     }
 
     /**
@@ -65,23 +93,61 @@ class EstudiantesController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $id_distrito = 11;
+        $estudiante = EstudianteBiblico::find($id);
+        $iglesias = Iglesia::where('estado', true)
+            ->where('distrito_id', $id_distrito)
+            ->orderBy('nombre') // opcional: para que salgan ordenadas alfabéticamente
+            ->get();
+        return view('estudiantes.edit', compact('estudiante','iglesias'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateEstudianteRequest $request, string $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            $estudiante = EstudianteBiblico::findOrFail($id);
+            $estudiante->update($request->validated());
+
+            DB::commit();
+            return redirect()->route('estudiantes.index')->with('success', 'Estudiante actualizado correctamente.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            // Buscar estudiante, si no existe lanzar excepción o manejar error
+            $estudiante = EstudianteBiblico::find($id);
+
+            if (!$estudiante) {
+                return redirect()->route('estudiantes.index')
+                    ->with('error', 'Estudiante no encontrado');
+            }
+
+            $estudiante->delete();
+
+            DB::commit();
+            return redirect()->route('estudiantes.index')->with('success', 'Estudiante Eliminado Correctamente');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->route('estudiantes.index')
+                ->with('error', 'Error al Eliminar al Estudiante: ' . $e->getMessage());
+        }
     }
 
 

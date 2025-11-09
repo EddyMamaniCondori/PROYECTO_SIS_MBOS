@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BautisoRequest extends FormRequest
+class UpdateBautisoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,7 +21,7 @@ class BautisoRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+       return [
             'tipo' => 'required|string|max:100',
             'fecha_bautizo' => [
                 'required',
@@ -34,9 +34,6 @@ class BautisoRequest extends FormRequest
         ];
     }
 
-     /**
-     * Mensajes personalizados (opcional)
-     */
     public function messages(): array
     {
         return [

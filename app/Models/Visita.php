@@ -13,26 +13,21 @@ class Visita extends Model
     protected $primaryKey = 'id_visita';
 
     protected $fillable = [
-        'fecha',
+        'fecha_visita',
         'nombre_visitado',
         'cant_present',
         'telefono',
         'hora',
         'motivo',
         'descripcion_lugar',
-        'pastor_id',
-        'iglesia_id',
+        'id_iglesia',
     ];
 
-    // Relación: una visita pertenece a un pastor
-    public function pastor() : BelongsTo
-    {
-        return $this->belongsTo(Pastor::class, 'pastor_id', 'id_pastor');
-    }
+
 
     // Relación: una visita pertenece a una iglesia
     public function iglesia() : BelongsTo
     {
-        return $this->belongsTo(Iglesia::class, 'iglesia_id', 'id_iglesia');
+        return $this->belongsTo(Iglesia::class, 'id_iglesia', 'id_iglesia');
     }
 }

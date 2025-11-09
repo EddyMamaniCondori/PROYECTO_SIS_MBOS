@@ -35,30 +35,26 @@ class Iglesia extends Model
     // Relación: una iglesia tiene muchas visitas
     public function visitas() : HasMany
     {
-        return $this->hasMany(Visita::class, 'iglesia_id', 'id_iglesia');
+        return $this->hasMany(Visita::class, 'id_iglesia', 'id_iglesia');
     }
 
     // Relación: una iglesia tiene muchos bautisos
     public function bautisos() : HasMany
     {
-        return $this->hasMany(Bautiso::class, 'iglesia_id', 'id_iglesia');
+        return $this->hasMany(Bautiso::class, 'id_iglesia', 'id_iglesia');
     }
     // Relación: una iglesia tiene muchos estudiantes bíblicos
-    public function estudianteBiblicos() : HasMany
+    public function estudianteBiblicos() : HasMany //verificado
     {
-        return $this->hasMany(EstudianteBiblico::class, 'iglesia_id', 'id_iglesia');
+        return $this->hasMany(EstudianteBiblico::class, 'id_iglesia', 'id_iglesia');
     }
 
     // Relación: una iglesia tiene muchos instructores bíblicos
-    public function instructoreBiblicos() : HasMany
+    public function instructoreBiblicos() : HasMany //vefificado
     {
-        return $this->hasMany(InstructorBiblico::class, 'iglesia_id', 'id_iglesia');
+        return $this->hasMany(InstructorBiblico::class, 'id_iglesia', 'id_iglesia');
     }
      // Relación: una iglesia tiene muchos desafíos mensuales
-    public function desafiosMensuales() : HasMany
-    {
-        return $this->hasMany(DesafioMensual::class, 'iglesia_id', 'id_iglesia');
-    }
 
     public function remesas()
     {
@@ -72,4 +68,10 @@ class Iglesia extends Model
         return $this->hasMany(Puntualidad::class, 'id_iglesia', 'id_iglesia');
     }
     
+    public function anualIglesias()
+    {
+        return $this->hasMany(AnualIglesia::class, 'id_iglesia', 'id_iglesia');
+    }
+
+
 }

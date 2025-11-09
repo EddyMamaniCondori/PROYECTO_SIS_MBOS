@@ -34,7 +34,7 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Instructores Biblicos</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Instructores Biblicos - {{$anioActual}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -60,12 +60,12 @@
                                 <table id="example" class="display">
                                     <thead>
                                          <tr>
-                                            <th>Nombre Completo</th>
+                                            <th>Iglesia</th>
+                                            <th>Nombre</th>
                                             <th>Sexo</th>
-                                            <th>Fecha Nacimiento</th>
                                             <th>Edad</th>
                                             <th>Celular</th>
-                                            <th>Iglesia</th>
+                                            
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -73,35 +73,30 @@
                                         @foreach ($instructores as $instructor)
                                         <tr>
                                             <td>
-                                                <strong>{{ $instructor->nombre }}</strong>
+                                                {{ $instructor->nombre_iglesia ?? 'Sin Iglesia' }}
+                                            </td>
+                                            <td>
+                                                {{ $instructor->nombre }}
                                                 {{ $instructor->ape_paterno }}
                                                 {{ $instructor->ape_materno ?? '' }}
                                             </td>
-
                                             <td class="text-center">
                                                 {{ $instructor->sexo === 'M' ? 'Masculino' : 'Femenino' }}
                                             </td>
-
                                             <td class="text-center">
-                                                {{ $instructor->fecha_nacimiento ? \Carbon\Carbon::parse($instructor->fecha_nacimiento)->format('d/m/Y') : '—' }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ $instructor->edad ?? '—' }}
+                                                {{ $instructor->edad }} años
                                             </td>
                                             <td>
                                                 {{ $instructor->celular ?? '—' }}
                                             </td>
-                                            <td>
-                                                {{ $instructor->nombre_iglesia ?? 'Sin Iglesia' }}
-                                            </td>
-                                            
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
 
-                                                <form action="" method="get">
-                                                    <button type="submit" class="btn btn-warning">Editar</button>
-                                                </form>
-                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$instructor->id_instructor}}">Eliminar</button>
+                                                <a href="{{ route('instructores.edit', $instructor->id_instructor) }}" class="btn btn-warning">
+                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                </a>
+
+                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$instructor->id_instructor}}"> <i class="bi bi-trash"></i> Eliminar</button>
                                             </td>
                                         </tr>
                                          <div class="modal fade" id="confirmModal-{{$instructor->id_instructor}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -109,10 +104,11 @@
                                                 <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de Confirmacion</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <strong style="color: red;">¿Seguro que quieres eliminar a este bautiso? </strong><br>
+                                                    <strong style="color: red;">¿Seguro que quieres eliminar a este Instructor? </strong><br>
+                                                    <p>Luego, no podras recuperarlo</p>
+                                                    <hr>
                                                     <strong> Nombre: </strong> <strong>{{ $instructor->nombre }}</strong>
                                                 {{ $instructor->ape_paterno }}
                                                 {{ $instructor->ape_materno ?? '' }} 
@@ -124,8 +120,6 @@
                                                         @csrf
                                                         <button type="submit" class="btn btn-danger">Confirmar</button>
                                                     </form>
-
-                                                    
                                                 </div>
                                                 </div>
                                             </div>
@@ -134,12 +128,11 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Nombre Completo</th>
+                                            <th>Iglesia</th>
+                                            <th>Nombre</th>
                                             <th>Sexo</th>
-                                            <th>Fecha Nacimiento</th>
                                             <th>Edad</th>
                                             <th>Celular</th>
-                                            <th>Iglesia</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </tfoot>

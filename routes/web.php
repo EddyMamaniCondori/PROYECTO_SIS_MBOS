@@ -10,13 +10,15 @@ use App\Http\Controllers\BautisosController;
 use App\Http\Controllers\VisitasController;
 use App\Http\Controllers\EstudiantesController;
 use App\Http\Controllers\InstructoresController;
-use App\Http\Controllers\DesafioMensualController;
+use App\Http\Controllers\DesafioController;
 use App\Http\Controllers\RemesaController;
 use App\Http\Controllers\RemesaExcelController;
 use App\Http\Controllers\PendientesController;
 use App\Http\Controllers\PuntualidadController;
 use App\Http\Controllers\RemesasDashboardController;
 use App\Http\Controllers\BlancoController;
+use App\Http\Controllers\DesafioAnualIglesiaController;
+use App\Http\Controllers\DesafioMensualController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -67,8 +69,22 @@ Route::get('remesas/distrital/dashboard', [RemesasDashboardController::class, 'i
 
 Route::get('remesas/distrital/dash', [RemesasDashboardController::class, 'index_distrital'])
     ->name('remesas.distrital.dash');
+/**
+ *_______________DESAFIOS BAUTISOS POR DISTRITO
+ * 
+ */
+Route::get('desafios/bautizos/distrital/', [DesafioController::class, 'index_desafio_bautizos'])
+    ->name('desafios.bautizos');
 
+Route::put('/desafios/update_2/{id}', [DesafioController::class, 'update_2'])
+    ->name('desafios.update_2');
+/**
+ *_______________DESAFIOS IGLESIAS ANUALES ESTUDIANTES Y INSTRUCTORES
+ * 
+ */
 
+Route::post('/desafios/{id}/completar-iglesias', [DesafioController::class, 'asignarAnualIglesiasFaltantes_botom'])
+    ->name('desafios.completar-faltantes');
 
 /**
  *_________________IMPORTACION Y EXPOTACION DE ARCHIVOS EXCEL 
@@ -175,12 +191,12 @@ Route::get('iglesias/indexdelete', [IglesiaController::class, 'index_eliminado']
 Route::get('iglesias/asignaciones', [IglesiaController::class, 'index_asignaciones'])
     ->name('iglesias.asignaciones');
     
-Route::get('desafios/mesual', [DesafioMensualController::class, 'index_mes'])
+Route::get('desafios/mesual', [DesafioController::class, 'index_mes'])
     ->name('desafios.mes');
 
-Route::post('/desafios/mes/store', [DesafioMensualController::class, 'storeMes'])->name('desafios.store_mes');
+Route::post('/desafios/mes/store', [DesafioController::class, 'storeMes'])->name('desafios.store_mes');
 
-Route::get('/desafios/mes/{mes}/{anio}', [DesafioMensualController::class, 'show_mes'])
+Route::get('/desafios/mes/{mes}/{anio}', [DesafioController::class, 'show_mes'])
     ->name('desafios.show_mes');
 
 //pruebas
@@ -196,6 +212,14 @@ Route::post('/iglesias/{id}/liberar', [IglesiaController::class, 'liberar'])->na
 Route::get('/pastor_perfil/{id_pastor}', [PastorController::class, 'perfil_pastor'])
     ->name('pastor.perfil');
 
+    /**
+     * _____________________DESAFIOS DE DISTRITO 
+     * 
+     */
+Route::get('/desafios/{id}/distrital', [DesafioController::class, 'index_distrital'])
+    ->name('desafios.index_distrital');
+
+
 
 Route::resource('pastores', PastorController::class);
 Route::resource('distritos', DistritoController::class);
@@ -205,6 +229,8 @@ Route::resource('bautisos', BautisosController::class);
 Route::resource('visitas', VisitasController::class);
 Route::resource('estudiantes', EstudiantesController::class);
 Route::resource('instructores', InstructoresController::class);
-Route::resource('desafios', DesafioMensualController::class);
+Route::resource('desafios', DesafioController::class);
 Route::resource('remesas', RemesaController::class);
 Route::resource('blancos', BlancoController::class);
+Route::resource('anual_iglesias', DesafioAnualIglesiaController::class);
+Route::resource('desafios_mensuales', DesafioMensualController::class);

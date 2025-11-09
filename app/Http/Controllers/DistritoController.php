@@ -464,8 +464,6 @@ class DistritoController extends Controller
 
     public function indexanual()
     {
-
-        
         $sw_cambio = DB::table('distritos')
             ->where('estado', true)
             ->value('sw_cambio');
@@ -473,6 +471,7 @@ class DistritoController extends Controller
         $anio = DB::table('distritos')
             ->where('estado', true)
             ->value('año');
+
         if($sw_cambio){
             $anio = DB::table('asignacion_distritos')
             ->value('año');
@@ -536,9 +535,7 @@ class DistritoController extends Controller
                         'año' => $distrito->año,
                     ]);
                 }
-            }
-
-           
+            } 
             // Actualizar todos los registros de distritos con datos de asignacion_distritos
             //2. para evitar errores todos las tuplas distrtito se cambia a falso
             DB::update('UPDATE distritos SET sw_cambio = ?, año = ?', [false, $anio]);

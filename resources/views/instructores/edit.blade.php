@@ -18,12 +18,12 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Crear Instructor Biblico</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Editar Instructor Biblico</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
                   <li class="breadcrumb-item"><a href="{{ route('instructores.index')}}">Instructor Biblicos</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Crear Instructores Biblicos</li>
+                  <li class="breadcrumb-item active" aria-current="page">Editar Instructor Biblico</li>
                 </ol>
               </div>
             </div>
@@ -33,15 +33,16 @@
         <div class="app-content">
           <div class="container-fluid">
             <!--begin::TABLA-->
-            <form action="{{ route('instructores.store')}}" method="POST" > <!--en actiion va que accion vamos ha acer con este formulario una ves de click en guardar-->
+            <form action="{{ route('instructores.update', $instructor->id_instructor)}}" method="POST" > <!--en actiion va que accion vamos ha acer con este formulario una ves de click en guardar-->
                     @csrf
+                    @method('PUT') 
                     <div class="row g-3">
                         <h5 class="mb-0"><strong>Datos Generales</strong></h5>
                         <hr>
                         <!-- Nombre -->
                         <div class="col-md-4">
                             <label for="nombre" class="form-label">Nombre: <span class="text-danger">*</span> </label>
-                            <input type="text" name="nombre" id="nombre" class="form-control" value="{{ old('nombre') }}">
+                            <input type="text" name="nombre" id="nombre" class="form-control" value="{{ old('nombre', $instructor->nombre) }}">
                             @error('nombre')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -49,7 +50,7 @@
                         <!-- Apellido Paterno -->
                         <div class="col-md-4">
                             <label for="ape_paterno" class="form-label">Apellido Paterno: <span class="text-danger">*</span></label>
-                            <input type="text" name="ape_paterno" id="ape_paterno" class="form-control" value="{{ old('ape_paterno') }}">
+                            <input type="text" name="ape_paterno" id="ape_paterno" class="form-control" value="{{ old('ape_paterno', $instructor->ape_paterno) }}">
                             @error('ape_paterno')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -58,7 +59,7 @@
                         <!-- Apellido Materno -->
                         <div class="col-md-4">
                             <label for="ape_materno" class="form-label">Apellido Materno:</label>
-                            <input type="text" name="ape_materno" id="ape_materno" class="form-control" value="{{ old('ape_materno') }}">
+                            <input type="text" name="ape_materno" id="ape_materno" class="form-control" value="{{ old('ape_materno', $instructor->ape_materno) }}">
                             @error('ape_materno')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -69,8 +70,8 @@
                             <label for="sexo" class="form-label">Sexo: <span class="text-danger">*</span> </label>
                             <select name="sexo" id="sexo" class="form-select">
                                 <option value="">-- Seleccione --</option>
-                                <option value="M" {{ old('sexo') == 'M' ? 'selected' : '' }}>Masculino</option>
-                                <option value="F" {{ old('sexo') == 'F' ? 'selected' : '' }}>Femenino</option>
+                                <option value="M" {{ old('sexo', $instructor->sexo) == 'M' ? 'selected' : '' }}>Masculino</option>
+                                <option value="F" {{ old('sexo', $instructor->sexo) == 'F' ? 'selected' : '' }}>Femenino</option>
                             </select>
                             @error('sexo')
                                 <small class="text-danger">{{ $message }}</small>
@@ -80,7 +81,7 @@
                         <!-- Opción de contacto -->
                         <div class="col-md-3">
                             <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento: <span class="text-danger">*</span> </label>
-                            <input type="date" name="fecha_nacimiento" class="form-control" value="{{ old('fecha_nacimiento') }}">
+                            <input type="date" name="fecha_nacimiento" class="form-control" value="{{ old('fecha_nacimiento', $instructor->fecha_nacimiento) }}">
                             @error('fecha_nacimiento')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -90,7 +91,7 @@
                         <!-- Celular -->
                         <div class="col-md-3">
                             <label for="celular" class="form-label">Celular:<span class="text-danger">*</span></label>
-                            <input type="text" name="celular" id="celular" class="form-control" value="{{ old('celular') }}">
+                            <input type="text" name="celular" id="celular" class="form-control" value="{{ old('celular', $instructor->celular) }}">
                             @error('celular')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -102,7 +103,7 @@
                                 <option value="">-- Seleccione una iglesia --</option>
                                 @foreach($iglesias as $iglesia)
                                     <option value="{{ $iglesia->id_iglesia }}" 
-                                        {{ old('id_iglesia') == $iglesia->id_iglesia ? 'selected' : '' }}>
+                                        {{ old('id_iglesia', $instructor->id_iglesia) == $iglesia->id_iglesia ? 'selected' : '' }}>
                                         {{ $iglesia->nombre }}
                                     </option>
                                 @endforeach

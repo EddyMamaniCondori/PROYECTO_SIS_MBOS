@@ -8,7 +8,7 @@ use App\Models\Iglesia;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Http\Requests\InstructorRequest;
-
+use App\Http\Requests\UpdateInstructorRequest;
 class InstructoresController extends Controller
 {
     /**
@@ -16,14 +16,20 @@ class InstructoresController extends Controller
      */
     public function index()
     {
-        $instructores = InstructorBiblico::join('iglesias as xi', 'instructor_biblicos.iglesia_id', '=', 'xi.id_iglesia')
+        $anioActual = now()->year; //muestro los estudiantes del año actual
+        $id_distrito = 11; // todos los estudiantes del distrito Bolivar
+
+        $instructores = InstructorBiblico::join('iglesias as xi', 'instructor_biblicos.id_iglesia', '=', 'xi.id_iglesia')
             ->select(
                 'instructor_biblicos.*',
                 'xi.nombre as nombre_iglesia' // alias para evitar conflicto con nombre del instructor
             )
+            ->whereYear('instructor_biblicos.fecha_registro', $anioActual) // mismo año
+            ->where('xi.estado', true) // iglesias activas
+            ->where('xi.distrito_id', $id_distrito) // solo distrito 11
             ->get();
 
-        return view('instructores.index', ['instructores' => $instructores]);
+        return view('instructores.index', compact('instructores','anioActual'));
 
     }
 
@@ -32,7 +38,14 @@ class InstructoresController extends Controller
      */
     public function create()
     {
-        $iglesias = Iglesia::all();
+        $id_distrito = 11;
+
+        // Obtenemos solo las iglesias activas del distrito 11
+        $iglesias = Iglesia::where('estado', true)
+            ->where('distrito_id', $id_distrito)
+            ->orderBy('nombre') // opcional: para que salgan ordenadas alfabéticamente
+            ->get();
+
         return view('instructores.create', compact('iglesias'));
     }
 
@@ -43,7 +56,12 @@ class InstructoresController extends Controller
     {
         try {
             DB::beginTransaction();
-            $estudiante = InstructorBiblico::create($request->validated()); // se crea el registro 
+            $fechaHoy = \Carbon\Carbon::now(); // puedes usar también now() si lo tienes importado
+            
+            $estudiante = InstructorBiblico::create(array_merge(
+                $request->validated(),
+                ['fecha_registro' => $fechaHoy]
+            )); // se crea el registro 
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -67,15 +85,31 @@ class InstructoresController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $id_distrito = 11;
+        $instructor = InstructorBiblico::find($id);
+        $iglesias = Iglesia::where('estado', true)
+            ->where('distrito_id', $id_distrito)
+            ->orderBy('nombre') // opcional: para que salgan ordenadas alfabéticamente
+            ->get();
+        return view('instructores.edit', compact('instructor','iglesias'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateInstructorRequest $request, string $id)
     {
-        //
+         try {
+            DB::beginTransaction();  
+
+            $instructor = InstructorBiblico::find($id);
+            $instructor->update($request->validated());
+            DB::commit();
+            return redirect()->route('instructores.index')->with('success', 'Instructor actualizado correctamente.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -83,7 +117,27 @@ class InstructoresController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            // Buscar estudiante, si no existe lanzar excepción o manejar error
+            $instructor = InstructorBiblico::find($id);
+
+            if (!$instructor) {
+                return redirect()->route('instructores.index')
+                    ->with('error', 'Instructor no encontrado');
+            }
+
+            $instructor->delete();
+
+            DB::commit();
+            return redirect()->route('instructores.index')->with('success', 'Instructor Eliminado Correctamente');
+
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->route('instructores.index')
+                ->with('error', 'Error al Eliminar: ' . $e->getMessage());
+        }
     }
 
     public function dashboard()

@@ -13,20 +13,15 @@ class Bautiso extends Model
     protected $primaryKey = 'id_bautiso';
 
     protected $fillable = [
-        'nombre',
-        'ape_paterno',
-        'ape_materno',
-        'sexo',
-        'fecha_nacimiento',
+        'tipo',
         'fecha_bautizo',
-        'estudiante_biblico',
-        'iglesia_id',
+        'id_iglesia',
     ];
 
     // Relación: un bautiso pertenece a una iglesia
     public function iglesia() : BelongsTo
     {
-        return $this->belongsTo(Iglesia::class, 'iglesia_id', 'id_iglesia');
+        return $this->belongsTo(Iglesia::class, 'id_iglesia', 'id_iglesia');
     }
 }
 

@@ -129,40 +129,10 @@
                   </li>
                 </ul>
               </li>
-              <!-- desplegable-->
+             
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="bi bi-house-fill"></i>
-                  <p>
-                    Desafios
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="{{ route('desafios.index')  }}" class="nav-link">
-                      <i class="bi bi-houses"></i>
-                      <p>Desafios</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{ route('desafios.mes')  }}" class="nav-link">
-                      <i class="bi bi-house-check"></i>
-                      <p>Administrador de desafios</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="bi bi-house-add"></i>
-                      <p>asignar Desafio</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-clipboard-fill"></i>
+                  <i class="bi bi-person-walking"></i>
                   <p>
                     Visitas
                     
@@ -266,7 +236,74 @@
                   </li>
                 </ul>
               </li>
+              <!--SECCCION DESAFIOS-->
+              <li class="nav-header"> DESAFIOS </li>
+              <!--desplehgable-->
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="bi bi-house-fill"></i>
+                  <p>
+                    Desafios
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('desafios.index')  }}" class="nav-link">
+                      <i class="bi bi-houses"></i>
+                      <p>Desafios</p>
+                    </a>
+                  </li>
+                  <li class="nav-itemms-3">
+                    <a href="{{ route('desafios.mes')  }}" class="nav-link">
+                      <i class="bi bi-house-check"></i>
+                      <p>Administrador de desafios</p>
+                    </a>
+                  </li>
+                  <li class="nav-item ms-3">
+                    <a href="#" class="nav-link">
+                      <i class="bi bi-house-add"></i>
+                      <p>asignar Desafio</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!--termina desplehgable-->
 
+
+
+              <!--desplehgable-->
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="bi bi-person-heart"></i>
+                  <p>
+                    Bautizos
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('desafios.bautizos')  }}" class="nav-link">
+                      <i class="bi bi-houses"></i>
+                      <p>Desafios Distritales</p>
+                    </a>
+                  </li>
+                  <li class="nav-item ms-3">
+                    <a href="#" class="nav-link">
+                      <i class="bi bi-house-add"></i>
+                      <p>asignar Desafio</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <!--termina desplehgable-->
+              <li class="nav-item">
+                <a href="{{route('desafios_mensuales.index')}}" class="nav-link">
+                  <i class="bi bi-database-fill-gear"></i>
+                  <p>Visitas Mensuales</p>
+                </a>
+              </li>
+              <!--SECCCION FINANCIERO-->
               <li class="nav-header">FINANCIERO</li>
                 <!--PANEL-->
                 <li class="nav-item">
@@ -586,25 +623,7 @@
                   <p>Level 1</p>
                 </a>
               </li>
-              <li class="nav-header">LABELS</li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-circle text-danger"></i>
-                  <p class="text">Important</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-circle text-warning"></i>
-                  <p>Warning</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-circle text-info"></i>
-                  <p>Informational</p>
-                </a>
-              </li>
+              
             </ul>
             <!--end::Sidebar Menu-->
           </nav>

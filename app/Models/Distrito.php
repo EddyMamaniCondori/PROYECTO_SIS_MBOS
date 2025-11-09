@@ -61,5 +61,9 @@ class Distrito extends Model
         return $this->hasMany(BlancoRemesa::class, 'id_distrito', 'id_distrito');
     }
 
+    public function desafios()
+    {
+        return $this->hasMany(Desafio::class, 'id_distrito', 'id_distrito');
+    }
 
 }

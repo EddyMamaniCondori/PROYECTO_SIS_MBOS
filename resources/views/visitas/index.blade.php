@@ -34,7 +34,7 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Visitas Distritales</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Visitas Distritales - {{$anioActual}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -60,15 +60,14 @@
                                 <table id="example" class="display">
                                     <thead>
                                         <tr>
-                                            <th>Persona o Familia Visitada</th>
+                                            <th>Iglesia</th>
+                                            <th>P / F visitada</th>
                                             <th>Fecha de visita</th>
-                                            <th>Personas presentes</th>
+                                            <th>Presentes</th>
                                             <th>Telefono</th>
                                             <th>Hora</th>
                                             <th>Motivo</th>
                                             <th>Descripcion del lugar</th>
-                                            <th>Iglesia</th>
-                                            <th>Pastor</th>
                                             <th>acciones</th>
                                         </tr>
                                     </thead>
@@ -76,10 +75,13 @@
                                         @foreach ($visitas as $visita)
                                         <tr>
                                             <td>
-                                            {{$visita->id_visita}} &nbsp {{$visita->nombre_visitado}} 
+                                                {{$visita->nombre_iglesia}}
                                             </td>
                                             <td>
-                                                {{$visita->fecha}}
+                                                {{$visita->nombre_visitado}} 
+                                            </td>
+                                            <td>
+                                                {{$visita->fecha_visita}}
                                             </td>
                                             <td>
                                                 {{$visita->cant_present}}
@@ -98,17 +100,12 @@
                                                 {{$visita->descripcion_lugar}}
                                             </td>
                                             <td> 
-                                                {{$visita->iglesia_id}} &nbsp {{$visita->nombre_iglesia}}
-                                            </td>
-                                            <td> 
-                                                {{$visita->pastor_id}}
-                                            </td>
-                                            <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
 
-                                                <form action="" method="get">
-                                                    <button type="submit" class="btn btn-warning">Editar</button>
-                                                </form>
+                                                <a href="{{ route('visitas.edit', $visita->id_visita) }}" class="btn btn-warning">
+                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                </a>
+
                                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$visita->id_visita}}">Eliminar</button>
                                             </td>
                                         </tr>
@@ -120,18 +117,17 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <strong style="color: red;">¿Seguro que quieres eliminar a este bautiso? </strong><br>
-                                                    <strong> Nombre: </strong> {{$visita->nombre}} &nbsp {{$visita->ape_paterno}} &nbsp  {{$visita->ape_materno }}
+                                                    <strong style="color: red;">¿Seguro que quieres eliminar esta visita? </strong><br>
+                                                    <hr>
+                                                    <strong> Nombre: </strong> {{$visita->nombre_visitado}}
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                    <form action="{{ route('bautisos.destroy', ['bautiso' => $visita->id_visita]) }}" method="POST">
+                                                    <form action="{{ route('visitas.destroy', ['visita' => $visita->id_visita]) }}" method="POST">
                                                         @method('DELETE')
                                                         @csrf
                                                         <button type="submit" class="btn btn-danger">Confirmar</button>
                                                     </form>
-
-                                                    
                                                 </div>
                                                 </div>
                                             </div>
@@ -140,15 +136,14 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Persona o Familia Visitada</th>
+                                            <th>Iglesia</th>
+                                            <th>P / F visitada</th>
                                             <th>Fecha de visita</th>
-                                            <th>Personas presentes</th>
-                                            <th>Telefono</th>
+                                            <th>Presentes</th>
+                                            <th>Telefono</th> 
                                             <th>Hora</th>
                                             <th>Motivo</th>
                                             <th>Descripcion del lugar</th>
-                                            <th>Iglesia</th>
-                                            <th>Pastor</th>
                                             <th>acciones</th>
                                         </tr>
                                     </tfoot>
