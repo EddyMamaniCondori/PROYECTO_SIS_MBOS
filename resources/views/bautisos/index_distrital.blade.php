@@ -56,7 +56,7 @@
                                  <input type="hidden" name="id_distrito" id="id_distrito" value="{{$distrito->id_distrito}}">
                                    
                                 <h5 class="mb-0"><strong>Datos del Bautizo</strong></h5>
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label for="fecha_bautizo" class="form-label">Fecha de Bautizo: <span class="text-danger">*</span> </label>
                                     <input type="date" name="fecha_bautizo" class="form-control" value="{{ old('fecha_bautizo') }}">
                                     @error('fecha_bautizo')
@@ -64,7 +64,7 @@
                                     @enderror
                                 </div>
                                 <!-- Bautizado -->
-                                <div class="col-md-3">
+                                <div class="col-md-2">
                                     <label for="tipo" class="form-label">Tipo: <span class="text-danger">*</span> </label>
                                     <select name="tipo" id="tipo" class="form-select">
                                         <option value="bautizo" {{ old('tipo') == 'bautizo' ? 'selected' : '' }}>Bautizo</option>
@@ -76,7 +76,7 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-3 mt-3" id="selectIglesia">
+                                <div class="col-md-3 mt-2" id="selectIglesia">
                                     <label for="id_iglesia" class="form-label">Iglesia: <span class="text-danger">*</span> </label>
                                     <select data-size="9" title="-- Seleccione un Iglesia --" data-live-search="true" name="id_iglesia" id="id_iglesia" class="form-control selectpicker show-tick" >                         
                                         <option value="">-- Seleccione una iglesia --</option>
@@ -87,13 +87,44 @@
                                             </option>
                                         @endforeach
                                     </select>
-
                                     @error('id_iglesia')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
-
-                                <div class="col-md-3">
+                                <!--AQUI EMPIEZA LOS DESAFIOS DE EVENTOS DISPONIBLES-->
+                                <div class="col-md-2 mt-3" id="selectDesafioEvento">
+                                    @if(isset($desafio_eventos) && $desafio_eventos->count() > 0)
+                                        <label for="id_desafio_evento" class="form-label">
+                                            Desafío Evento: <span class="text-danger">*</span>
+                                        </label>
+                                        <select data-size="9" 
+                                                title="-- Seleccione un Desafío Evento --"
+                                                data-live-search="true" 
+                                                name="id_desafio_evento" 
+                                                id="id_desafio_evento" 
+                                                class="form-control selectpicker show-tick">
+                                            <option value="null">-- Seleccione un desafío evento --</option>
+                                            @foreach($desafio_eventos as $evento)
+                                                <option value="{{ $evento->id_desafio_evento }}" 
+                                                    {{ old('id_desafio_evento') == $evento->id_desafio_evento ? 'selected' : '' }}>
+                                                    {{ $evento->nombre }} ({{ \Carbon\Carbon::parse($evento->fecha_inicio)->format('d/m/Y') }} - 
+                                                    {{ \Carbon\Carbon::parse($evento->fecha_final)->format('d/m/Y') }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('id_desafio_evento')
+                                            <small class="text-danger">{{ $message }}</small>
+                                        @enderror
+                                    @else
+                                        {{-- Si no hay eventos disponibles --}}
+                                        <input type="hidden" name="id_desafio_evento" value="null">
+                                        <div class="alert alert-warning mt-2">
+                                            No hay desafíos de eventos disponibles en esta fecha.
+                                        </div>
+                                    @endif
+                                </div>
+                                <!--AQUI TERMINA LOS DESAFIOS DE EVENTOS DISPONIBLES-->
+                                <div class="col-md-2">
                                     <button type="submit" class="btn btn-success">  <i class="bi bi-bookmark"></i> Guardar </button>
 
                                     <a href="{{ route('bautisos.index') }}" class="btn btn-secondary"> <i class="bi bi-arrow-left"></i> Volver</a>

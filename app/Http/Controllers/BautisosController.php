@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Bautiso; 
 use App\Models\Iglesia; 
 use App\Models\Distrito;
+use App\Models\Desafio;
+use App\Models\DesafioEvento;
+use App\Models\AsignaDesafio;
 use App\Http\Requests\BautisoRequest;
 use App\Http\Requests\UpdateBautisoRequest;
 
@@ -21,6 +24,7 @@ class BautisosController extends Controller
     public function index()
     {   
         $año = now()->year;
+
         $distritos = DB::table('distritos as xd')
                     ->leftJoin('iglesias as xi', 'xi.distrito_id', '=', 'xd.id_distrito')
                     ->leftJoin('bautisos as xb', function($join) use ($año) {
@@ -74,20 +78,41 @@ class BautisosController extends Controller
         //dd($request);
         try {
             DB::beginTransaction();
+            $anioActual = now()->year;
             $id_distrito = $request->id_distrito;
-            //dd($id_distrito);
-             $bautiso = Bautiso::create($request->validated()); // se crea el registro 
-
-             DB::commit();
+            $bautiso = Bautiso::create($request->validated()); 
+            //se crea el bautizo a la 
+            if ($request->id_desafio_evento) {
+                $desafio = Desafio::where('anio', $anioActual)
+                    ->where('id_distrito', $id_distrito)
+                    ->first();
+                if (!$desafio) {
+                    DB::rollBack();
+                    return back()->with('error', "No se encontró un desafío para el distrito {$id_distrito} en el año {$anioActual}.");
+                }
+                $asignacion = AsignaDesafio::where('id_desafio', $desafio->id_desafio)
+                    ->where('id_desafio_evento', $request->id_desafio_evento)
+                    ->first();
+                if ($asignacion) {
+                    // ✅ Si existe, incrementar 'alcanzado'
+                    $asignacion->increment('alcanzado');
+                } else {
+                    // 🆕 Si no existe, crear nueva asignación con alcanzado = 1
+                    AsignaDesafio::create([
+                        'id_desafio' => $desafio->id_desafio,
+                        'id_desafio_evento' => $request->id_desafio_evento,
+                        'desafio' => 0,
+                        'alcanzado' => 1,
+                    ]);
+                }
+            }
+            DB::commit();
             return redirect()->route('bautisos.show', ['bautiso' => $id_distrito])
                 ->with('success', 'Registro creado correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Error al crear el bautiso: ' . $e->getMessage()], 500);
-
         }
-
-        
     }
 
     /**
@@ -103,6 +128,12 @@ class BautisosController extends Controller
             ->where('distrito_id', $id) // solo iglesias del distrito 11
             ->orderBy('nombre') // opcional: para que salgan ordenadas alfabéticamente
             ->get();
+        $fechaHoy = now(); // o Carbon::now()
+
+        $desafio_eventos = DesafioEvento::where('estado', true)
+            ->where('fecha_inicio', '<=', now())
+            ->where('fecha_final', '>=', now())
+            ->get();
 
         $bautisos = DB::table('bautisos as xb')
             ->join('iglesias as xi', 'xb.id_iglesia', '=', 'xi.id_iglesia')
@@ -111,7 +142,8 @@ class BautisosController extends Controller
             ->whereRaw("EXTRACT(YEAR FROM xb.fecha_bautizo) = ?", [$anioActual])
             ->orderBy('xb.created_at', 'desc')
             ->get();
-        return view('bautisos.index_distrital', compact('iglesias', 'anioActual', 'bautisos','distrito'));
+    
+        return view('bautisos.index_distrital', compact('iglesias', 'anioActual', 'bautisos','distrito', 'desafio_eventos'));
     }   
 
     /**

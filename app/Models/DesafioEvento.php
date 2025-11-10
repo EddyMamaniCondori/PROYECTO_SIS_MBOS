@@ -17,6 +17,7 @@ class DesafioEvento extends Model
     protected $fillable = [
         'nombre',
         'anio',
+        'estado',
         'fecha_inicio',
         'fecha_final',
     ];

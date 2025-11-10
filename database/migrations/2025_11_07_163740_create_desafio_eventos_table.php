@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id('id_desafio_evento');
             $table->string('nombre', 100);
             $table->unsignedInteger('anio');
+            $table->boolean('estado')->default(true);
             $table->date('fecha_inicio');
             $table->date('fecha_final');
             $table->timestamps();

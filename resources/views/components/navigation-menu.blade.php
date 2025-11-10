@@ -264,7 +264,7 @@
                       <p>Desafios</p>
                     </a>
                   </li>
-                  <li class="nav-itemms-3">
+                  <li class="nav-item ms-3">
                     <a href="{{ route('desafios.mes')  }}" class="nav-link">
                       <i class="bi bi-house-check"></i>
                       <p>Administrador de desafios</p>
@@ -313,6 +313,36 @@
                   <p>Visitas Mensuales</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link">
+                  <i class="fa-solid fa-people-roof"></i> 
+                  <p>
+                    Campañas
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('desafio_eventos.index')  }}" class="nav-link">
+                      <i class="fa-solid fa-people-roof"></i>
+                      <p>Administrar Campañas</p>
+                    </a>
+                  </li>
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('desafio_eventos.indexasignaciones')  }}" class="nav-link">
+                      <i class="bi bi-diagram-3"></i>
+                      <p>Asignar Desafios</p>
+                    </a>
+                  </li>
+                  <li class="nav-item ms-3">
+                    <a href="#" class="nav-link">
+                      <i class="bi bi-graph-up-arrow"></i>       
+                      <p>Dashboard Resultados</p>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+
               <!--SECCCION FINANCIERO-->
               <li class="nav-header">FINANCIERO</li>
                 <!--PANEL-->

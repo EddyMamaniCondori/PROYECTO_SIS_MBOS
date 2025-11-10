@@ -31,6 +31,7 @@ class BautisoRequest extends FormRequest
             ],
             'id_iglesia' => 'required|exists:iglesias,id_iglesia',
             'id_distrito' => 'nullable',
+            'id_desafio_evento' => 'nullable',
         ];
     }
 

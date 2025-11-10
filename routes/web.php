@@ -21,7 +21,7 @@ use App\Http\Controllers\RemesasDashboardController;
 use App\Http\Controllers\BlancoController;
 use App\Http\Controllers\DesafioAnualIglesiaController;
 use App\Http\Controllers\DesafioMensualController;
-
+use App\Http\Controllers\DesafioEventoController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -246,7 +246,24 @@ Route::get('/desafios/{id}/distrital', [DesafioController::class, 'index_distrit
 Route::put('/mensuales_desafios/{id}', [DesafioMensualController::class, 'update_desafios'])
     ->name('mensuales_desafios.update');
 
+Route::get('desafio_eventos/indexdelete', [DesafioEventoController::class, 'index_eliminado'])
+    ->name('desafio_eventos.indexdelete');
 
+Route::post('desafio_eventos/reactive/{id}', [DesafioEventoController::class, 'reactive'])
+    ->name('desafio_eventos.reactive');
+
+Route::get('desafio_eventos/indexasignaciones', [DesafioEventoController::class, 'index_asignaciones'])
+    ->name('desafio_eventos.indexasignaciones');
+
+Route::get('desafio_eventos/asignar/{id}/distritos', [DesafioEventoController::class, 'asignar_evento_distrito'])
+    ->name('desafio_eventos.asignar_distritos');
+
+Route::get('desafio_eventos/mostrar_asignaciones/{id}/', [DesafioEventoController::class, 'mostrar_asignaciones_evento'])
+    ->name('desafio_eventos.mostrar_asignaciones');
+
+Route::put('desafio_eventos/asignaciones/{id}', [DesafioEventoController::class, 'update_asignacion_desafio'])
+    ->name('desafio_eventos.update_asignacion_desafio');
+    
 
 Route::resource('pastores', PastorController::class);
 Route::resource('personales', PersonalController::class);
@@ -264,3 +281,5 @@ Route::resource('remesas', RemesaController::class);
 Route::resource('blancos', BlancoController::class);
 Route::resource('anual_iglesias', DesafioAnualIglesiaController::class);
 Route::resource('desafios_mensuales', DesafioMensualController::class);
+
+Route::resource('desafio_eventos', DesafioEventoController::class);
