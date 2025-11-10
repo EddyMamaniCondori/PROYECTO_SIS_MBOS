@@ -22,6 +22,7 @@ class UpdateVisitasRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id_mensual'=> 'required',
             'fecha_visita' => [
                 'required',
                 'date',

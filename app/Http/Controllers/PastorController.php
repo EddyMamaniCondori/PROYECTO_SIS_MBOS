@@ -28,9 +28,18 @@ class PastorController extends Controller
 
     public function index()
     {
-        $pastores = Persona::join('pastors as xp', 'personas.id_persona', '=', 'xp.id_pastor')
+        /*$pastores = Persona::join('pastors as xp', 'personas.id_persona', '=', 'xp.id_pastor')
                     ->where('personas.estado', true)
-                    ->get();
+                    ->get();*/
+        $pastores = Persona::join('pastors as xp', 'personas.id_persona', '=', 'xp.id_pastor')
+            ->leftJoin('distritos as xd', 'xp.id_pastor', '=', 'xd.id_pastor')
+            ->where('personas.estado', true)
+            ->select(
+                'personas.*',
+                'xp.*',
+                DB::raw('CASE WHEN xd.id_pastor IS NOT NULL THEN 1 ELSE 0 END as asignado')
+            )
+            ->get();
         //dd($pastores);
         return view('pastores.index',['personas'=>$pastores]);
     }

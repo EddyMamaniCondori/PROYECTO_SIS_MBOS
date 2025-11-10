@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\DB;
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Grupo;
 use App\Models\Administrativo;
@@ -32,12 +33,16 @@ class GrupoController extends Controller
      */
     public function create()
     {
-        $administrativos = Administrativo::AdministrativoDC();
-        //dd($administrativos);
+        $administrativos = DB::table('personas as p')
+            ->join('administrativos as a', 'p.id_persona', '=', 'a.id_persona')
+            ->leftJoin('grupos as g', 'a.id_persona', '=', 'g.administrativo_id')
+            ->whereNull('g.administrativo_id') // No están en ningún grupo
+            ->where('p.estado', true) // Solo activos (opcional)
+            ->select('p.*', 'a.*')
+            ->get();
+            
         return view('gp.create', compact('administrativos'));
-    
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -80,9 +85,29 @@ class GrupoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
+    /**
+ * Show the form for editing the specified resource.
+ */
     public function edit(string $id)
     {
-        //
+        $grupo = DB::table('grupos as g')
+            ->where('g.id_grupo', $id)
+            ->select('g.*')
+            ->first();
+        
+        // Obtener administrativos disponibles (no asignados a otros grupos)
+        $administrativos = DB::table('personas as p')
+            ->join('administrativos as a', 'p.id_persona', '=', 'a.id_persona')
+            ->leftJoin('grupos as g', 'a.id_persona', '=', 'g.administrativo_id')
+            ->where(function($query) use ($id) {
+                $query->whereNull('g.administrativo_id') // No asignados
+                    ->orWhere('g.id_grupo', $id); // O el actual (para poder mantenerlo)
+            })
+            ->where('p.estado', true)
+            ->select('p.*')
+            ->get();
+        
+        return view('gp.edit', compact('grupo', 'administrativos'));
     }
 
     /**
@@ -90,7 +115,30 @@ class GrupoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'nombre' => 'required|string|max:100',
+            'administrativo_id' => 'required',
+        ], [
+            'nombre.required' => 'El nombre del grupo es obligatorio.',
+            'administrativo_id.required' => 'Debe seleccionar un administrativo.',
+        ]);
+        try {
+            DB::beginTransaction();
+            
+            $grupo = Grupo::findOrFail($id);
+            $grupo->update([
+                'nombre' => $request->nombre,
+                'administrativo_id' => $request->administrativo_id,
+            ]);
+            
+            DB::commit();
+            
+            return redirect()->route('grupo.index')->with('success', 'Grupo actualizado correctamente.');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error al actualizar el grupo: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -98,6 +146,19 @@ class GrupoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+            
+            $grupo = Grupo::findOrFail($id);
+            $grupo->delete();
+            
+            DB::commit();
+            
+            return redirect()->route('grupo.index')->with('success', 'Grupo eliminado correctamente.');
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Error al eliminar el grupo: ' . $e->getMessage()], 500);
+        }
     }
 }

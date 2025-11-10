@@ -18,7 +18,7 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Editar Visita</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">{{$mensual->id_mensual}}-{{$visita->id_visita}} - Editar Visita</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -37,6 +37,7 @@
                     @csrf
                     @method('PUT')
                     <div class="row g-3">
+                        <input type="hidden" name="id_mensual" id="id_mensual" value="{{$mensual->id_mensual}}">
                         <h5 class="mb-0"><strong>Datos Generales</strong></h5>
                         <hr>
                         <div class="col-md-4"> <!--ocupa la mitad del espacio-->
@@ -56,10 +57,19 @@
                             @enderror
                         </div>
                        <!-- Fecha de la visita -->
+                       @php
+                            use Carbon\Carbon;
+
+                            // Construimos las fechas de inicio y fin del mes
+                            $fechaInicioMes = Carbon::create($mensual->anio, $mensual->mes, 1)->format('Y-m-d');
+                            $fechaFinMes = Carbon::create($mensual->anio, $mensual->mes, 1)->endOfMonth()->format('Y-m-d');
+                        @endphp
                         <div class="col-md-3">
                             <label for="fecha_visita" class="form-label">Fecha de Visita:<span class="text-danger">*</span></label>
                             <input type="date" name="fecha_visita" id="fecha_visita" class="form-control" 
-                                value="{{ old('fecha_visita', $visita->fecha_visita) }}">
+                                value="{{ old('fecha_visita', $visita->fecha_visita) }}" 
+                                min="{{ $fechaInicioMes }}"
+                                max="{{ $fechaFinMes }}">
                             @error('fecha_visita')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -130,7 +140,7 @@
 
                     
                         <div>
-                            <a href="{{route('visitas.index')}}"><button type="button" class="btn btn-secondary"> <i class="bi bi-x"></i> Cancelar </button></a>
+                            <a href="{{route('visitas.llenar_mes', $mensual->id_mensual)}}"><button type="button" class="btn btn-secondary"> <i class="bi bi-x"></i> Cancelar </button></a>
                             <button type="submit" class="btn btn-primary">  <i class="bi bi-bookmark"></i> Actualizar </button>
                         </div>
                     </div>

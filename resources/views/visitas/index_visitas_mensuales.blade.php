@@ -1,7 +1,7 @@
 @extends('template')
 
 
-@section('title', 'Tablas')
+@section('title', 'Bautisos')
 
 @push('css')
     <!--data table-->
@@ -30,20 +30,45 @@
         });
     </script>
 @endif
+@php
+            $meses_array = [
+                        1 => 'Enero',
+                        2 => 'Febrero',
+                        3 => 'Marzo',
+                        4 => 'Abril',
+                        5 => 'Mayo',
+                        6 => 'Junio',
+                        7 => 'Julio',
+                        8 => 'Agosto',
+                        9 => 'Septiembre',
+                        10 => 'Octubre',
+                        11 => 'Noviembre',
+                        12 => 'Diciembre'
+                    ];
+            
+@endphp
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Grupos Pequeños</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0"> {{$mensual->id_mensual}}Tus visitas en - {{$meses_array[$mensual->mes]}} /{{$anioActual}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Grupos</li>
+                  <li class="breadcrumb-item"><a href="{{route('visitas.index')}}">Visitas</a></li>
+                  <li class="breadcrumb-item"><a href="{{route('visitas.index_mes')}}">Desafios Mensuales</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Completar Desafio Mensuales</li>
                 </ol>
               </div>
               <div class="row">
-                <a href="{{route('grupo.create')}}"><button type="button" class="btn btn-primary"> <i class="fa-solid fa-plus"></i> &nbsp Añadir nuevo Grupo Pequeño </button> </a><br>
-              </div>
+                @if (now()->startOfDay()->lte(\Carbon\Carbon::parse($mensual->fecha_limite)->startOfDay()))
+                    <a href="{{ route('visitas.create', ['id_mensual' => $mensual->id_mensual]) }}">
+                        <button type="button" class="btn btn-primary">
+                            <i class="fa-solid fa-plus"></i> &nbsp; Añadir nueva Visita
+                        </button>
+                    </a>
+                @endif
+            </div>
             </div>
           </div>
         </div>
@@ -54,45 +79,60 @@
             <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                Tabla de grupos
+                                Tabla de Visitas
                             </div>
                             <div class="card-body">
                                 <table id="example" class="display">
                                     <thead>
                                         <tr>
-                                            <th>Nombre </th>
-                                            <th>cantidad de distritos</th>
-                                            <th>Pr. consejero</th>
-                                            <th>Acciones</th>
+                                            <th>Iglesia</th>
+                                            <th>P / F visitada</th>
+                                            <th>Fecha de visita</th>
+                                            <th>Presentes</th>
+                                            <th>Telefono</th>
+                                            <th>Hora</th>
+                                            <th>Motivo</th>
+                                            <th>Descripcion del lugar</th>
+                                            <th>acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($grupos as $grupo)
+                                        @foreach ($visitas as $visita)
                                         <tr>
                                             <td>
-                                            {{$grupo->id_grupo}} &nbsp {{$grupo->nombre}} 
-                                            <td>
-                                                {{$grupo->nro_distritos}}
+                                                {{$visita->id_visita}} {{$visita->nombre_iglesia}}
                                             </td>
                                             <td>
-                                                @if($grupo->administrativo_id)
-                                                    {{ $grupo->nombre_ad }} &nbsp; {{ $grupo->ape_paterno_ad }} &nbsp; {{ $grupo->ape_materno_ad }} &nbsp; ({{ $grupo->cargo }})
-                                                @else
-                                                    <span class="text-muted">SIN CONSEJERO ASIGNADO</span>
-                                                @endif
+                                                {{$visita->nombre_visitado}} 
+                                            </td>
+                                            <td>
+                                                {{$visita->fecha_visita}}
+                                            </td>
+                                            <td>
+                                                {{$visita->cant_present}}
+                                            </td>
+                                            <td>
+                                                {{$visita->telefono}}
+                                            </td>
+                                            <td> 
+                                                {{$visita->hora}}
+                
+                                            </td>
+                                            <td> 
+                                                {{$visita->motivo}}
+                                            </td>
+                                            <td> 
+                                                {{$visita->descripcion_lugar}}
                                             </td>
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-
-                                                <a href="{{ route('grupo.edit', $grupo->id_grupo) }}" class="btn btn-warning">
+                                                <a href="{{ route('visitas.edit', ['id_mensual' => $mensual->id_mensual, 'id_visita' => $visita->id_visita]) }}" class="btn btn-warning">
                                                     <i class="bi bi-pencil-square"></i> Editar
                                                 </a>
-                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$grupo->id_grupo}}">Eliminar</button>
+                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$visita->id_visita}}">Eliminar</button>
                                             </td>
                                         </tr>
-
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="confirmModal-{{$grupo->id_grupo}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                         <div class="modal fade" id="confirmModal-{{$visita->id_visita}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                 <div class="modal-header">
@@ -100,17 +140,17 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <strong style="color: red;">¿Seguro que quieres eliminar a este Grupo Pequeño? </strong><br>
-                                                    <strong> Nombre: </strong> {{$grupo->nombre}} 
+                                                    <strong style="color: red;">¿Seguro que quieres eliminar esta visita? </strong><br>
+                                                    <hr>
+                                                    <strong> Nombre: </strong> {{$visita->nombre_visitado}}
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                    <form action="{{ route('grupo.destroy',['grupo'=>$grupo->id_grupo])}}" method="POST">
+                                                    <form action="{{ route('visitas.destroy', ['id_mensual' => $mensual->id_mensual, 'id_visita' => $visita->id_visita]) }}" method="POST" >
                                                         @method('DELETE')
                                                         @csrf
                                                     <button type="submit" class="btn btn-danger">Confirmar</button>
                                                     </form>
-                                                    
                                                 </div>
                                                 </div>
                                             </div>
@@ -119,10 +159,15 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Nombre </th>
-                                            <th>cantidad de distritos</th>
-                                            <th>Pr. consejero</th>
-                                            <th>Acciones</th>
+                                            <th>Iglesia</th>
+                                            <th>P / F visitada</th>
+                                            <th>Fecha de visita</th>
+                                            <th>Presentes</th>
+                                            <th>Telefono</th> 
+                                            <th>Hora</th>
+                                            <th>Motivo</th>
+                                            <th>Descripcion del lugar</th>
+                                            <th>acciones</th>
                                         </tr>
                                     </tfoot>
                                 </table>

@@ -19,7 +19,7 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Crear Grupo Pequeño</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Editar Grupo Pequeño</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -34,8 +34,9 @@
         <div class="app-content">
           <div class="container-fluid">
             <!--begin::TABLA-->
-            <form action="{{ route('grupo.store') }}" method="POST">
+            <form action="{{ route('grupo.update', $grupo->id_grupo) }}" method="POST">
                 @csrf
+                @method('PUT')
                  <h5 class="mb-0"><strong>Datos Generales</strong></h5>
                     <hr>
                 <div class="row g-3">
@@ -43,15 +44,11 @@
                     <div class="col-md-6">
                         <label for="nombre" class="form-label">Nombre del gp: <span class="text-danger">*</span>  </label>
                         <input type="text" name="nombre" id="nombre" 
-                            class="form-control" value="{{ old('nombre') }}">
+                            class="form-control" value="{{ old('nombre', $grupo->nombre) }}">
                         @error('nombre')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
-
-                     <input type="hidden" name="nro_distritos" id="nro_distritos" class="form-control" value="0">
-
-                    
                     <!-- Checkbox-->
                     <h5 class="mb-0"><strong>Asignar a un Administrativo</strong></h5>
                     <hr>
@@ -62,7 +59,7 @@
                         <select data-size="9" title="-- Seleccione un grupo --" data-live-search="true"  name="administrativo_id" id="administrativo_id" class="form-control selectpicker show-tick">
                             @foreach($administrativos as $administrativo)
                                 <option value="{{ $administrativo->id_persona }}" 
-                                    {{ old('administrativo_id') == $administrativo->id_persona ? 'selected' : '' }}>
+                                    {{ old('administrativo_id', $grupo->administrativo_id) == $administrativo->id_persona ? 'selected' : '' }}>
                                     {{ $administrativo->nombre }} {{ $administrativo->ape_paterno }} {{ $administrativo->ape_materno }}
                                 </option>
                             @endforeach
@@ -73,7 +70,7 @@
                     </div>
                     <!-- Botón Guardar -->
                     <div class="col-12 mt-3">
-                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
                         <a href="{{ route('grupo.index') }}" class="btn btn-secondary">Cancelar</a>
                     </div>
                 </div>

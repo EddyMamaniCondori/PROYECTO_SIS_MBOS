@@ -14,11 +14,30 @@
 @endpush
 
 @section('content')
+
+@php
+            $meses_array = [
+                        1 => 'Enero',
+                        2 => 'Febrero',
+                        3 => 'Marzo',
+                        4 => 'Abril',
+                        5 => 'Mayo',
+                        6 => 'Junio',
+                        7 => 'Julio',
+                        8 => 'Agosto',
+                        9 => 'Septiembre',
+                        10 => 'Octubre',
+                        11 => 'Noviembre',
+                        12 => 'Diciembre'
+                    ];
+            
+@endphp
+
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Crear Visita</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">{{$mensual->id_mensual}} - Crear Visita - {{ $meses_array[$mensual->mes]}}   </h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -32,12 +51,15 @@
         <!--contenido-->
         <div class="app-content">
           <div class="container-fluid">
+
             <!--begin::TABLA-->
             <form action="{{ route('visitas.store')}}" method="POST" > <!--en actiion va que accion vamos ha acer con este formulario una ves de click en guardar-->
                     @csrf
                 
                     <div class="row g-3">
+                        <input type="hidden" name="id_mensual" id="id_mensual" value="{{$mensual->id_mensual}}">
                         <h5 class="mb-0"><strong>Datos Generales</strong></h5>
+                        <label class="text-primary">La fecha limite de registros es {{$mensual->fecha_limite}}</label>
                         <hr>
                         <div class="col-md-4"> <!--ocupa la mitad del espacio-->
 
@@ -55,11 +77,20 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+                        @php
+                            use Carbon\Carbon;
+
+                            // Construimos las fechas de inicio y fin del mes
+                            $fechaInicioMes = Carbon::create($mensual->anio, $mensual->mes, 1)->format('Y-m-d');
+                            $fechaFinMes = Carbon::create($mensual->anio, $mensual->mes, 1)->endOfMonth()->format('Y-m-d');
+                        @endphp
                        <!-- Fecha de la visita -->
                         <div class="col-md-3">
                             <label for="fecha_visita" class="form-label">Fecha de Visita:<span class="text-danger">*</span></label>
                             <input type="date" name="fecha_visita" id="fecha_visita" class="form-control" 
-                                value="{{ old('fecha_visita', \Carbon\Carbon::now()->format('Y-m-d')) }}">
+                                value="{{ old('fecha_visita', \Carbon\Carbon::now()->format('Y-m-d')) }}" 
+                                min="{{ $fechaInicioMes }}"
+                                max="{{ $fechaFinMes }}">
                             @error('fecha_visita')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -130,7 +161,7 @@
 
                     
                         <div>
-                            <a href="{{route('visitas.index')}}"><button type="button" class="btn btn-secondary"> <i class="bi bi-x"></i> Cancelar </button></a>
+                            <a href="{{route('visitas.llenar_mes', $mensual->id_mensual)}}"><button type="button" class="btn btn-secondary"> <i class="bi bi-x"></i> Cancelar </button></a>
                             <button type="submit" class="btn btn-primary">  <i class="bi bi-bookmark"></i> Guardar </button>
                         </div>
                     </div>

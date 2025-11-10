@@ -43,6 +43,11 @@ class Persona extends Model
     {
         return $this->hasOne(Pastor::class, 'id_pastor', 'id_persona');
     }
+        //realacion principal 1:1 con personal
+    public function personal(): HasOne
+    {
+        return $this->hasOne(Personal::class, 'id_personal', 'id_persona');
+    }
 
     // Una persona puede ser un administrativo
     public function administrativo() :HasOne

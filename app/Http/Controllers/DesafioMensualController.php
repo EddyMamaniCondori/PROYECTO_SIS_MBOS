@@ -186,6 +186,36 @@ class DesafioMensualController extends Controller
         }
     }
 
+
+    public function update_desafios(Request $request, $id)
+    {
+        //dd($request, $id);
+        try {
+            DB::beginTransaction();
+
+            // Validación simple
+            $request->validate([
+                'desafio_visitas' => 'required|integer|min:0',
+            ]);
+
+            // Buscar el registro mensual
+            $mensual = Mensual::findOrFail($id);
+
+            // Actualizar el campo
+            $mensual->update([
+                'desafio_visitas' => $request->desafio_visitas,
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Desafío mensual actualizado correctamente.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error al actualizar el desafío mensual: ' . $e->getMessage());
+        }
+    }
+
+
     /**
      * Remove the specified resource from storage.
      */

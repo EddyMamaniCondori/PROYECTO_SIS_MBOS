@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\PastorController;
+use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\AdministrativoController;
 use App\Http\Controllers\DistritoController;
 use App\Http\Controllers\IglesiaController;
 use App\Http\Controllers\GrupoController;
@@ -19,6 +21,7 @@ use App\Http\Controllers\RemesasDashboardController;
 use App\Http\Controllers\BlancoController;
 use App\Http\Controllers\DesafioAnualIglesiaController;
 use App\Http\Controllers\DesafioMensualController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -128,6 +131,11 @@ Route::get('pastores/indexdelete', [PastorController::class, 'indexdelete'])
     ->name('pastores.indexdelete');
 Route::post('pastores/reactive/{id}', [PastorController::class, 'reactive'])
     ->name('pastores.reactive');
+/*ruta extra para Personales*/
+Route::post('personales/reactive/{id}', [PersonalController::class, 'reactive'])
+    ->name('personales.reactive');
+Route::get('personales/indexdelete', [PersonalController::class, 'indexdelete'])
+    ->name('personales.indexdelete');
 
 /*______________*/ 
 Route::get('bautisos/dashboard', [BautisosController::class, 'dashboard'])
@@ -167,12 +175,28 @@ Route::get('/distritos/asignaciones/liberar_anual/{id_distrito}', [DistritoContr
 Route::post('/distritos/asignar/cambiar/{id_distrito}', [DistritoController::class, 'cambiarAsignacion'])->name('distritos.cambiar');
 Route::post('/distritos/asignar/cambiaranual/{id_distrito}', [DistritoController::class, 'cambiarAsignacionAnual'])->name('distritos.cambiaranual');   
 
-
+ /*ruta para visitas */
 Route::get('visitas/dashboard', [VisitasController::class, 'dashboard'])
     ->name('visitas.dashboard');
-    Route::get('estudiantes/dashboard', [EstudiantesController::class, 'dashboard'])
-    ->name('estudiantes.dashboard');
-    Route::get('instructores/dashboard', [InstructoresController::class, 'dashboard'])
+
+Route::get('visitas/index_mes', [VisitasController::class, 'index_mes'])
+    ->name('visitas.index_mes');
+
+Route::get('/visitas/llenar-mes/{id}', [VisitasController::class, 'index_llenar_visitas_mes'])
+    ->name('visitas.llenar_mes');
+
+Route::delete('/visitas/{id_mensual}/{id_visita}', [VisitasController::class, 'destroy'])
+    ->name('visitas.destroy');
+
+Route::get('/visitas/create/{id_mensual}', [VisitasController::class, 'create'])
+    ->name('visitas.create');
+
+Route::get('/visitas/{id_mensual}/{id_visita}/edit', [VisitasController::class, 'edit'])
+    ->name('visitas.edit');
+
+ /*ruta para signaciones */
+
+Route::get('instructores/dashboard', [InstructoresController::class, 'index_desafios_inst'])
     ->name('instructores.dashboard');
 
 
@@ -219,9 +243,15 @@ Route::get('/pastor_perfil/{id_pastor}', [PastorController::class, 'perfil_pasto
 Route::get('/desafios/{id}/distrital', [DesafioController::class, 'index_distrital'])
     ->name('desafios.index_distrital');
 
+Route::put('/mensuales_desafios/{id}', [DesafioMensualController::class, 'update_desafios'])
+    ->name('mensuales_desafios.update');
+
 
 
 Route::resource('pastores', PastorController::class);
+Route::resource('personales', PersonalController::class);
+Route::resource('administrativos', AdministrativoController::class);
+
 Route::resource('distritos', DistritoController::class);
 Route::resource('iglesias', IglesiaController::class);
 Route::resource('grupo', GrupoController::class);

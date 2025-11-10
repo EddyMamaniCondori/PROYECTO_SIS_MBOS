@@ -30,11 +30,29 @@
         });
     </script>
 @endif
+@php
+            $meses_array = [
+                        1 => 'Enero',
+                        2 => 'Febrero',
+                        3 => 'Marzo',
+                        4 => 'Abril',
+                        5 => 'Mayo',
+                        6 => 'Junio',
+                        7 => 'Julio',
+                        8 => 'Agosto',
+                        9 => 'Septiembre',
+                        10 => 'Octubre',
+                        11 => 'Noviembre',
+                        12 => 'Diciembre'
+                    ];
+            
+@endphp
+
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0"> Tus Visitas Distritales - {{$anioActual}}</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Completa tus visitas distritales - {{$anioActual}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -57,58 +75,63 @@
                                 <table id="example" class="display">
                                     <thead>
                                         <tr>
-                                            <th>Iglesia</th>
-                                            <th>P / F visitada</th>
-                                            <th>Fecha de visita</th>
-                                            <th>Presentes</th>
-                                            <th>Telefono</th>
-                                            <th>Hora</th>
-                                            <th>Motivo</th>
-                                            <th>Descripcion del lugar</th>
+                                            <th>codigo DesfMensual</th>
+                                            <th>Mes - Anio</th>
+                                            <th>Desafio</th>
+                                            <th>Alcanzado</th>
+                                            <th>Limite de Registro</th>
+                                            <th>acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($visitas as $visita)
                                         <tr>
                                             <td>
-                                                {{$visita->nombre_iglesia}}
+                                                {{$visita->id_mensual}}
                                             </td>
                                             <td>
-                                                {{$visita->nombre_visitado}} 
+                                                {{$meses_array[$visita->mes]}} - {{$visita->anio}}
                                             </td>
                                             <td>
-                                                {{$visita->fecha_visita}}
+                                                {{$visita->desafio_visitas}} 
                                             </td>
                                             <td>
-                                                {{$visita->cant_present}}
+                                                @if($visita->visitas_alcanzadas < $visita->desafio_visitas)
+                                                    <span class="text-danger">{{ $visita->visitas_alcanzadas }}</span>  {{-- rojo --}}
+                                                @elseif($visita->visitas_alcanzadas > $visita->desafio_visitas)
+                                                    <span class="text-success">{{ $visita->visitas_alcanzadas }}</span> {{-- verde --}}
+                                                @else
+                                                    <span class="text-warning">{{ $visita->visitas_alcanzadas }}</span> {{-- amarillo si es igual --}}
+                                                @endif
                                             </td>
                                             <td>
-                                                {{$visita->telefono}}
+                                                {{$visita->fecha_limite}}
                                             </td>
                                             <td> 
-                                                {{$visita->hora}}
-                
-                                            </td>
-                                            <td> 
-                                                {{$visita->motivo}}
-                                            </td>
-                                            <td> 
-                                                {{$visita->descripcion_lugar}}
-                                            </td>
+                                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                                    <!--<a href="{{ route('visitas.llenar_mes', $visita->id_mensual) }}" class="btn btn-primary">
+                                                        <i class="bi bi-pencil-square"></i> Completar
+                                                    </a>-->
+                                                    @if (now()->startOfDay()->lte(\Carbon\Carbon::parse($visita->fecha_limite)->startOfDay()))
+                                                        <a href="{{ route('visitas.llenar_mes', $visita->id_mensual) }}" class="btn btn-success">
+                                                            <i class="bi bi-archive"></i> Completar
+                                                        </a>
+                                                    @else
+                                                        <a href="{{ route('visitas.llenar_mes', $visita->id_mensual) }}" class="btn btn-primary">
+                                                            <i class="bi bi-pencil-square"></i> Ver
+                                                        </a>
+                                                    @endif
+                                            </td>   
                                         </tr>
-                                         
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Iglesia</th>
-                                            <th>P / F visitada</th>
-                                            <th>Fecha de visita</th>
-                                            <th>Presentes</th>
-                                            <th>Telefono</th> 
-                                            <th>Hora</th>
-                                            <th>Motivo</th>
-                                            <th>Descripcion del lugar</th>
+                                            <th>Mes - Anio</th>
+                                            <th>Desafio</th>
+                                            <th>Alcanzado</th>
+                                            <th>Limite de Registro</th>
+                                            <th>acciones</th>
                                         </tr>
                                     </tfoot>
                                 </table>

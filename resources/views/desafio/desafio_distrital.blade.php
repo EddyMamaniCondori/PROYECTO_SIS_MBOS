@@ -133,6 +133,7 @@
                                     <table id="example" class="display">
                                         <thead>
                                             <tr>
+                                                <th>Cod Desafio Mensual</th>
                                                 <th>Mes - Año</th>
                                                 <th>Desafio</th>
                                                 <th>Alcanzado</th>
@@ -143,6 +144,9 @@
                                         <tbody>
                                             @foreach ($visitas as $visita)
                                             <tr>
+                                                <td>
+                                                    {{ $visita->id_mensual}}
+                                                </td>
                                                 <td>
                                                     {{$meses_array[$visita->mes]}} - {{ $visita->anio}}   
                                                 </td>
@@ -157,16 +161,46 @@
                                                 </td>    
                                                 <td> 
                                                     <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                        <a href="#" class="btn btn-success">
-                                                            <i class="bi bi-pencil-square"></i> Asignar
-                                                        </a>
+                                                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModalmensual-{{$visita->id_mensual}}"> <i class="bi bi-pencil-square"></i> Asignar</button>
                                                     </div>
                                                 </td>
                                             </tr>
+                                            <div class="modal fade" id="confirmModalmensual-{{$visita->id_mensual}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de Confirmacion</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <form action="{{ route('mensuales_desafios.update', $visita->id_mensual) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <strong>Mes:</strong> {{$meses_array[$visita->mes]}} <br>
+                                                                <strong>Anio:</strong> {{ $visita->anio}}   
+                                                            </div>
+                                                            <hr>
+                                                            <!-- Campo editable -->
+                                                            <div class="mb-3">
+                                                                <label for="desafio_visitas" class="form-label"><strong>Desafio Visitas :</strong> </label>
+                                                                <input  type="number" class="form-control" name="desafio_visitas" id="desafio_visitas" value="{{ old('desafio_visitas', $visita->desafio_visitas) }}" 
+                                                                min="0"  required >
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                            <button type="submit" class="btn btn-success">Confirmar</button>
+                                                        </div>
+                                                    </form>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             @endforeach
                                         </tbody>
                                         <tfoot>
                                             <tr>
+                                                <th>Cod Desafio Mensual</th>
                                                 <th>Mes - Año</th>
                                                 <th>Desafio</th>
                                                 <th>Alcanzado</th>

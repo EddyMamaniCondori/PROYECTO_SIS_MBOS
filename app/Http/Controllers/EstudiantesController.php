@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request; 
 use App\Models\EstudianteBiblico; 
 use App\Models\Iglesia; 
+use App\Models\Desafio; 
+use App\Models\Mensual; 
+use App\Models\AnualIglesia; 
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Http\Requests\EstudianteRequest;
@@ -21,19 +24,31 @@ class EstudiantesController extends Controller
         $anioActual = now()->year;
         $id_distrito = 11; // todos los estudiantes del distrito Bolivar
 
+        $anioDistritos = DB::table('distritos')
+            ->where('estado', true)
+            ->value('año');
+
+        if (!$anioDistritos) {
+            return view('desafio.index', [
+                'desafios' => collect([]),
+                'anioActual' => $anioActual,
+                'mensaje' => 'No hay distritos activos en el sistema.'
+            ]);
+        }
+        $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
         // 2️⃣ Consultar estudiantes bíblicos con los filtros
         $estudiantes = EstudianteBiblico::join('iglesias as xi', 'estudiante_biblicos.id_iglesia', '=', 'xi.id_iglesia')
             ->select(
                 'estudiante_biblicos.*',
                 'xi.nombre as nombre_iglesia'
             )
-            ->whereYear('estudiante_biblicos.fecha_registro', $anioActual) // mismo año
+            ->whereYear('estudiante_biblicos.fecha_registro', $anio) // mismo año
             ->where('xi.estado', true) // iglesias activas
             ->where('xi.distrito_id', $id_distrito) // solo distrito 11
             ->get();
 
         // 3️⃣ Enviar datos a la vista
-        return view('estudiantes.index', compact('estudiantes', 'anioActual'));
+        return view('estudiantes.index', compact('estudiantes', 'anio'));
     }
 
     /**
@@ -63,14 +78,35 @@ class EstudiantesController extends Controller
             DB::beginTransaction();
 
             // Obtenemos la fecha actual, por ejemplo con Carbon:
-            $fechaHoy = \Carbon\Carbon::now(); // puedes usar también now() si lo tienes importado
-            
+            $fechaHoy = now();  // puedes usar también now() si lo tienes importado
             // Creamos el registro incluyendo la fecha_registro
             $estudiante = EstudianteBiblico::create(array_merge(
                 $request->validated(),
                 ['fecha_registro' => $fechaHoy]
             ));
+            $anioActual = now()->year;
+            // Obtener el distrito
+            $id_distrito = 11;
+
+            $desafio = Desafio::where('id_distrito', $id_distrito)
+                ->where('anio', $anioActual)
+                ->first();
             
+            if (!$desafio) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el desafío anual para el distrito.');
+            }
+
+            $anual_iglesias = AnualIglesia::where('id_desafio', $desafio->id_desafio)
+                ->where('id_iglesia', $estudiante->id_iglesia)
+                ->first();
+
+            if (!$anual_iglesias) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el registro anual de la iglesia.');
+            }
+
+            $anual_iglesias->increment('estudiantes_alcanzados');
             DB::commit();
             return redirect()->route('estudiantes.index')->with('success', 'Estudiante creado correctamente.');
 
@@ -109,10 +145,36 @@ class EstudiantesController extends Controller
     {
         try {
             DB::beginTransaction();
-
+            $anioActual = now()->year;
+            // Obtener el distrito
+            $id_distrito = 11;
+             $desafio = Desafio::where('id_distrito', $id_distrito)
+                ->where('anio', $anioActual)
+                ->first();
+            if (!$desafio) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el desafío anual para el distrito.');
+            }
             $estudiante = EstudianteBiblico::findOrFail($id);
+            $anual_iglesias = AnualIglesia::where('id_desafio', $desafio->id_desafio)
+                ->where('id_iglesia', $estudiante->id_iglesia)
+                ->first();
+            if (!$anual_iglesias) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el registro anual de la iglesia.');
+            }
+            $anual_iglesias->decrement('estudiantes_alcanzados');
+
             $estudiante->update($request->validated());
 
+            $anual_iglesias = AnualIglesia::where('id_desafio', $desafio->id_desafio)
+                ->where('id_iglesia', $estudiante->id_iglesia)
+                ->first();
+            if (!$anual_iglesias) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el registro anual de la iglesia.');
+            }
+            $anual_iglesias->increment('estudiantes_alcanzados');
             DB::commit();
             return redirect()->route('estudiantes.index')->with('success', 'Estudiante actualizado correctamente.');
         } catch (\Exception $e) {
@@ -129,6 +191,16 @@ class EstudiantesController extends Controller
     {
         try {
             DB::beginTransaction();
+            $anioActual = now()->year;
+            // Obtener el distrito
+            $id_distrito = 11;
+            $desafio = Desafio::where('id_distrito', $id_distrito)
+                ->where('anio', $anioActual)
+                ->first();
+            if (!$desafio) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el desafío anual para el distrito.');
+            }
 
             // Buscar estudiante, si no existe lanzar excepción o manejar error
             $estudiante = EstudianteBiblico::find($id);
@@ -137,6 +209,17 @@ class EstudiantesController extends Controller
                 return redirect()->route('estudiantes.index')
                     ->with('error', 'Estudiante no encontrado');
             }
+
+            $anual_iglesias = AnualIglesia::where('id_desafio', $desafio->id_desafio)
+                ->where('id_iglesia', $estudiante->id_iglesia)
+                ->first();
+
+            if (!$anual_iglesias) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el registro anual de la iglesia.');
+            }
+
+            $anual_iglesias->decrement('estudiantes_alcanzados');
 
             $estudiante->delete();
 
@@ -148,41 +231,5 @@ class EstudiantesController extends Controller
             return redirect()->route('estudiantes.index')
                 ->with('error', 'Error al Eliminar al Estudiante: ' . $e->getMessage());
         }
-    }
-
-
-
-     public function dashboard()
-    {
-        $result = DB::table('desafio_mensuales')
-                ->select('mes', 'desafios_est_biblicos', 'estudiantes_alcanzados')
-                ->where('iglesia_id', 1)
-                ->where('pastor_id', 1)
-                ->where('anio', 2025)
-                ->orderByRaw("
-                    CASE mes
-                        WHEN 'enero' THEN 1
-                        WHEN 'febrero' THEN 2
-                        WHEN 'marzo' THEN 3
-                        WHEN 'abril' THEN 4
-                        WHEN 'mayo' THEN 5
-                        WHEN 'junio' THEN 6
-                        WHEN 'julio' THEN 7
-                        WHEN 'agosto' THEN 8
-                        WHEN 'septiembre' THEN 9
-                        WHEN 'octubre' THEN 10
-                        WHEN 'noviembre' THEN 11
-                        WHEN 'diciembre' THEN 12
-                    END
-                ")
-                ->get();
-
-
-        // Convertimos a arrays separados
-        $meses = $result->pluck('mes');                 // ['enero','febrero',...]
-        $desafios = $result->pluck('desafios_est_biblicos'); // [28,48,40,...]
-        $alcanzados = $result->pluck('estudiantes_alcanzados'); // [65,59,80,...]
-
-        return view('estudiantes.dashboard', compact('meses','desafios','alcanzados'));
     }
 }

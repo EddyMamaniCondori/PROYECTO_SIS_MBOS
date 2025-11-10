@@ -73,77 +73,64 @@
       src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
       integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8=" crossorigin="anonymous" ></script>
       <!-- ChartJS -->
-    <script>
-      // NOTICE!! DO NOT USE ANY OF THIS JAVASCRIPT
-      // IT'S ALL JUST JUNK FOR DEMO
-      // ++++++++++++++++++++++++++++++++++++++++++
-
-        var meses = @json($meses);
-        var datosDesafio = @json($desafios);
-        var datosAlcanzados = @json($alcanzados);
+  <script>
+      var meses = @json($meses);
+      var datosDesafio = @json($desafios);
+      var datosAlcanzados = @json($alcanzados);
 
       const sales_chart_options = {
-        series: [
-          {
-            name: 'Desafio',
-            data: datosDesafio,
-          },
-          {
-            name: 'Alcanzado',
-            data: datosAlcanzados,
-          },
-        ],
-        //tamaño de cada espacio
-        chart: {
-          height: 300,
-          type: 'area',
-          toolbar: {
-            show: true,
-          },
-        },
-        //leyendas
-        legend: {
-          show: true,
-        },
-        //colores de las lineas y los resultados en cada mes
-        colors: ['#0d6efd', '#20c997'],
-        dataLabels: {
-          enabled: true,
-        },
-        //la linea de 1 punto a otro punto
-        stroke: {
-          curve: 'smooth',
-        },
-        //columna x
-        xaxis: {
-          type: 'category',
-          categories: [
-            'enero',
-            'febrero',
-            'marzo',
-            'abril',
-            'mayo',
-            'junio',
-            'julio',
-            'agosto',
-            'septiembre',
-            'octubre',
-            'noviembre',
-            'diciembre',
+          series: [
+              {
+                  name: 'Desafío',
+                  data: datosDesafio,
+              },
+              {
+                  name: 'Alcanzado',
+                  data: datosAlcanzados,
+              },
           ],
-        },
-        tooltip: {
-          x: {
-            show: 'true',
+          chart: {
+              height: 350,
+              type: 'bar', // usa 'bar' para barras
+              toolbar: { show: true },
           },
-        },
+          plotOptions: {
+              bar: {
+                  horizontal: false,
+                  columnWidth: '60%',
+                  endingShape: 'rounded',
+              },
+          },
+          legend: {
+              show: true,
+          },
+          colors: ['#0d6efd', '#20c997'], // azul y verde
+          dataLabels: {
+              enabled: true,
+          },
+          stroke: {
+              show: true,
+              width: 2,
+              colors: ['transparent'],
+          },
+          xaxis: {
+              categories: meses,
+          },
+          yaxis: {
+              title: { text: 'Número de visitas' },
+          },
+          tooltip: {
+              y: {
+                  formatter: function (val) {
+                      return val + " visitas";
+                  },
+              },
+          },
       };
-      const sales_chart = new ApexCharts(
-        document.querySelector('#revenue-chart'),
-        sales_chart_options,
-      );
+
+      const sales_chart = new ApexCharts(document.querySelector("#revenue-chart"), sales_chart_options);
       sales_chart.render();
-    </script> 
+  </script>
 
      
 @endpush

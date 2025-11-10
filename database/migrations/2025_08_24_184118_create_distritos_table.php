@@ -26,7 +26,8 @@ return new class extends Migration
 
             $table->foreignId('id_grupo')->nullable()
                 ->constrained('grupos', 'id_grupo')
-                ->cascadeOnDelete();
+                ->nullOnDelete()
+                ->cascadeOnUpdate(); // Actualiza la FK si cambia el ID del grupo
 
             $table->timestamps();
         });

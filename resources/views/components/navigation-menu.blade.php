@@ -40,23 +40,46 @@
                   </li>
                 </ul>
               </li>
-
+              <!--SECCION sEXREATRIA-->
+              <li class="nav-header"> SECRETARIA </li>
+              <!-- desplegable-->
               <li class="nav-item">
-                <a href="{{ route('pastores.index')  }}" class="nav-link">
-                  <i class="bi bi-person"></i>
-                  <p>Pastores</p>
+                <a href="#" class="nav-link">
+                  <i class="bi bi-people-fill"></i>
+                  <p>
+                    Usuarios
+                    <i class="nav-arrow bi bi-chevron-right"></i>
+                  </p>
                 </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('pastores.index')  }}" class="nav-link">
+                      <i class="bi bi-person"></i>
+                      <p>Pastores</p>
+                    </a>
+                  </li>
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('personales.index')  }}" class="nav-link">
+                      <i class="bi bi-person"></i>
+                      <p>Personal</p>
+                    </a>
+                  </li>
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('administrativos.index')}}" class="nav-link">
+                      <i class="bi bi-person"></i>
+                      <p>Administrativos</p>
+                    </a>
+                  </li>
+                </ul>
               </li>
+
+              
               <li class="nav-item">
                 <a href="{{ route('grupo.index')  }}" class="nav-link">
-                  <i class="bi bi-person"></i>
+                  <i class="fa-solid fa-people-group"></i>
                   <p>Grupos Pequeños</p>
                 </a>
               </li>
-
-
-
-            
                <!-- desplegable-->
               <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -67,32 +90,29 @@
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-                  <li class="nav-item">
+                  <li class="nav-item ms-3" >
                     <a href="{{ route('distritos.index')  }}" class="nav-link">
-                      <i class="bi bi-houses-fill"></i>&nbsp
+                      <i class="bi bi-house-gear"></i>&nbsp
                       <p>Distritos</p>
                     </a>
                   </li>
-                    <li class="nav-item">
+                    <li class="nav-item ms-3">
                         <a href="{{ route('distritos.asignaciones') }}" class="nav-link">
-                            <i class="bi bi-house-gear-fill"></i>
+                            <i class="bi bi-house-gear"></i>
                             <p>Asignación distrital</p>&nbsp
                         </a>
                     </li>
                     @if($sw_cambio)
-                    <li class="nav-item">
+                    <li class="nav-item ms-3">
                         <a href="{{ route('distritos.asiganual') }}" class="nav-link">
-                            <i class="bi bi-bezier2"></i>
+                            <i class="bi bi-house-gear"></i>
                             <p>Asignación distrital anual</p>&nbsp
                         </a>
                     </li>
                     @endif
-                  
-                  
-
-                  <li class="nav-item">
+                  <li class="nav-item ms-3">
                     <a href="{{ route('distritos.historiales')}}" class="nav-link">
-                      <i class="bi bi-house-exclamation-fill"></i>&nbsp
+                      <i class="bi bi-house-exclamation"></i>&nbsp
                       <p>Historial</p>
                     </a>
                   </li>
@@ -109,27 +129,20 @@
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-                  <li class="nav-item">
+                  <li class="nav-item ms-3">
                     <a href="{{ route('iglesias.index')  }}" class="nav-link">
                       <i class="bi bi-houses"></i>
                       <p>Iglesias</p>
                     </a>
                   </li>
-                  <li class="nav-item">
+                  <li class="nav-item ms-3">
                     <a href="{{ route('iglesias.asignaciones')  }}" class="nav-link">
                       <i class="bi bi-house-check"></i>
                       <p>iglesias asignadas</p>
                     </a>
                   </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="bi bi-house-add"></i>
-                      <p>asignar iglesia</p>
-                    </a>
-                  </li>
                 </ul>
               </li>
-             
               <li class="nav-item">
                 <a href="#" class="nav-link">
                   <i class="bi bi-person-walking"></i>
@@ -140,15 +153,21 @@
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="{{ route('visitas.index')}}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Visitas</p>
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('visitas.index_mes')}}" class="nav-link">
+                      <i class="bi bi-person-add"></i>
+                      <p> Registrar Visitas</p>
                     </a>
                   </li>
-                  <li class="nav-item">
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('visitas.index')}}" class="nav-link">
+                      <i class="bi bi-person"></i>
+                      <p> Visitas</p>
+                    </a>
+                  </li>
+                  <li class="nav-item ms-3">
                     <a href="{{ route('visitas.dashboard')}}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
+                      <i class="bi bi-graph-up"></i>
                       <p>Dashboard de Visitas</p>
                     </a>
                   </li>
@@ -157,36 +176,23 @@
 
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-clipboard-fill"></i>
+                  <i class="fa-solid fa-dove"></i>
                   <p>
                     Bautisos
-                    <span class="nav-badge badge text-bg-secondary me-3">6</span>
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-                  <li class="nav-item">
+                  <li class="nav-item ms-3">
                     <a href="{{ route('bautisos.index')}}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Bautisos</p>
+                      <i class="fa-solid fa-dove"></i>
+                      <p>Registrar Bautisos</p>
                     </a>
                   </li>
-                  <li class="nav-item">
+                  <li class="nav-item ms-3">
                     <a href="{{ route('bautiso.dashboard')}}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
+                      <i class="bi bi-bar-chart-fill"></i>
                       <p>Dashboard de Bautisos</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{ route('bautisos.index')}}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Bautisos GP</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{ route('bautisos.index')}}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Bautisos Distritales</p>
                     </a>
                   </li>
                 </ul>
@@ -194,44 +200,48 @@
               
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-pencil-square"></i>
+                  <i class="fa-solid fa-user-graduate"></i>
                   <p>
                     Estudiantes Biblicos
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="{{ route('estudiantes.dashboard')  }}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Dashboard estudiantes biblicos</p>
-                    </a>
+                <li class="nav-item ms-3">
                     <a href="{{ route('estudiantes.index')  }}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
+                      <i class="bi bi-person"></i>
                       <p>estudiantes biblicos</p>
                     </a>
                   </li>
+                
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('instructores.dashboard')  }}" class="nav-link">
+                      <i class="bi bi-graph-up"></i>
+                      <p>Dashboard estudiantes biblicos</p>
+                    </a>
+                  </li>
+                  
                 </ul>
               </li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-table"></i>
+                  <i class="bi bi-person-workspace"></i>
                   <p>
                     Instructores Biblicos
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="{{ route('instructores.dashboard')  }}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Dashboard instructores Biblicos</p>
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('instructores.index')  }}" class="nav-link">
+                      <i class="bi bi-person-check-fill"></i>
+                      <p>instructores Biblicos</p>
                     </a>
                   </li>
-                  <li class="nav-item">
-                    <a href="{{ route('instructores.index')  }}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>instructores Biblicos</p>
+                  <li class="nav-item ms-3">
+                    <a href="{{ route('instructores.dashboard')  }}" class="nav-link">
+                      <i class="bi bi-graph-up"></i>
+                      <p>Dashboard instructores Biblicos</p>
                     </a>
                   </li>
                 </ul>
@@ -409,7 +419,7 @@
                   </a>
                   <ul class="nav nav-treeview">
                     <li class="nav-item">
-                      <a href="{{ route('estudiantes.dashboard')  }}" class="nav-link">
+                      <a href="#" class="nav-link">
                         <i class="nav-icon bi bi-circle"></i>
                         <p>Reporte Fondo Local</p>
                       </a>

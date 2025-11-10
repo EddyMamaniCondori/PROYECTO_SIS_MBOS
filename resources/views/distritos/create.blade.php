@@ -37,6 +37,8 @@
             <!--begin::TABLA-->
             <form action="{{ route('distritos.store')}}" method="POST" > <!--en actiion va que accion vamos ha acer con este formulario una ves de click en guardar-->
             @csrf
+            <h5 class="mb-0"><strong>Datos Generales</strong></h5>
+                    <hr>
                 <div class="row g-3">
                     <div class="col-md-6"> <!--ocupa la mitad del espacio-->
                         <label for="nombre" class="form-label">Nombre: <span class="text-danger">*</span> </label>

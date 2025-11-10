@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\InstructorBiblico;
 use App\Models\Iglesia;
+use App\Models\Desafio;
+use App\Models\AnualIglesia;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Http\Requests\InstructorRequest;
@@ -17,21 +19,114 @@ class InstructoresController extends Controller
     public function index()
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
-        $id_distrito = 11; // todos los estudiantes del distrito Bolivar
+        $id_distrito = 11; // todos los estudiantes del distrito Bolivar  
+
+        $anioDistritos = DB::table('distritos')
+            ->where('estado', true)
+            ->value('año');
+
+        if (!$anioDistritos) {
+            return view('desafio.index', [
+                'desafios' => collect([]),
+                'anioActual' => $anioActual,
+                'mensaje' => 'No hay distritos activos en el sistema.'
+            ]);
+        }
+
+        $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
 
         $instructores = InstructorBiblico::join('iglesias as xi', 'instructor_biblicos.id_iglesia', '=', 'xi.id_iglesia')
             ->select(
                 'instructor_biblicos.*',
                 'xi.nombre as nombre_iglesia' // alias para evitar conflicto con nombre del instructor
             )
-            ->whereYear('instructor_biblicos.fecha_registro', $anioActual) // mismo año
+            ->whereYear('instructor_biblicos.fecha_registro', $anio) // mismo año
             ->where('xi.estado', true) // iglesias activas
             ->where('xi.distrito_id', $id_distrito) // solo distrito 11
             ->get();
 
-        return view('instructores.index', compact('instructores','anioActual'));
+        return view('instructores.index', compact('instructores','anio'));
 
     }
+
+    public function index_desafios_inst()
+    {
+        $anioActual = now()->year;
+        $id_distrito = 11;
+
+        $anioDistritos = DB::table('distritos')
+            ->where('estado', true)
+            ->value('año');
+
+        if (!$anioDistritos) {
+            return view('desafio.index', [
+                'desafios' => collect([]),
+                'anioActual' => $anioActual,
+                'mensaje' => 'No hay distritos activos en el sistema.'
+            ]);
+        }
+
+        $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
+
+        $desafios = DB::table('desafios as xd')
+            ->join('anual_iglesias as xai', 'xd.id_desafio', '=', 'xai.id_desafio')
+            ->join('iglesias as xi', 'xai.id_iglesia', '=', 'xi.id_iglesia')
+            ->where('xd.id_distrito', $id_distrito)
+            ->where('xd.anio', $anio)
+            ->select(
+                'xai.id_iglesia',
+                'xi.codigo',
+                'xi.nombre as nombre_iglesia',
+                'xai.desafio_estudiantes',
+                'xai.estudiantes_alcanzados',
+                'xai.desafio_instructores',
+                'xai.instructores_alcanzados'
+            )
+            ->get();
+
+        // Procesar los datos para el gráfico (ya listos) NUMEROS
+        /*$graficos = $desafios->map(function ($d) {
+            return [
+                'id_iglesia' => $d->id_iglesia,
+                'estudiantes' => [
+                    'desafio' => (int)$d->desafio_estudiantes,
+                    'alcanzado' => (int)$d->estudiantes_alcanzados,
+                    'diferencia' => (int)$d->desafio_estudiantes - (int)$d->estudiantes_alcanzados,
+                ],
+                'instructores' => [
+                    'desafio' => (int)$d->desafio_instructores,
+                    'alcanzado' => (int)$d->instructores_alcanzados,
+                    'diferencia' => (int)$d->desafio_instructores - (int)$d->instructores_alcanzados,
+                ]
+            ];
+        });*/
+        $graficos = $desafios->map(function ($d) { //EN PORCENTAJES
+            // Evitar división entre 0
+            $desafioEst = max((int)$d->desafio_estudiantes, 1);
+            $desafioInst = max((int)$d->desafio_instructores, 1);
+
+            // Cálculo de porcentajes (base 100%)
+            $porcEstAlcanzado = ((int)$d->estudiantes_alcanzados / $desafioEst) * 100;
+            $porcInstAlcanzado = ((int)$d->instructores_alcanzados / $desafioInst) * 100;
+
+            return [
+                'id_iglesia' => $d->id_iglesia,
+                'estudiantes' => [
+                    'desafio' => 100, // Siempre 100%
+                    'alcanzado' => round($porcEstAlcanzado, 2),
+                    'diferencia' => round(100 - $porcEstAlcanzado, 2),
+                ],
+                'instructores' => [
+                    'desafio' => 100, // Siempre 100%
+                    'alcanzado' => round($porcInstAlcanzado, 2),
+                    'diferencia' => round(100 - $porcInstAlcanzado, 2),
+                ]
+            ];
+        });
+
+        return view('instructores.dashboard', compact('desafios', 'anio', 'graficos'));
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -56,20 +151,44 @@ class InstructoresController extends Controller
     {
         try {
             DB::beginTransaction();
-            $fechaHoy = \Carbon\Carbon::now(); // puedes usar también now() si lo tienes importado
-            
-            $estudiante = InstructorBiblico::create(array_merge(
+
+            $fechaHoy = now(); // puedes usar también now() si lo tienes importado
+            $instructor = InstructorBiblico::create(array_merge(
                 $request->validated(),
                 ['fecha_registro' => $fechaHoy]
             )); // se crea el registro 
+
+            $anioActual = now()->year;
+            // Obtener el distrito
+            $id_distrito = 11;
+
+            $desafio = Desafio::where('id_distrito', $id_distrito)
+                ->where('anio', $anioActual)
+                ->first();
+            
+            if (!$desafio) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el desafío anual para el distrito.');
+            }
+
+            $anual_iglesias = AnualIglesia::where('id_desafio', $desafio->id_desafio)
+                ->where('id_iglesia', $instructor->id_iglesia)
+                ->first();
+
+            if (!$anual_iglesias) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el registro anual de la iglesia.');
+            }
+
+            $anual_iglesias->increment('instructores_alcanzados');
+            
             DB::commit();
+            return redirect()->route('instructores.index')->with('success', 'Instructor registrado correctamente');
+        
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Error al crear el instructor biblico: ' . $e->getMessage()], 500);
         }
-
-        return redirect()->route('instructores.index')->with('success','Instructor registrado Correctamente');
-    
     }
 
     /**
@@ -101,9 +220,38 @@ class InstructoresController extends Controller
     {
          try {
             DB::beginTransaction();  
+            $anioActual = now()->year;
+            // Obtener el distrito
+            $id_distrito = 11;
+            $desafio = Desafio::where('id_distrito', $id_distrito)
+                ->where('anio', $anioActual)
+                ->first();
+            if (!$desafio) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el desafío anual para el distrito.');
+            }
 
             $instructor = InstructorBiblico::find($id);
+            //antes de actualizar decrementar la iglesia
+            $anual_iglesias = AnualIglesia::where('id_desafio', $desafio->id_desafio)
+                ->where('id_iglesia', $instructor->id_iglesia)
+                ->first();
+            if (!$anual_iglesias) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el registro anual de la iglesia.');
+            }
+            $anual_iglesias->decrement('instructores_alcanzados');
+            //actualizamos el registro
+
             $instructor->update($request->validated());
+            $anual_iglesias = AnualIglesia::where('id_desafio', $desafio->id_desafio)
+                ->where('id_iglesia', $instructor->id_iglesia)
+                ->first();
+            if (!$anual_iglesias) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el registro anual de la iglesia.');
+            }
+            $anual_iglesias->increment('instructores_alcanzados');
             DB::commit();
             return redirect()->route('instructores.index')->with('success', 'Instructor actualizado correctamente.');
         } catch (\Exception $e) {
@@ -119,17 +267,35 @@ class InstructoresController extends Controller
     {
         try {
             DB::beginTransaction();
+            $anioActual = now()->year;
+            // Obtener el distrito
+            $id_distrito = 11;
 
+            $desafio = Desafio::where('id_distrito', $id_distrito)
+                ->where('anio', $anioActual)
+                ->first();
+            if (!$desafio) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el desafío anual para el distrito.');
+            }
             // Buscar estudiante, si no existe lanzar excepción o manejar error
             $instructor = InstructorBiblico::find($id);
-
             if (!$instructor) {
                 return redirect()->route('instructores.index')
                     ->with('error', 'Instructor no encontrado');
             }
 
-            $instructor->delete();
+            $anual_iglesias = AnualIglesia::where('id_desafio', $desafio->id_desafio)
+                ->where('id_iglesia', $instructor->id_iglesia)
+                ->first();
 
+            if (!$anual_iglesias) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'No se encontró el registro anual de la iglesia.');
+            }
+
+            $anual_iglesias->decrement('instructores_alcanzados');
+            $instructor->delete();
             DB::commit();
             return redirect()->route('instructores.index')->with('success', 'Instructor Eliminado Correctamente');
 
@@ -140,37 +306,5 @@ class InstructoresController extends Controller
         }
     }
 
-    public function dashboard()
-    {
-        $result = DB::table('desafio_mensuales')
-                ->select('mes', 'desafio_inst_biblicos', 'instructores_alcanzados')
-                ->where('iglesia_id', 1)
-                ->where('pastor_id', 1)
-                ->where('anio', 2025)
-                ->orderByRaw("
-                    CASE mes
-                        WHEN 'enero' THEN 1
-                        WHEN 'febrero' THEN 2
-                        WHEN 'marzo' THEN 3
-                        WHEN 'abril' THEN 4
-                        WHEN 'mayo' THEN 5
-                        WHEN 'junio' THEN 6
-                        WHEN 'julio' THEN 7
-                        WHEN 'agosto' THEN 8
-                        WHEN 'septiembre' THEN 9
-                        WHEN 'octubre' THEN 10
-                        WHEN 'noviembre' THEN 11
-                        WHEN 'diciembre' THEN 12
-                    END
-                ")
-                ->get();
-
-
-        // Convertimos a arrays separados
-        $meses = $result->pluck('mes');                 // ['enero','febrero',...]
-        $desafios = $result->pluck('desafio_inst_biblicos'); // [28,48,40,...]
-        $alcanzados = $result->pluck('instructores_alcanzados'); // [65,59,80,...]
-
-        return view('instructores.dashboard', compact('meses','desafios','alcanzados'));
-    }
+    
 }
