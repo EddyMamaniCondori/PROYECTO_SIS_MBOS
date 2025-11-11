@@ -50,7 +50,10 @@ class BautisosController extends Controller
     public function index_distrital()
     {
         $anioActual = now()->year;
-        $id_distrito = 11; // todos los estudiantes del distrito Bolivar
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito; // todos los estudiantes del distrito Bolivar
         $bautizos = Bautiso::join('iglesias as xi', 'bautisos.iglesia_id', '=', 'xi.id_iglesia')
         ->select(
             'bautisos.*',

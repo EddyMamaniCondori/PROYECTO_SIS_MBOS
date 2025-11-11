@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('distritos', function (Blueprint $table) {
-            $table->id('id_distrito'); // PK autoincremental
+            $table->unsignedBigInteger('id_distrito', true)->primary()->unique(); // PK autoincremental
             $table->string('nombre', 150)->unique();
             $table->integer('nro_iglesias')->default(0); // valor por defecto
             $table->boolean('estado')->default(true); // eliminacion logica
             $table->boolean('sw_cambio')->default(false);
             $table->string('año')->nullable(); // identificar la gestion
 
-            $table->date('fecha_asignacion')->nullable();; // ES PASTOR ACTUAL DESDE QUE FECHA ESTA.
+            $table->date('fecha_asignacion')->nullable(); // ES PASTOR ACTUAL DESDE QUE FECHA ESTA.
             $table->foreignId('id_pastor')->nullable()
                 ->constrained('pastors', 'id_pastor')
                 ->nullOnDelete();

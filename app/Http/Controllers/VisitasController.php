@@ -22,7 +22,10 @@ class VisitasController extends Controller
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
 
-        $id_distrito = 11; // todos los estudiantes del distrito Bolivar
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;// todos los estudiantes del distrito Bolivar
 
         $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
                 ->select(
@@ -39,7 +42,10 @@ class VisitasController extends Controller
     public function index_mes() //obtenemos los meses desafiados al distrito 11
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
-        $id_distrito = 11; // todos los estudiantes del distrito Bolivar
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito; // todos los estudiantes del distrito Bolivar
         $desafio = Desafio::where('anio', $anioActual)
                     ->where('id_distrito', $id_distrito)
                     ->first();
@@ -57,7 +63,10 @@ class VisitasController extends Controller
             return redirect()->back()->with('error', 'Desafío mensual no encontrado.');
         }
         $anioActual = now()->year;
-        $id_distrito = 11;
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
         
         // Obtener visitas del mes específico del desafío
         $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
@@ -79,7 +88,10 @@ class VisitasController extends Controller
      */
     public function create( $id_mensual)
     {
-        $id_distrito = 11;
+       $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
 
         $mensual = Mensual::find($id_mensual);
         if (!$mensual) {
@@ -133,7 +145,10 @@ class VisitasController extends Controller
      */
     public function edit($id_mensual, $id_visita)
     {
-        $id_distrito = 11;
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
 
         $mensual = Mensual::find($id_mensual);
         if (!$mensual) {
@@ -201,7 +216,10 @@ class VisitasController extends Controller
     public function dashboard()
     {
         $anioActual = now()->year;
-        $id_distrito = 11;
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
 
         // Obtener el desafío anual del distrito
         $desafio = Desafio::where('anio', $anioActual)
@@ -262,7 +280,10 @@ class VisitasController extends Controller
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
 
-        $id_distrito = 11; // todos los estudiantes del distrito Bolivar
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito; // todos los estudiantes del distrito Bolivar
 
         $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
                 ->select(

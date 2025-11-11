@@ -224,7 +224,7 @@
                   class="user-image rounded-circle shadow"
                   alt="User Image"
                 />
-                <span class="d-none d-md-inline">Alexander Pierce</span>
+                <span class="d-none d-md-inline">{{ Auth::user()->nombre }} {{ Auth::user()->ape_paterno }} {{ Auth::user()->ape_materno }} </span>
               </a>
               <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                 <!--begin::User Image-->
@@ -235,8 +235,8 @@
                     alt="User Image"
                   />
                   <p>
-                    Alexander Pierce - Web Developer
-                    <small>Member since Nov. 2023</small>
+                      {{ Auth::user()->nombre }} {{ Auth::user()->ape_paterno }} {{ Auth::user()->ape_materno }}  <br>Pastor Distrital
+                    <small>11 de noviembre del 2025</small>
                   </p>
                 </li>
                 <!--end::User Image-->
@@ -254,7 +254,15 @@
                 <!--begin::Menu Footer-->
                 <li class="user-footer">
                   <a href="#" class="btn btn-default btn-flat">Profile</a>
-                  <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                  
+                  <form method="POST" action="{{ route('logout') }}" class="btn btn-default btn-flat float-end">
+                            @csrf
+                            <x-dropdown-link :href="route('logout')"
+                                    onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                {{ __('Cerrar Sesion') }}
+                            </x-dropdown-link>
+                  </form>
                 </li>
                 <!--end::Menu Footer-->
               </ul>

@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('diriges', function (Blueprint $table) {
             // Claves foráneas
-            $table->unsignedBigInteger('id_distrito');
-            $table->unsignedBigInteger('id_pastor');
+            $table->unsignedBigInteger('id_distrito')->nullable();
+            $table->unsignedBigInteger('id_pastor')->nullable();
             
 
             // Atributos de la relación

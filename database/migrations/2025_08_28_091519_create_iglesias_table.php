@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('calle')->nullable();
             $table->string('nro')->nullable();
             $table->enum('lugar', ['ALTIPLANO', 'EL ALTO'])->nullable();
-            $table->enum('tipo', ['Iglesia', 'Grupo', 'Filial','filial', 'Grupo Cerrado', 'Grupo-CERRADO', 'I/Grupo'])->nullable();
+            $table->enum('tipo', ['Iglesia', 'Grupo','filial', 'Grupo Cerrado', 'Grupo-CERRADO', 'I/Grupo'])->nullable();
             $table->unsignedBigInteger('distrito_id')->nullable();
             $table->foreign('distrito_id')
                 ->references('id_distrito')

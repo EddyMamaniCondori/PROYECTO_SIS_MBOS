@@ -67,7 +67,7 @@ class DistritoSeeder extends Seeder
                 'id_grupo' => null,  // Puedes asignar si tienes id
                 'sw_cambio' => false,
                 'año' => '2025',
-                'fecha_asignacion' => '01/01/2025',
+                'fecha_asignacion' => \Carbon\Carbon::createFromFormat('d/m/Y', '01/01/2025')->format('Y-m-d'),
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];

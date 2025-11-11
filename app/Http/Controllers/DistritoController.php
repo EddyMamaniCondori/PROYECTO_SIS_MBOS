@@ -540,8 +540,8 @@ class DistritoController extends Controller
             //2. para evitar errores todos las tuplas distrtito se cambia a falso
             DB::update('UPDATE distritos SET sw_cambio = ?, año = ?', [false, $anio]);
 
-            // 2. ACTUALIZAR TODOS LOS REGISTROS CON LAS MODIFICACIONES
-            DB::update("
+            // 2. ACTUALIZAR TODOS LOS REGISTROS CON LAS MODIFICACIONES fecha_asignacion = STR_TO_DATE(:fecha_asignacion, '%d/%m/%Y')
+            /*POSTGRESSQL DB::update("
                 UPDATE distritos d
                 SET 
                     nombre = ad.nombre,
@@ -554,7 +554,23 @@ class DistritoController extends Controller
             ", [
                 'anio' => $anio,
                 'fecha_asignacion' => "01/01/$anio"
+            ]);*/
+
+            DB::update("
+                UPDATE distritos d
+                JOIN asignacion_distritos ad ON d.id_distrito = ad.id_distrito_asignaciones
+                SET 
+                    d.nombre = ad.nombre,
+                    d.id_pastor = ad.id_pastor,
+                    d.sw_cambio = FALSE,
+                    d.año = :anio,
+                    d.fecha_asignacion = STR_TO_DATE(:fecha_asignacion, '%d/%m/%Y')
+
+            ", [
+                'anio' => $anio,
+                'fecha_asignacion' => "01/01/$anio"
             ]);
+
             // 3. VASIAR LA TABLA ASIGNACIONES_DISRTITALERS
             DB::statement('DELETE FROM asignacion_distritos');
 

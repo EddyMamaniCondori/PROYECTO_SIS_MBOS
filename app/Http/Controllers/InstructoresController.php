@@ -19,7 +19,10 @@ class InstructoresController extends Controller
     public function index()
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
-        $id_distrito = 11; // todos los estudiantes del distrito Bolivar  
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;// todos los estudiantes del distrito Bolivar  
 
         $anioDistritos = DB::table('distritos')
             ->where('estado', true)
@@ -52,7 +55,10 @@ class InstructoresController extends Controller
     public function index_desafios_inst()
     {
         $anioActual = now()->year;
-        $id_distrito = 11;
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
 
         $anioDistritos = DB::table('distritos')
             ->where('estado', true)
@@ -133,7 +139,10 @@ class InstructoresController extends Controller
      */
     public function create()
     {
-        $id_distrito = 11;
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
 
         // Obtenemos solo las iglesias activas del distrito 11
         $iglesias = Iglesia::where('estado', true)
@@ -160,7 +169,10 @@ class InstructoresController extends Controller
 
             $anioActual = now()->year;
             // Obtener el distrito
-            $id_distrito = 11;
+            $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
 
             $desafio = Desafio::where('id_distrito', $id_distrito)
                 ->where('anio', $anioActual)
@@ -204,7 +216,10 @@ class InstructoresController extends Controller
      */
     public function edit(string $id)
     {
-        $id_distrito = 11;
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
         $instructor = InstructorBiblico::find($id);
         $iglesias = Iglesia::where('estado', true)
             ->where('distrito_id', $id_distrito)
@@ -222,7 +237,10 @@ class InstructoresController extends Controller
             DB::beginTransaction();  
             $anioActual = now()->year;
             // Obtener el distrito
-            $id_distrito = 11;
+            $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
             $desafio = Desafio::where('id_distrito', $id_distrito)
                 ->where('anio', $anioActual)
                 ->first();
@@ -269,7 +287,10 @@ class InstructoresController extends Controller
             DB::beginTransaction();
             $anioActual = now()->year;
             // Obtener el distrito
-            $id_distrito = 11;
+            $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        $id_distrito = $distrito->id_distrito;
 
             $desafio = Desafio::where('id_distrito', $id_distrito)
                 ->where('anio', $anioActual)

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\PastorController;
@@ -22,20 +23,32 @@ use App\Http\Controllers\BlancoController;
 use App\Http\Controllers\DesafioAnualIglesiaController;
 use App\Http\Controllers\DesafioMensualController;
 use App\Http\Controllers\DesafioEventoController;
+
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+
+})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+
+// ===== TUS RUTAS ANTIGUAS (las reconstruimos juntos) =====
+Route::middleware(['auth'])->group(function () {
 Route::get('/', function () {
     return view('welcome');
 });
+
 Route::get('/template', function () {
     return view('template');
 });
 
 Route::get('/panel', function () {
     return view('panel/index');
-});
-
-Route::get('/tablas', function () {
-    return view('pruebas/table');
-});
+})->name('panel');
 
 /**
  *_________________BANCOS
@@ -283,3 +296,7 @@ Route::resource('anual_iglesias', DesafioAnualIglesiaController::class);
 Route::resource('desafios_mensuales', DesafioMensualController::class);
 
 Route::resource('desafio_eventos', DesafioEventoController::class);
+
+
+});
+require __DIR__.'/auth.php';
