@@ -103,7 +103,7 @@
                                                 name="id_desafio_evento" 
                                                 id="id_desafio_evento" 
                                                 class="form-control selectpicker show-tick">
-                                            <option value="null">-- Seleccione un desafío evento --</option>
+                                            <option value="">-- Seleccione un desafío evento --</option>
                                             @foreach($desafio_eventos as $evento)
                                                 <option value="{{ $evento->id_desafio_evento }}" 
                                                     {{ old('id_desafio_evento') == $evento->id_desafio_evento ? 'selected' : '' }}>
@@ -117,7 +117,7 @@
                                         @enderror
                                     @else
                                         {{-- Si no hay eventos disponibles --}}
-                                        <input type="hidden" name="id_desafio_evento" value="null">
+                                        <input type="hidden" name="id_desafio_evento" value="">
                                         <div class="alert alert-warning mt-2">
                                             No hay desafíos de eventos disponibles en esta fecha.
                                         </div>

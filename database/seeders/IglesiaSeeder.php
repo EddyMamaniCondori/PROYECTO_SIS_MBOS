@@ -480,7 +480,7 @@ class IglesiaSeeder extends Seeder
             ['distrito_id' => 21, 'codigo' => 652, 'nombre' => 'Keraya', 'tipo' => 'Grupo', 'lugar' => 'ALTIPLANO', 'ciudad' => 'La Paz', 'zona' => 'El Valle Keraya'],
             ['distrito_id' => 21, 'codigo' => 649, 'nombre' => 'Quebrada', 'tipo' => 'Grupo', 'lugar' => 'ALTIPLANO', 'ciudad' => 'La Paz', 'zona' => 'El Valle Quebrada'],
             ['distrito_id' => 21, 'codigo' => 653, 'nombre' => 'Pucarani', 'tipo' => 'Grupo', 'lugar' => 'ALTIPLANO', 'ciudad' => 'La Paz', 'zona' => 'El Valle Pucarani'],
-            ['distrito_id' => 21, 'codigo' => 653, 'nombre' => 'GP Jañumarca', 'tipo' => 'filial', 'lugar' => 'ALTIPLANO', 'ciudad' => 'La Paz', 'zona' => 'El Valle F. Jañumarca'],
+            ['distrito_id' => 21, 'codigo' => 653, 'nombre' => 'GP Jañumarca', 'tipo' => 'Filial', 'lugar' => 'ALTIPLANO', 'ciudad' => 'La Paz', 'zona' => 'El Valle F. Jañumarca'],
             ['distrito_id' => 21, 'codigo' => 890, 'nombre' => 'Tirco', 'tipo' => 'Grupo', 'lugar' => 'ALTIPLANO', 'ciudad' => 'La Paz', 'zona' => 'El Valle Tirco'],
 
             // Registros de Viloco / Inquisivi (ALTIPLANO/VALLE, LA PAZ)

@@ -7,11 +7,13 @@ use App\Models\Iglesia;
 use App\Models\Visita; 
 use App\Models\Desafio; 
 use App\Models\Mensual;
+use App\Models\Distrito;
 use App\Http\Requests\VisitaRequest;
 use App\Http\Requests\UpdateVisitasRequest;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
+use Illuminate\Support\Facades\Auth;
 
 class VisitasController extends Controller
 {
@@ -23,9 +25,15 @@ class VisitasController extends Controller
         $anioActual = now()->year; //muestro los estudiantes del año actual
 
         $persona = Auth::user(); 
-
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
-        $id_distrito = $distrito->id_distrito;// todos los estudiantes del distrito Bolivar
+
+        if (!$distrito) {
+            
+            return redirect()->route('panel')->with('success', 'No tienes un distrito asignado.');
+        }
+        $id_distrito = $distrito->id_distrito;
+        
+
 
         $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
                 ->select(
@@ -45,7 +53,12 @@ class VisitasController extends Controller
         $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
-        $id_distrito = $distrito->id_distrito; // todos los estudiantes del distrito Bolivar
+        if (!$distrito) {
+            //dd('esta entrado par amadnar mensaje');
+            return redirect()->route('panel')->with('success', 'No tienes un distrito asignado.');
+        }
+        $id_distrito = $distrito->id_distrito;
+        
         $desafio = Desafio::where('anio', $anioActual)
                     ->where('id_distrito', $id_distrito)
                     ->first();
@@ -64,10 +77,12 @@ class VisitasController extends Controller
         }
         $anioActual = now()->year;
         $persona = Auth::user(); 
-
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
-        
+
         // Obtener visitas del mes específico del desafío
         $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
             ->select(
@@ -91,6 +106,9 @@ class VisitasController extends Controller
        $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
 
         $mensual = Mensual::find($id_mensual);
@@ -148,6 +166,9 @@ class VisitasController extends Controller
         $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
 
         $mensual = Mensual::find($id_mensual);
@@ -219,6 +240,9 @@ class VisitasController extends Controller
         $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
 
         // Obtener el desafío anual del distrito
@@ -279,10 +303,11 @@ class VisitasController extends Controller
     public function index_asignacion_desafios()
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
-
         $persona = Auth::user(); 
-
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito; // todos los estudiantes del distrito Bolivar
 
         $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')

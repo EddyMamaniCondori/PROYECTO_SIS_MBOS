@@ -55,7 +55,6 @@
                   <div class="card-header"><h3 class="card-title">Visitas Mensuales</h3></div>
                   <div class="card-body"><div id="revenue-chart"></div></div>
                 </div>
-                
               </div>
             </div>
           <!--end::Container-->

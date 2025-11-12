@@ -130,4 +130,8 @@ class BlancoController extends Controller
     {
         //
     }
+
+
+
+    
 }

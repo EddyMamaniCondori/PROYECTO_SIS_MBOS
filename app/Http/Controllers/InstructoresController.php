@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\InstructorBiblico;
 use App\Models\Iglesia;
 use App\Models\Desafio;
+use App\Models\Distrito;
 use App\Models\AnualIglesia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Exception;
 use App\Http\Requests\InstructorRequest;
 use App\Http\Requests\UpdateInstructorRequest;
@@ -22,6 +24,9 @@ class InstructoresController extends Controller
         $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;// todos los estudiantes del distrito Bolivar  
 
         $anioDistritos = DB::table('distritos')
@@ -58,6 +63,9 @@ class InstructoresController extends Controller
         $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
 
         $anioDistritos = DB::table('distritos')
@@ -91,7 +99,7 @@ class InstructoresController extends Controller
             ->get();
 
         // Procesar los datos para el gráfico (ya listos) NUMEROS
-        /*$graficos = $desafios->map(function ($d) {
+        $graficos = $desafios->map(function ($d) {
             return [
                 'id_iglesia' => $d->id_iglesia,
                 'estudiantes' => [
@@ -105,8 +113,8 @@ class InstructoresController extends Controller
                     'diferencia' => (int)$d->desafio_instructores - (int)$d->instructores_alcanzados,
                 ]
             ];
-        });*/
-        $graficos = $desafios->map(function ($d) { //EN PORCENTAJES
+        });
+        /*$graficos = $desafios->map(function ($d) { //EN PORCENTAJES
             // Evitar división entre 0
             $desafioEst = max((int)$d->desafio_estudiantes, 1);
             $desafioInst = max((int)$d->desafio_instructores, 1);
@@ -128,7 +136,7 @@ class InstructoresController extends Controller
                     'diferencia' => round(100 - $porcInstAlcanzado, 2),
                 ]
             ];
-        });
+        });*/
 
         return view('instructores.dashboard', compact('desafios', 'anio', 'graficos'));
     }
@@ -142,6 +150,9 @@ class InstructoresController extends Controller
         $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
 
         // Obtenemos solo las iglesias activas del distrito 11
@@ -172,6 +183,9 @@ class InstructoresController extends Controller
             $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
 
             $desafio = Desafio::where('id_distrito', $id_distrito)
@@ -219,6 +233,9 @@ class InstructoresController extends Controller
         $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
         $instructor = InstructorBiblico::find($id);
         $iglesias = Iglesia::where('estado', true)
@@ -240,6 +257,9 @@ class InstructoresController extends Controller
             $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
             $desafio = Desafio::where('id_distrito', $id_distrito)
                 ->where('anio', $anioActual)
@@ -290,6 +310,9 @@ class InstructoresController extends Controller
             $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito;
 
             $desafio = Desafio::where('id_distrito', $id_distrito)

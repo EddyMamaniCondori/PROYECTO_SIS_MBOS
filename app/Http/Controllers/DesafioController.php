@@ -63,12 +63,62 @@ class DesafioController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * ES UNA FUNCION AUTOMATICA QUE CREA Y ACTUALIZA LOS DESAFIOS PARA CADA DISTRITO ACTIVO
      */
-    public function store(DesafioMensualRequest $request)
+    public function store()
     {
-        
+        try {
+            $anioActual = now()->year;
+
+            // Distritos que ya tienen desafío este año
+            $distritosConDesafio = DB::table('desafios')
+                ->where('anio', $anioActual)
+                ->pluck('id_distrito')
+                ->toArray();
+
+            // Distritos activos sin desafío
+            $distritosFaltantes = Distrito::where('estado', true)
+                ->whereNotIn('id_distrito', $distritosConDesafio)
+                ->leftJoin('pastors', 'distritos.id_pastor', '=', 'pastors.id_pastor') //AUNQUE NO TENGAN PASTOR ASIGNADO
+                ->select('distritos.id_distrito', 'pastors.id_pastor')
+                ->get();
+
+            if ($distritosFaltantes->isEmpty()) {
+                return redirect()->route('desafios.index')
+                    ->with('info', 'Todos los distritos ya tienen desafío para este año.');
+            }
+
+            // Preparar datos
+            $insertData = $distritosFaltantes->map(function ($d) use ($anioActual) {
+                return [
+                    'desafio_bautizo' => 0,
+                    'bautizos_alcanzados' => 0,
+                    'anio' => $anioActual,
+                    'estado' => false,
+                    'id_distrito' => $d->id_distrito,
+                    'id_pastor' => $d->id_pastor,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            })->toArray();
+
+            DB::beginTransaction();
+            DB::table('desafios')->insert($insertData);
+            DB::commit();
+
+            $total = count($insertData);
+
+            return redirect()->route('desafios.index')
+                ->with('success', "Se crearon {$total} desafío(s) nuevo(s) correctamente.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error al crear desafíos: ' . $e->getMessage());
+            return redirect()->route('desafios.index')
+                ->with('error', 'Ocurrió un error al crear los desafíos.');
+        }
     }
+
 
     /**
      * Display the specified resource.
@@ -164,7 +214,7 @@ class DesafioController extends Controller
     }
 
     
-    public function index_desafio_bautizos() 
+    public function index_desafio_bautizos() //muestra todos desafios y sus alcanzados en bautisos
     {
         try {
             $anioActual = now()->year; //sacamos el año actual
@@ -228,7 +278,8 @@ class DesafioController extends Controller
      * __________________________________________________________________________________________________________
      * 
      */
-    public function index() 
+    
+    public function index()  // ES EL ACTUALIZADOR Y CREAD0R DE SAFIOS PARA TODOS 
     {
         try {
             $anioActual = now()->year; //sacamos el año actual
@@ -377,7 +428,6 @@ class DesafioController extends Controller
     }
 
     /**
-         * 🆕 AGREGAR ESTAS FUNCIONES PRIVADAS AL CONTROLADOR
          */ /*## 📋 **Flujo lógico del código:**
  
         1. Obtener año actual del sistema (2025)
@@ -419,6 +469,7 @@ class DesafioController extends Controller
     /**
      * Crear registros anuales para TODAS las iglesias de un desafío
      */
+
     private function asignarAnualIglesias($id_desafio)
     {
         try {

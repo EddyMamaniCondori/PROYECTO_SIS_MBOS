@@ -11,7 +11,7 @@ class PuntualidadController extends Controller
  
 
         // Traemos todas las iglesias junto con su distrito
-        /* postgrstsql$iglesias = DB::select("
+        $iglesias = DB::select("
                     SELECT 
                     xd.nombre as nombre_distrito,
                     xi.codigo, 
@@ -45,41 +45,6 @@ class PuntualidadController extends Controller
                     xi.tipo,
                     xi.lugar,
                     xp.anio;
-        ");*/
-
-        $iglesias = DB::select("
-                    SELECT 
-                        xd.nombre as nombre_distrito,
-                        xi.codigo, 
-                        xi.nombre,
-                        xi.tipo,
-                        xi.lugar,
-                        xp.anio,
-                        MAX(CASE WHEN xm.mes = 1 THEN xm.tipo ELSE NULL END) AS puntualidad_enero,
-                        MAX(CASE WHEN xm.mes = 2 THEN xm.tipo ELSE NULL END) AS puntualidad_febrero,
-                        MAX(CASE WHEN xm.mes = 3 THEN xm.tipo ELSE NULL END) AS puntualidad_marzo,
-                        MAX(CASE WHEN xm.mes = 4 THEN xm.tipo ELSE NULL END) AS puntualidad_abril,
-                        MAX(CASE WHEN xm.mes = 5 THEN xm.tipo ELSE NULL END) AS puntualidad_mayo,
-                        MAX(CASE WHEN xm.mes = 6 THEN xm.tipo ELSE NULL END) AS puntualidad_junio,
-                        MAX(CASE WHEN xm.mes = 7 THEN xm.tipo ELSE NULL END) AS puntualidad_julio,
-                        MAX(CASE WHEN xm.mes = 8 THEN xm.tipo ELSE NULL END) AS puntualidad_agosto,
-                        MAX(CASE WHEN xm.mes = 9 THEN xm.tipo ELSE NULL END) AS puntualidad_septiembre,
-                        MAX(CASE WHEN xm.mes = 10 THEN xm.tipo ELSE NULL END) AS puntualidad_octubre,
-                        MAX(CASE WHEN xm.mes = 11 THEN xm.tipo ELSE NULL END) AS puntualidad_noviembre,
-                        MAX(CASE WHEN xm.mes = 12 THEN xm.tipo ELSE NULL END) AS puntualidad_diciembre
-                    FROM iglesias xi 
-                    LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
-                    JOIN puntualidades xp ON xp.id_iglesia = xi.id_iglesia
-                    JOIN mes xm ON xm.id_puntualidad = xp.id_puntualidad
-                    WHERE xp.anio = 2025
-                    AND xi.estado = true
-                    GROUP BY 
-                        xd.nombre,
-                        xi.codigo, 
-                        xi.nombre,
-                        xi.tipo,
-                        xi.lugar,
-                        xp.anio;
         ");
         return view('puntualidad.index', compact('iglesias'));
     }

@@ -18,10 +18,15 @@
       integrity="sha256-+uGLJmmTKOqBr+2E6KDYs/NRsHxSkONXFHUL0fy2O/4="
       crossorigin="anonymous"
     />  
+  <!-- SWIALERT-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endpush
 
 
-        @section('content')
+@section('content')
+ 
+<x-alerts />
+
         <!--begin::App Content Header-->
         <div class="app-content-header">
           <!--begin::Container-->

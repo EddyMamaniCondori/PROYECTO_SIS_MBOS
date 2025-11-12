@@ -57,7 +57,7 @@
                                 <table id="example" class="display">
                                     <thead>
                                         <tr>
-                                            <th>Distrtio</th>
+                                            <th>Distrito</th>
                                             <th>bautizos</th>
                                             <th>profesion de fe</th>
                                             <th>rebautismos</th>

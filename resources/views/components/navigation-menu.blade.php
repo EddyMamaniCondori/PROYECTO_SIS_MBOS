@@ -21,9 +21,9 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="#" class="nav-link active">
+                    <a href="{{ route('dashboard.pastor')}}" class="nav-link active">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Dashboard administrativo</p>
+                      <p>Dashboard Pastores</p>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -285,7 +285,7 @@
               <!--desplehgable-->
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="bi bi-person-heart"></i>
+                  <i class="fa-solid fa-dove"></i>
                   <p>
                     Bautizos
                     <i class="nav-arrow bi bi-chevron-right"></i>
@@ -294,14 +294,14 @@
                 <ul class="nav nav-treeview">
                   <li class="nav-item ms-3">
                     <a href="{{ route('desafios.bautizos')  }}" class="nav-link">
-                      <i class="bi bi-houses"></i>
-                      <p>Desafios Distritales</p>
+                      <i class="fa-solid fa-dove"></i>
+                      <p>Administrar Blancos</p>
                     </a>
                   </li>
                   <li class="nav-item ms-3">
-                    <a href="#" class="nav-link">
+                    <a href="{{ route('bautizos.dashboard')}}" class="nav-link">
                       <i class="bi bi-house-add"></i>
-                      <p>asignar Desafio</p>
+                      <p>Dashboard</p>
                     </a>
                   </li>
                 </ul>

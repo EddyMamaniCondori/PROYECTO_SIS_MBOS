@@ -23,7 +23,7 @@ use App\Http\Controllers\BlancoController;
 use App\Http\Controllers\DesafioAnualIglesiaController;
 use App\Http\Controllers\DesafioMensualController;
 use App\Http\Controllers\DesafioEventoController;
-
+use App\Http\Controllers\PanelController;
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -51,11 +51,25 @@ Route::get('/panel', function () {
 })->name('panel');
 
 /**
+ *_________________DASHBOARDS PRINCIPAÑES
+ * 
+ */
+Route::get('/dashboard/pastor/', [PanelController::class, 'dashboard_pastores'])
+    ->name('dashboard.pastor');
+
+/**
  *_________________BANCOS
  * 
  */
 Route::get('/blancos/index/', [BlancoController::class, 'index'])
     ->name('blancos.index');
+/**
+ *_________________Bautisos
+ * 
+ */
+Route::get('/bautizos/dashboard/', [BautisosController::class, 'dashboard_general'])
+    ->name('bautizos.dashboard');
+
 /**
  *_________________PUNTUALIDADES
  * 

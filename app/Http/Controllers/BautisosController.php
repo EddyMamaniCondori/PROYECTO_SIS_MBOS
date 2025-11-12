@@ -14,7 +14,7 @@ use App\Http\Requests\UpdateBautisoRequest;
 
 use Illuminate\Support\Facades\DB;
 use Exception;
-
+use Illuminate\Support\Facades\Auth;
 class BautisosController extends Controller
 {
     /**
@@ -53,6 +53,9 @@ class BautisosController extends Controller
         $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
         $id_distrito = $distrito->id_distrito; // todos los estudiantes del distrito Bolivar
         $bautizos = Bautiso::join('iglesias as xi', 'bautisos.iglesia_id', '=', 'xi.id_iglesia')
         ->select(
@@ -85,6 +88,7 @@ class BautisosController extends Controller
             $id_distrito = $request->id_distrito;
             $bautiso = Bautiso::create($request->validated()); 
             //se crea el bautizo a la 
+            
             if ($request->id_desafio_evento) {
                 $desafio = Desafio::where('anio', $anioActual)
                     ->where('id_distrito', $id_distrito)
@@ -228,38 +232,118 @@ class BautisosController extends Controller
         }
     }
 
-    public function dashboard()
+    public function dashboard_general()
     {
-        $result = DB::table('desafio_mensuales')
-                ->select('mes', 'desafio_bautiso', 'bautisos_alcanzados')
-                ->where('iglesia_id', 1)
-                ->where('pastor_id', 1)
-                ->where('anio', 2025)
-                ->orderByRaw("
-                    CASE mes
-                        WHEN 'enero' THEN 1
-                        WHEN 'febrero' THEN 2
-                        WHEN 'marzo' THEN 3
-                        WHEN 'abril' THEN 4
-                        WHEN 'mayo' THEN 5
-                        WHEN 'junio' THEN 6
-                        WHEN 'julio' THEN 7
-                        WHEN 'agosto' THEN 8
-                        WHEN 'septiembre' THEN 9
-                        WHEN 'octubre' THEN 10
-                        WHEN 'noviembre' THEN 11
-                        WHEN 'diciembre' THEN 12
-                    END
-                ")
-                ->get();
+        $anio= now()->year;
+        
+        // Consulta de los desafíos por distrito
+        $desafios = DB::table('desafios as xd')
+            ->join('distritos as xdd', 'xd.id_distrito', '=', 'xdd.id_distrito')
+            ->where('xd.anio', $anio)
+            ->select(
+                'xdd.id_distrito',
+                'xdd.nombre as nombre_distrito',
+                'xd.desafio_bautizo',
+                'xd.bautizos_alcanzados',
+                DB::raw('(xd.desafio_bautizo - xd.bautizos_alcanzados) as diferencia')
+            )
+            ->orderBy('xdd.nombre')
+            ->get();
 
+        $bautizosPorDistrito = DB::table('distritos as xd')
+            ->leftJoin('iglesias as xi', 'xi.distrito_id', '=', 'xd.id_distrito')
+            ->leftJoin('bautisos as xb', function($join) use ($anio) {
+                $join->on('xb.id_iglesia', '=', 'xi.id_iglesia')
+                    ->whereRaw('EXTRACT(YEAR FROM xb.fecha_bautizo) = ?', [$anio]);
+            })
+            ->where('xd.estado', true)
+            ->groupBy('xd.id_distrito')
+            ->select(
+                'xd.id_distrito',
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 1 THEN 1 ELSE 0 END), 0) AS enero'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 2 THEN 1 ELSE 0 END), 0) AS febrero'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 3 THEN 1 ELSE 0 END), 0) AS marzo'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 4 THEN 1 ELSE 0 END), 0) AS abril'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 5 THEN 1 ELSE 0 END), 0) AS mayo'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 6 THEN 1 ELSE 0 END), 0) AS junio'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 7 THEN 1 ELSE 0 END), 0) AS julio'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 8 THEN 1 ELSE 0 END), 0) AS agosto'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 9 THEN 1 ELSE 0 END), 0) AS septiembre'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 10 THEN 1 ELSE 0 END), 0) AS octubre'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 11 THEN 1 ELSE 0 END), 0) AS noviembre'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM xb.fecha_bautizo) = 12 THEN 1 ELSE 0 END), 0) AS diciembre')
+            )
+            ->get();
 
-        // Convertimos a arrays separados
-        $meses = $result->pluck('mes');                 // ['enero','febrero',...]
-        $desafios = $result->pluck('desafio_bautiso'); // [28,48,40,...]
-        $alcanzados = $result->pluck('bautisos_alcanzados'); // [65,59,80,...]
+        // Preparar para frontend (por ejemplo con etiquetas para la gráfica)
+        $graficos = $bautizosPorDistrito->map(function ($d) {
+            return [
+                'id_distrito' => $d->id_distrito,
+                'meses' => [
+                    'Enero' => (int)$d->enero,
+                    'Febrero' => (int)$d->febrero,
+                    'Marzo' => (int)$d->marzo,
+                    'Abril' => (int)$d->abril,
+                    'Mayo' => (int)$d->mayo,
+                    'Junio' => (int)$d->junio,
+                    'Julio' => (int)$d->julio,
+                    'Agosto' => (int)$d->agosto,
+                    'Septiembre' => (int)$d->septiembre,
+                    'Octubre' => (int)$d->octubre,
+                    'Noviembre' => (int)$d->noviembre,
+                    'Diciembre' => (int)$d->diciembre,
+                ],
+            ];
+        });
 
-        return view('bautisos.dashboard', compact('meses','desafios','alcanzados'));
+        // para el grafica de tipos
+        $tipos = DB::table('distritos as xd')
+            ->leftJoin('iglesias as xi', 'xi.distrito_id', '=', 'xd.id_distrito')
+            ->leftJoin('bautisos as xb', function ($join) use ($anio) {
+                $join->on('xb.id_iglesia', '=', 'xi.id_iglesia')
+                    ->whereRaw('EXTRACT(YEAR FROM xb.fecha_bautizo) = ?', [$anio]);
+            })
+            ->where('xd.estado', true)
+            ->select(
+                'xd.id_distrito',
+                'xd.nombre as nombre_distrito',
+                DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'bautizo' THEN 1 ELSE 0 END), 0) as nro_bautizo"),
+                DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'profesion de fe' THEN 1 ELSE 0 END), 0) as nro_profesion_fe"),
+                DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'rebautismo' THEN 1 ELSE 0 END), 0) as nro_rebautismo")
+            )
+            ->groupBy('xd.id_distrito', 'xd.nombre')
+            ->orderBy('xd.nombre')
+            ->get();
+        
+        $graficos_tipos = $tipos->map(function ($d) {
+            return [
+                'id_distrito' => $d->id_distrito,
+                'nombre' => $d->nombre_distrito,
+                'categorias' => ['Bautizos', 'Profesión de Fe', 'Rebautismos'],
+                'valores' => [
+                    (int) $d->nro_bautizo,
+                    (int) $d->nro_profesion_fe,
+                    (int) $d->nro_rebautismo
+                ]
+            ];
+        });
+
+         // 🔹 Preparamos datos listos para ApexCharts
+        $graficos_final = $desafios->map(function ($d) {
+            return [
+                'id_distrito' => $d->id_distrito,
+                'nombre' => $d->nombre_distrito,
+                'categorias' => ['Desafío', 'Alcanzado', 'Diferencia'],
+                'valores' => [
+                    (int) $d->desafio_bautizo,
+                    (int) $d->bautizos_alcanzados,
+                    (int) $d->diferencia
+                ]
+            ];
+        });
+        return view('bautisos.dashboard_general', compact('graficos', 'anio','desafios', 'graficos_tipos', 'graficos_final'));
+
+        
     }
 
 }
