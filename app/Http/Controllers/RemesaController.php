@@ -19,7 +19,7 @@ class RemesaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() //'ver meses - remesas',
     {
         $meses = DB::select("
                 SELECT DISTINCT xg.mes, xg.anio, xr.fecha_limite
@@ -44,7 +44,7 @@ class RemesaController extends Controller
         return view('remesas.index', compact('meses', 'ultimo'));
     }
 
-    public function index_mes($mes, $anio)
+    public function index_mes($mes, $anio) //permission 'ver remesas mes - remesas',
     {
         $resultados = DB::select("
         SELECT 
@@ -85,8 +85,8 @@ class RemesaController extends Controller
     {
         //
     }
-    
-    public function crear(Request $request) //habilita un mes y crea para todas las igelsias activas su remesa del correspondientes mes y año
+    //habilita un mes y crea para todas las igelsias activas su remesa del correspondientes mes y año
+    public function crear(Request $request)  //permission 'crear meses - remesas',
     {
         //dd($request);
         $mes = $request->mes;
@@ -211,13 +211,10 @@ class RemesaController extends Controller
         //
     }
 
+//muestra la vista de cada filiala
 
-
-    public function llenar_filial(Request $request) //muestra la vista de cada filiala
+    public function llenar_filial(Request $request) //permision 'ver remesas filiales - remesas',
     {
-
-
-
         $idIglesia = $request->id_iglesia;
         $anio = $request->anio;
         $distrito = $request->distrito;
@@ -263,7 +260,7 @@ class RemesaController extends Controller
     }
 
 
-    public function registrar_remesa_filial(Request $request, $id){
+    public function registrar_remesa_filial(Request $request, $id){ //permision 'llenar remesas filiales - remesas',
         DB::beginTransaction();
         try {
             $remesa = Remesa::find($id);
@@ -322,7 +319,7 @@ class RemesaController extends Controller
         }
     }
 
-    public function registrar_remesa_iglesia(Request $request, $id){
+    public function registrar_remesa_iglesia(Request $request, $id){ //permision 'registra remesas filiales- remesas',
         //dd($id, $request);
         DB::beginTransaction();
         $mes = $request->input('mes');
@@ -412,6 +409,7 @@ class RemesaController extends Controller
             return redirect()->back()->with('error', 'Error al registrar la remesa: ' . $e->getMessage());
         }
     }
+    
     public function asignar_puntualidad(){
 
         // 🔹 Buscar la iglesia asociada a la remesa --- PARA ASIGNAR PUNTUAIDAD

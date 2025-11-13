@@ -52,7 +52,7 @@ class DesafioAnualIglesiaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id) // permission  'editar desafios anual Est Inst',
     {
         try {
             // Validar los datos primero
@@ -88,8 +88,8 @@ class DesafioAnualIglesiaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
+    public function destroy(string $id) // permission  'elimidar desafios anual Est Inst',
+    { 
         try {
             DB::beginTransaction();
 

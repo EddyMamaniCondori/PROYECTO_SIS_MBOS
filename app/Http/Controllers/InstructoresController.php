@@ -18,7 +18,7 @@ class InstructoresController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() //PERMISION 'ver-instructores',
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
         $persona = Auth::user(); 
@@ -57,7 +57,7 @@ class InstructoresController extends Controller
 
     }
 
-    public function index_desafios_inst()
+    public function index_desafios_inst() //PERMISION 'ver avance-instructores',
     {
         $anioActual = now()->year;
         $persona = Auth::user(); 
@@ -145,7 +145,7 @@ class InstructoresController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create() //PERMISION 'crear-instructores',
     {
         $persona = Auth::user(); 
 
@@ -167,7 +167,7 @@ class InstructoresController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(InstructorRequest $request)
+    public function store(InstructorRequest $request) //PERMISION 'crear-instructores',
     {
         try {
             DB::beginTransaction();
@@ -228,7 +228,7 @@ class InstructoresController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id) //PERMISION 'editar-instructores',
     {
         $persona = Auth::user(); 
 
@@ -248,7 +248,7 @@ class InstructoresController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateInstructorRequest $request, string $id)
+    public function update(UpdateInstructorRequest $request, string $id) //PERMISION 'editar-instructores',
     {
          try {
             DB::beginTransaction();  
@@ -301,7 +301,7 @@ class InstructoresController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id) //PERMISION 'eliminar-instructores',
     {
         try {
             DB::beginTransaction();

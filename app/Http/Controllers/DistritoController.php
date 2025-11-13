@@ -16,7 +16,7 @@ use App\Http\Requests\DistritoRequest;
 
 class DistritoController extends Controller
 {
-    public function index()
+    public function index() //PERMISION ver distritos
     {
         $anios = DB::select('SELECT DISTINCT xd.año FROM distritos xd');
 
@@ -36,7 +36,7 @@ class DistritoController extends Controller
         return view('distritos.index', compact('distritos', 'anios'));
     }
 
-    public function index_eliminado()
+    public function index_eliminado() //PERMISION ver eliminados -distritos
     {
 
         $distritos = Distrito::leftJoin('pastors', 'distritos.id_pastor', '=', 'pastors.id_pastor')
@@ -56,14 +56,14 @@ class DistritoController extends Controller
     }
 
 
-    public function index_historial()
+    public function index_historial() //PERMISION ver istorial -distritos 1 
     {
         $distritos = Distrito::all();
         return view('distritos.index_historial', ['distritos' => $distritos]);
     }
 
 
-    public function historial($id_distrito)
+    public function historial($id_distrito) //PERMISION ver istorial -distritos 2
     {
         // Usamos Query Builder para ejecutar la consulta
         $distrito = Distrito::leftJoin('personas as xp', 'distritos.id_pastor', '=', 'xp.id_persona')
@@ -93,7 +93,7 @@ class DistritoController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create() //permissions creaer distritos 1
     {
 
         $pastores = DB::select("
@@ -112,7 +112,7 @@ class DistritoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(DistritoRequest $request)
+    public function store(DistritoRequest $request) //permissions creaer distritos 2
     {
         $anio = DB::table('distritos')
             ->where('estado', true)
@@ -184,7 +184,7 @@ class DistritoController extends Controller
      * 
      * 
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id) //permissions editar distritos
     {
 
         try {
@@ -228,7 +228,7 @@ class DistritoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id)//permissions eliminar distritos 
     {
         //dd($id);
         try {
@@ -275,7 +275,7 @@ class DistritoController extends Controller
 
 
     
-    public function reactive(string $id)
+    public function reactive(string $id) //permissions reactivar distritos 
     {
         try {
             $anio = DB::table('distritos')

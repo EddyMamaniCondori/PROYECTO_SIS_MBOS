@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class PuntualidadController extends Controller
 {
-    public function index()
+    public function index() //permissions 'ver puntualidad',
     {
  
 

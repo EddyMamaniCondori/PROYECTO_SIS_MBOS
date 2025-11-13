@@ -19,7 +19,7 @@ class IglesiaController extends Controller
      */
     
 
-    public function index()
+    public function index()// permision ver-iglesias
     {
         // Traemos todas las iglesias junto con su distrito
         $iglesias = Iglesia::leftJoin('distritos', 'iglesias.distrito_id', '=', 'distritos.id_distrito')
@@ -36,13 +36,13 @@ class IglesiaController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create() // permision crear-iglesias 1
     {
         $distritos = Distrito::where('estado', true)->get();
         return view('iglesias.create', compact('distritos'));
     }
 
-    public function store(IglesiaRequest $request)
+    public function store(IglesiaRequest $request) // permision crear-iglesias2
     {
         // Datos base comunes
         $data = [
@@ -88,7 +88,7 @@ class IglesiaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id) // permision editar-iglesias1
     {
         $iglesia = Iglesia::find($id);
 
@@ -99,7 +99,7 @@ class IglesiaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateIglesiaRequest $request, string $id)
+    public function update(UpdateIglesiaRequest $request, string $id) // permision editar-iglesias2
     {
         $data = [
             'nombre' => $request->nombre,
@@ -151,7 +151,7 @@ class IglesiaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id) // permision eliminar-iglesias
     {
          try {
             DB::beginTransaction();
@@ -188,61 +188,7 @@ class IglesiaController extends Controller
      * ___________________________________________________________________OTRAS FUNCIONES________________________________________
      */
 
-
-     public function dashboard_general()
-    {
-        
-        $result = DB::table('desafio_mensuales')
-                ->select('mes', 
-                'desafio_bautiso', 'bautisos_alcanzados', 
-                'desafios_est_biblicos', 'estudiantes_alcanzados',
-                'desafio_inst_biblicos', 'instructores_alcanzados',
-                'desafio_visitacion', 'visitas_alcanzadas')
-                ->where('iglesia_id', 1)
-                ->where('pastor_id', 1)
-                ->where('anio', 2025)
-                ->orderByRaw("
-                    CASE mes
-                        WHEN 'enero' THEN 1
-                        WHEN 'febrero' THEN 2
-                        WHEN 'marzo' THEN 3
-                        WHEN 'abril' THEN 4
-                        WHEN 'mayo' THEN 5
-                        WHEN 'junio' THEN 6
-                        WHEN 'julio' THEN 7
-                        WHEN 'agosto' THEN 8
-                        WHEN 'septiembre' THEN 9
-                        WHEN 'octubre' THEN 10
-                        WHEN 'noviembre' THEN 11
-                        WHEN 'diciembre' THEN 12
-                    END
-                ")
-                ->get();
-
-
-        // bautisos
-        $meses = $result->pluck('mes');                 // ['enero','febrero',...]
-        $desafios_bau = $result->pluck('desafio_bautiso'); // [28,48,40,...]
-        $alcanzados_bau = $result->pluck('bautisos_alcanzados'); // [65,59,80,...]
-        //ESTUDIANTES
-
-        $desafios_est = $result->pluck('desafios_est_biblicos'); // [28,48,40,...]
-        $alcanzados_est = $result->pluck('estudiantes_alcanzados'); // [65,59,80,...]
-
-        //INST4RUCTORES
-        $desafios_ins = $result->pluck('desafio_inst_biblicos'); // [28,48,40,...]
-        $alcanzados_ins = $result->pluck('instructores_alcanzados'); // [65,59,80,...]
-
-        /// VISTAS
-
-        $desafios_vis = $result->pluck('desafio_visitacion'); // [28,48,40,...]
-        $alcanzados_vis = $result->pluck('visitas_alcanzadas'); // [65,59,80,...]
-        // RETURN
-
-        return view('iglesias.dashboard', compact('meses','desafios_bau','alcanzados_bau','desafios_est','alcanzados_est','desafios_ins','alcanzados_ins','desafios_vis','alcanzados_vis'));
-    }
-
-    public function index_eliminado()
+    public function index_eliminado() //permission 'ver eliminados -iglesias',
     {
         // Traemos todas las iglesias junto con su distrito
         $iglesias = Iglesia::leftJoin('distritos', 'iglesias.distrito_id', '=', 'distritos.id_distrito')
@@ -253,7 +199,7 @@ class IglesiaController extends Controller
 
         return view('iglesias.index_eliminados', compact('iglesias'));
     }
-    public function reactive(string $id)
+    public function reactive(string $id) //permission 'reactivar -iglesias',
     {
         try {
             DB::beginTransaction();
@@ -286,7 +232,7 @@ class IglesiaController extends Controller
         }
     }
     /**________________________________________ASIGNACIONES _______________________________________________*/
-     public function index_asignaciones()
+     public function index_asignaciones() // permission ver-asigancion iglesias
     {
         $iglesiasConDistrito = DB::select("
                                     SELECT xi.*, xd.id_distrito, xd.nombre AS nombre_distrito
@@ -303,7 +249,7 @@ class IglesiaController extends Controller
         return view('iglesias.asignaciones', compact('iglesiasConDistrito', 'iglesiasSinDistrito', 'distritos'));
     }
 
-    public function asignarDistrito(Request $request, $id)
+    public function asignarDistrito(Request $request, $id) //permisoin 'asignar-asignacion iglesias',
     {
         DB::beginTransaction();
         try {
@@ -327,7 +273,7 @@ class IglesiaController extends Controller
         }
     }
 
-    public function cambiarDistrito(Request $request, $id)
+    public function cambiarDistrito(Request $request, $id) //permisoin 'cambiar-asignacion iglesias',
     {
         DB::beginTransaction();
         try {
@@ -362,7 +308,7 @@ class IglesiaController extends Controller
         }
     }
 
-    public function liberar($id)
+    public function liberar($id) //permisoin 'liberar-asignacion iglesias',
     {
         DB::beginTransaction();
         try {

@@ -21,7 +21,7 @@ class BautisosController extends Controller
      * 
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() //PERMISO ver bautisos
     {   
         $año = now()->year;
 
@@ -47,27 +47,7 @@ class BautisosController extends Controller
         return view('bautisos.index', compact('distritos','año'));
     }
 
-    public function index_distrital()
-    {
-        $anioActual = now()->year;
-        $persona = Auth::user(); 
 
-        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
-        if (!$distrito) {
-            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
-        }
-        $id_distrito = $distrito->id_distrito; // todos los estudiantes del distrito Bolivar
-        $bautizos = Bautiso::join('iglesias as xi', 'bautisos.iglesia_id', '=', 'xi.id_iglesia')
-        ->select(
-            'bautisos.*',
-            'xi.nombre as nombre_iglesia'
-        )
-        ->where('xi.distrito_id', $id_distrito)
-        ->whereRaw('EXTRACT(YEAR FROM bautisos.fecha_bautizo) = ?', [$anioActual])
-        ->orderBy('bautisos.created_at', 'desc')
-        ->get();
-        return view('bautisos.index', compact('bautizos','anioActual'));
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -79,7 +59,7 @@ class BautisosController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(BautisoRequest $request)
+    public function store(BautisoRequest $request) //PERMISO Crear bautisos - paso 2
     {
         //dd($request);
         try {
@@ -125,7 +105,7 @@ class BautisosController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id) //PERMISO Crear bautisos - paso 1
     {
         $anioActual = now()->year;
 
@@ -156,7 +136,7 @@ class BautisosController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id) //PERMISO editar bautisos
     {
         $bautizo = Bautiso::find($id);
 
@@ -176,7 +156,7 @@ class BautisosController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateBautisoRequest $request, string $id)
+    public function update(UpdateBautisoRequest $request, string $id) //PERMISO editar bautisos paso 2
     {
         try {
             DB::beginTransaction();
@@ -200,7 +180,7 @@ class BautisosController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id) //FUNCIONA
+    public function destroy(string $id) //FUNCIONA //PERMISO eliminar bautisos
     {
         try {
             DB::beginTransaction();
@@ -232,7 +212,7 @@ class BautisosController extends Controller
         }
     }
 
-    public function dashboard_general()
+    public function dashboard_general() //PERMISO 'dashboard mbos bautisos'
     {
         $anio= now()->year;
         

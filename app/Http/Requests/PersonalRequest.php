@@ -37,6 +37,8 @@ class PersonalRequest extends FormRequest
             'calle'              => 'nullable|string|max:100',
             'nro'                => 'nullable|string|max:20',
             'fecha_ingreso'   => 'nullable|date|before_or_equal:today',
+            'rol'            => 'nullable|string|exists:roles,name',
+            'email'          => 'required|email|unique:personas,email',
         ];
     }
     public function messages()
@@ -76,6 +78,13 @@ class PersonalRequest extends FormRequest
 
             'fecha_ingreso.date'     => 'La fecha de ingreso debe ser una fecha válida.',
             'fecha_ingreso.before_or_equal' => 'La fecha de ingreso no puede ser futura.',
+
+            'rol.required' => 'Debe seleccionar un rol para el personal.',
+            'rol.exists'   => 'El rol seleccionado no es válido.',
+
+            'email.required'          => 'La correo electronico es obligatorio.',
+            'email.email'          => 'el correo debe ser un correo valido.',
+            'email.unique'          => 'el correo debe ser unico, hay otra persona registrada con su correo.',
         ];
     }
 }

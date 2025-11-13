@@ -11,25 +11,7 @@
 
 @section('content')
 
-@if (session('success'))
-    <script>
-        const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-        });
-        Toast.fire({
-        icon: "success",
-        title: "{{ session('success') }}"
-        });
-    </script>
-@endif
+<x-alerts />
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
@@ -64,6 +46,7 @@
                                     <thead>
                                         <tr>
                                             <th>Nombre Completo</th>
+                                            <th>Rol - Permiso</th>
                                             <th>ci</th>
                                             <th>celular</th>
                                             <th>edad</th>
@@ -76,6 +59,13 @@
                                         <tr>
                                             <td>
                                             {{$persona->id_persona}} &nbsp {{$persona->nombre}} &nbsp {{$persona->ape_paterno}} &nbsp  {{$persona->ape_materno }}
+                                            </td>
+                                            <td>
+                                                @if ($persona->roles->isNotEmpty())
+                                                    {{ $persona->roles->pluck('name')->join(', ') }}
+                                                @else
+                                                    <span class="text-muted">Sin rol</span>
+                                                @endif
                                             </td>
                                             <td>
                                                 {{$persona->ci}}

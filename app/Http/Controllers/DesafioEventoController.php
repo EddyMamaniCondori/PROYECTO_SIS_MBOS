@@ -14,14 +14,14 @@ class DesafioEventoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() //permision ver desafios eventos
     {
         $eventos = DesafioEvento::where('estado', true)
                     ->get();
         
         return view('desafio_eventos.index',['desafio_eventos'=>$eventos]);
     }
-    public function index_eliminado()
+    public function index_eliminado() //permision ver eliminados desafios eventos
     {
         $eventos = DesafioEvento::where('estado', false)
                     ->get();
@@ -29,7 +29,7 @@ class DesafioEventoController extends Controller
         return view('desafio_eventos.indexdelete',['desafio_eventos'=>$eventos]);
     }
 
-    public function index_asignaciones()
+    public function index_asignaciones()//permision 'ver asignaciones-desafios eventos'
     {
         $eventos = DesafioEvento::where('estado', true)
                     ->get();
@@ -38,7 +38,7 @@ class DesafioEventoController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create() //permision crear desafio eventos
     {
         return view('desafio_eventos.create');
     }
@@ -46,7 +46,7 @@ class DesafioEventoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(DesafioEventoRequest $request)
+    public function store(DesafioEventoRequest $request) //permision crear desafio eventos
     {
         try {
             DB::beginTransaction();
@@ -70,7 +70,7 @@ class DesafioEventoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id) //permision editar desafio eventos
     {
         try {
             $desafio = DesafioEvento::findOrFail($id);
@@ -83,7 +83,7 @@ class DesafioEventoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(DesafioEventoRequest $request, string $id)
+    public function update(DesafioEventoRequest $request, string $id)//permision editar desafio eventos
     {
         try {
             DB::beginTransaction();
@@ -102,7 +102,7 @@ class DesafioEventoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id)  //permision eliminar desafio eventos
     {
         try {
             DB::beginTransaction();
@@ -120,8 +120,9 @@ class DesafioEventoController extends Controller
         }
     }
 
+//entrando a un evento muestra los distritos que estan asignados a este evento
 
-    public function mostrar_asignaciones_evento($id)
+    public function mostrar_asignaciones_evento($id) //permision 'ver desafio - asignacion desafios eventos',
     {
         $desafio = DesafioEvento::findOrFail($id);
         // Consulta uniendo todas las tablas relacionadas
@@ -145,7 +146,8 @@ class DesafioEventoController extends Controller
         return view('desafio_eventos.mostrar_asignaciones', compact('asignaciones', 'desafio'));
     }
 
-    public function asignar_evento_distrito(string $id)
+        // asigna el evento seleecinado atodos lños distritos y los actualiza 
+    public function asignar_evento_distrito(string $id) //permision  'asignar evento a distrito - asignacion desafios eventos',
     {
         try {
             DB::beginTransaction();
@@ -214,7 +216,7 @@ class DesafioEventoController extends Controller
         }
     }
 
-    public function reactive(string $id)
+    public function reactive(string $id) //permision 'reactivar-desafios eventos',
     {
         try {
             DB::beginTransaction();
@@ -232,7 +234,7 @@ class DesafioEventoController extends Controller
         }
     }
 
-   public function update_asignacion_desafio(Request $request, string $id)
+   public function update_asignacion_desafio(Request $request, string $id) //permisoin 'actualizar desafios - asignacion desafios eventos', 
     {   
         //dd($request, $id);
         // Validar que el campo 'desafio' venga y sea entero

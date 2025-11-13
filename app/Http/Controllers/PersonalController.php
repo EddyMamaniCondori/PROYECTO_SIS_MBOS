@@ -5,16 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Persona; 
 use App\Models\Personal;
+use Spatie\Permission\Models\Role;
 use App\Http\Requests\PersonalRequest;
 use App\Http\Requests\UpdatePersonalRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Exception;
 class PersonalController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function indexdelete()
+    public function indexdelete() // permission ver elimnado -personal
     {
         $personales = Persona::join('personales as xp', 'personas.id_persona', '=', 'xp.id_personal')
                     ->where('personas.estado', false)
@@ -22,12 +24,12 @@ class PersonalController extends Controller
         
         return view('personales.indexeliminados',['personas'=>$personales]);
     }   
-
-    public function index()
+ 
+    public function index() // permission ver personal
     {
-        $personales = Persona::join('personales as xp', 'personas.id_persona', '=', 'xp.id_personal')
-                    ->where('personas.estado', true)
-                    ->get();
+        $personales = Persona::with(['personal', 'roles']) // incluye personal y roles
+            ->where('estado', true)
+            ->get();
         
         return view('personales.index',['personas'=>$personales]);
     }
@@ -36,32 +38,45 @@ class PersonalController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create() // permission crear personal
     {
-        return view('personales.create');
+        $roles = Role::all(); // obtenemos todos los roles existentes
+
+        return view('personales.create', compact('roles'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PersonalRequest $request)
+    public function store(PersonalRequest $request)// permission crear personal
     {
-        try {
+        //try {
             DB::beginTransaction();
-            $pers = Persona::create($request->validated()); // se crea el registro 
+
+        // se crea el registro 
+            $pers = Persona::create(array_merge(
+                $request->validated(),
+                ['password' => Hash::make($request->ci)]
+            ));
             $pers->personal()->create([
                 'id_personal'          => $pers->id_persona,  
                 'fecha_ingreso' => $request->filled('fecha_ingreso') ? $request->fecha_ingreso : null,
             ]);
+            // Asignar Rol (si se envió)
+            if ($request->filled('rol')) {
+                $pers->assignRole($request->rol);
+            }
             DB::commit();
-        } catch (Exception $e) {
+            return redirect()->route('personales.index')->with('success','Personal registrado Correctamente');
+        
+        /*} catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Error al crear al personal: ' . $e->getMessage()], 500);
-
-        }
-
-        return redirect()->route('personales.index')->with('success','Personal registrado Correctamente');
-
+            \Log::error('Error al crear personal: ' . $e->getMessage());
+        return redirect()
+            ->back()
+            ->withInput()
+            ->with('error', 'Error al registrar al personal.');
+        }*/
     }
 
     /**
@@ -75,25 +90,24 @@ class PersonalController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    
-    public function edit(string $id)
+     
+    public function edit(string $id) // permission editar personal
     {
-        $personal = DB::table('personas as xp')
-                ->join('personales as xps', 'xp.id_persona', '=', 'xps.id_personal')
-                ->where('xps.id_personal', $id)
-                ->select('xp.*', 'xps.*')
-                ->first();
-        return view('personales.edit', ['pastor' => $personal]);
+        $persona = Persona::with('personal', 'roles')->findOrFail($id);
+        $roles = Role::all();
+        //DD($persona);
+        return view('personales.edit', compact('persona', 'roles'));
     }
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePersonalRequest $request, $id)
+    public function update(UpdatePersonalRequest $request, $id) // permission editar personal
     {
         try {
             DB::beginTransaction();
             
             $personal = Personal::findOrFail($id);
+
             $persona = Persona::findOrFail($personal->id_personal);
             
             // Actualizar datos de la persona
@@ -104,6 +118,7 @@ class PersonalController extends Controller
                 'fecha_nac'    => $request->fecha_nac,
                 'ci'           => $request->ci,
                 'celular'      => $request->celular,
+                'email'         => $request->email,
                 'ciudad'       => $request->ciudad,
                 'zona'         => $request->zona,
                 'calle'        => $request->calle,
@@ -114,9 +129,26 @@ class PersonalController extends Controller
             $personal->update([
                 'fecha_ingreso'       => $request->fecha_ingreso
             ]);
-            
+
+            //$persona->syncRoles([$request->rol]);
+            //manejo de roles 
+            // 🔹 Manejo profesional de roles
+            $rolActual = $persona->getRoleNames()->first(); // Obtiene el nombre del rol actual (si tiene)
+            $nuevoRol = $request->rol; // Puede venir vacío o con un nuevo rol
+            // Si tenía rol y el nuevo es vacío → remover rol
+            if ($rolActual && !$nuevoRol) {
+                $persona->removeRole($rolActual);
+            }
+                // Si tenía rol y el nuevo es distinto → remover el anterior y asignar el nuevo
+                elseif ($rolActual && $nuevoRol && $rolActual !== $nuevoRol) {
+                    $persona->removeRole($rolActual);
+                    $persona->assignRole($nuevoRol);
+                }
+                    // Si no tenía rol y ahora se asignó uno nuevo → asignar
+                    elseif (!$rolActual && $nuevoRol) {
+                        $persona->assignRole($nuevoRol);
+                    }
             DB::commit();
-            
             return redirect()->route('personales.index')->with('success', 'Personal actualizado correctamente.');
             
         } catch (\Exception $e) {
@@ -128,26 +160,39 @@ class PersonalController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id) // permission eliminar personal
     {
         try {
             DB::beginTransaction();
-            $personal = Persona::findOrFail($id);
-            $personal->estado = false;
+            $personal = Personal::findOrFail($id);
+            // Buscar la persona asociada
+            $persona = Persona::findOrFail($personal->id_personal);
+            // 🔹 Desactivar persona
+            $persona->estado = false;
+            $persona->save();
+            // 🔹 Registrar fecha de finalización del personal
+            $personal->fecha_finalizacion = now()->toDateString();
             $personal->save();
-
-            $personale = Personal::findOrFail($id);
-            $personale ->fecha_finalizacion = now()->toDateString();
-            $personale->save();
+            // 🔹 Eliminar (remover) rol si tiene alguno
+            $rolActual = $persona->getRoleNames()->first(); // obtiene el nombre del rol actual
+            if ($rolActual) {
+                $persona->removeRole($rolActual);
+            }
             DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => 'Error al eliminar el Personal: ' . $e->getMessage()], 500);
-        }
-        return redirect()->route('personales.index')->with('success', 'Personal eliminado correctamente');
-    }
+            return redirect()
+                ->route('personales.index')
+                ->with('success', 'Personal eliminado y rol removido correctamente.');
 
-    public function reactive(string $id)
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error al eliminar personal: ' . $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', 'Error al eliminar el personal: ' . $e->getMessage());
+        }
+    }
+    public function reactive(string $id) // permission reactivar personal
     {
         try {
             DB::beginTransaction();

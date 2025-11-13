@@ -20,7 +20,7 @@ class AdministrativoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() //Permiso  ver administrativo
     {
         $administrativos = Persona::join('administrativos as xp', 'personas.id_persona', '=', 'xp.id_persona')
                     ->where('personas.estado', true)

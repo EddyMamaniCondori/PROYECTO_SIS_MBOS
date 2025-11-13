@@ -38,6 +38,15 @@ class UpdatePersonalRequest extends FormRequest
             'calle'              => 'nullable|string|max:100',
             'nro'                => 'nullable|string|max:20',
             'fecha_ingreso'   => 'nullable|date|before_or_equal:today',
+            'rol'            => 'nullable|string|exists:roles,name',
+            'email'          =>  [
+                                    'required',
+                                    'email',
+                                    Rule::unique('personas', 'email')->ignore($this->route('personale'), 'id_persona'),
+                                ],
+            'password' => $this->filled('password') || $this->filled('password_confirmation')
+            ? 'required_with:password_confirmation|string|min:8|confirmed'
+            : 'nullable',
         ];
     }
     public function messages()
@@ -78,6 +87,17 @@ class UpdatePersonalRequest extends FormRequest
             'fecha_ingreso.date'     => 'La fecha de ingreso debe ser una fecha válida.',
             'fecha_ingreso.before_or_equal' => 'La fecha de ingreso no puede ser futura.',
 
+            'rol.required' => 'Debe seleccionar un rol para el personal.',
+            'rol.exists'   => 'El rol seleccionado no es válido.',
+
+            'email.required'          => 'La correo electronico es obligatorio.',
+            'email.email'          => 'el correo debe ser un correo valido.',
+            'email.unique'          => 'el correo debe ser unico, hay otra persona registrada con su correo.',
+
+
+            'password.required_with' => 'Debe ingresar una contraseña si desea confirmar una.',
+            'password.min'           => 'La contraseña debe tener al menos :min caracteres.',
+            'password.confirmed'     => 'La confirmación de la contraseña no coincide.',
         ];
     }
 }

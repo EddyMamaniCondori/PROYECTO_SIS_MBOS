@@ -24,7 +24,7 @@ use App\Http\Controllers\DesafioAnualIglesiaController;
 use App\Http\Controllers\DesafioMensualController;
 use App\Http\Controllers\DesafioEventoController;
 use App\Http\Controllers\PanelController;
-
+use App\Http\Controllers\roleController;
 Route::get('/dashboard', function () {
     return view('dashboard');
 
@@ -38,279 +38,280 @@ Route::middleware('auth')->group(function () {
 
 // ===== TUS RUTAS ANTIGUAS (las reconstruimos juntos) =====
 Route::middleware(['auth'])->group(function () {
-Route::get('/', function () {
-    return view('welcome');
-});
+    Route::get('/', function () {
+        return view('welcome');
+    });
 
-Route::get('/template', function () {
-    return view('template');
-});
+    Route::get('/template', function () {
+        return view('template');
+    });
 
-Route::get('/panel', function () {
-    return view('panel/index');
-})->name('panel');
-
-/**
- *_________________DASHBOARDS PRINCIPAÑES
- * 
- */
-Route::get('/dashboard/pastor/', [PanelController::class, 'dashboard_pastores'])
-    ->name('dashboard.pastor');
-
-/**
- *_________________BANCOS
- * 
- */
-Route::get('/blancos/index/', [BlancoController::class, 'index'])
-    ->name('blancos.index');
-/**
- *_________________Bautisos
- * 
- */
-Route::get('/bautizos/dashboard/', [BautisosController::class, 'dashboard_general'])
-    ->name('bautizos.dashboard');
-
-/**
- *_________________PUNTUALIDADES
- * 
- */
-Route::get('/remesas/puntualidades/', [PuntualidadController::class, 'index'])
-    ->name('remesas.puntualidades');
-/**
- *_________________PENDIENTES
- * 
- */
-Route::get('remesas/pendientes', [PendientesController::class, 'index'])
-    ->name('remesas.pendientes');
-Route::post('/remesas/pendientes/anual/filtro', [PendientesController::class, 'filtro_anual'])->name('remesas.pendiente.anual.filtro');
-Route::get('remesas/pendientes/mensual', [PendientesController::class, 'index_mensual'])
-    ->name('remesas.pendientes.mensual');
-
-Route::get('remesas/pendientes/distrital', [PendientesController::class, 'index_distrital'])
-    ->name('remesas.pendientes.distrital');
-
-/**
- *_______________GRAFICOS DE REMESAS
- * 
- */
-
-Route::get('remesas/distrital/dashboard', [RemesasDashboardController::class, 'index'])
-    ->name('remesas.distrital.dashboard');
-
-Route::get('remesas/distrital/dash', [RemesasDashboardController::class, 'index_distrital'])
-    ->name('remesas.distrital.dash');
-/**
- *_______________DESAFIOS BAUTISOS POR DISTRITO
- * 
- */
-Route::get('desafios/bautizos/distrital/', [DesafioController::class, 'index_desafio_bautizos'])
-    ->name('desafios.bautizos');
-
-Route::put('/desafios/update_2/{id}', [DesafioController::class, 'update_2'])
-    ->name('desafios.update_2');
-/**
- *_______________DESAFIOS IGLESIAS ANUALES ESTUDIANTES Y INSTRUCTORES
- * 
- */
-
-Route::post('/desafios/{id}/completar-iglesias', [DesafioController::class, 'asignarAnualIglesiasFaltantes_botom'])
-    ->name('desafios.completar-faltantes');
-
-/**
- *_________________IMPORTACION Y EXPOTACION DE ARCHIVOS EXCEL 
- * 
- */
-Route::post('/remesas/importar', [RemesaExcelController::class, 'import'])->name('remesas.import');
-
-Route::get('/remesas/index_import/', [RemesaExcelController::class, 'index'])
-    ->name('remesas.indeximport');
-
-Route::delete('/remesas/importar/destroy/{id}', [RemesaExcelController::class, 'destroy'])->name('remesasimport.destroy');
-
-
-
-Route::get('/remesas/procesar/{anio}', [RemesaExcelController::class, 'procesarRemesas'])->name('remesas.procesar');
-
-/**
- * 
- */
-Route::get('/remesas/mes/{mes}/{anio}', [RemesaController::class, 'index_mes'])
-    ->name('remesas.index_mes');
-
-Route::POST('/remesas/filial/', [RemesaController::class, 'llenar_filial'])
-    ->name('remesas.filial');
-
-
-Route::POST('/remesas/filial/registrar/{id}', [RemesaController::class, 'registrar_remesa_filial'])
-    ->name('remesasfilial.registrar');
-
-Route::POST('/remesas/iglesia/registrar/{id_remesa}', [RemesaController::class, 'registrar_remesa_iglesia'])
-    ->name('remesasiglesia.registrar');
-
-
-
-// Ruta para procesar el formulario (POST)
-Route::post('remesas/crear', [RemesaController::class, 'crear'])->name('remesas.crear');
-
-
-/*ruta extra para Pastores*/ 
-Route::get('pastores/indexdelete', [PastorController::class, 'indexdelete'])
-    ->name('pastores.indexdelete');
-Route::post('pastores/reactive/{id}', [PastorController::class, 'reactive'])
-    ->name('pastores.reactive');
-/*ruta extra para Personales*/
-Route::post('personales/reactive/{id}', [PersonalController::class, 'reactive'])
-    ->name('personales.reactive');
-Route::get('personales/indexdelete', [PersonalController::class, 'indexdelete'])
-    ->name('personales.indexdelete');
-
-/*______________*/ 
-Route::get('bautisos/dashboard', [BautisosController::class, 'dashboard'])
-    ->name('bautiso.dashboard');
-
-
-/*ruta extra para Distritos*/ 
-Route::get('distritos/asignaciones', [DistritoController::class, 'index_asignaciones'])
-    ->name('distritos.asignaciones');
-
-Route::get('distritos/asiganual', [DistritoController::class, 'indexanual'])
-    ->name('distritos.asiganual');
-
-Route::get('distritos/historiales', [DistritoController::class, 'index_historial'])
-    ->name('distritos.historiales');
-
-Route::get('/distritos/historial/{id_distrito}', [DistritoController::class, 'historial'])
-    ->name('distritos.historial');
-
-Route::get('/distritos/copiar-diriges', [DistritoController::class, 'copiarADiriges'])
-    ->name('distritos.copiar.diriges');
-
-Route::get('/distritos/finalizar_asignaciones/{anio}', [DistritoController::class, 'Finalizar_Asignaciones'])
-    ->name('distritos.finalizar_asignaciones');
-
-Route::get('distritos/indexdelete', [DistritoController::class, 'index_eliminado'])
-    ->name('distritos.indexdelete');
-    
-Route::post('distritos/reactive/{id}', [DistritoController::class, 'reactive'])
-    ->name('distritos.reactive');
-
- /*ruta para signaciones */
-Route::get('/distritos/asignacion/mantener/{id_distrito}', [DistritoController::class, 'mantenerAsignacion'])->name('distritos.mantener');
-Route::get('/distritos/asignaciones/liberar/{id_distrito}', [DistritoController::class, 'liberarAsignacion'])->name('distritos.liberar');
-
-Route::get('/distritos/asignaciones/liberar_anual/{id_distrito}', [DistritoController::class, 'liberarAsignacionAnual'])->name('distritos.liberar_anual');
-Route::post('/distritos/asignar/cambiar/{id_distrito}', [DistritoController::class, 'cambiarAsignacion'])->name('distritos.cambiar');
-Route::post('/distritos/asignar/cambiaranual/{id_distrito}', [DistritoController::class, 'cambiarAsignacionAnual'])->name('distritos.cambiaranual');   
-
- /*ruta para visitas */
-Route::get('visitas/dashboard', [VisitasController::class, 'dashboard'])
-    ->name('visitas.dashboard');
-
-Route::get('visitas/index_mes', [VisitasController::class, 'index_mes'])
-    ->name('visitas.index_mes');
-
-Route::get('/visitas/llenar-mes/{id}', [VisitasController::class, 'index_llenar_visitas_mes'])
-    ->name('visitas.llenar_mes');
-
-Route::delete('/visitas/{id_mensual}/{id_visita}', [VisitasController::class, 'destroy'])
-    ->name('visitas.destroy');
-
-Route::get('/visitas/create/{id_mensual}', [VisitasController::class, 'create'])
-    ->name('visitas.create');
-
-Route::get('/visitas/{id_mensual}/{id_visita}/edit', [VisitasController::class, 'edit'])
-    ->name('visitas.edit');
-
- /*ruta para signaciones */
-
-Route::get('instructores/dashboard', [InstructoresController::class, 'index_desafios_inst'])
-    ->name('instructores.dashboard');
-
-
-Route::get('iglesias/dashboard_general', [IglesiaController::class, 'dashboard_general'])
-    ->name('iglesias.dashboard_general');
-Route::post('iglesias/reactive/{id}', [IglesiaController::class, 'reactive'])
-    ->name('iglesias.reactive');
-
-
-
-
-
-    /*ruta extra para iglesias*/ 
-Route::get('iglesias/indexdelete', [IglesiaController::class, 'index_eliminado'])
-    ->name('iglesias.indexdelete');
-Route::get('iglesias/asignaciones', [IglesiaController::class, 'index_asignaciones'])
-    ->name('iglesias.asignaciones');
-    
-Route::get('desafios/mesual', [DesafioController::class, 'index_mes'])
-    ->name('desafios.mes');
-
-Route::post('/desafios/mes/store', [DesafioController::class, 'storeMes'])->name('desafios.store_mes');
-
-Route::get('/desafios/mes/{mes}/{anio}', [DesafioController::class, 'show_mes'])
-    ->name('desafios.show_mes');
-
-//pruebas
-Route::post('/iglesias/{id}/asignar-distrito', [IglesiaController::class, 'asignarDistrito'])->name('iglesias.asignar');
-Route::post('/iglesias/{id}/cambiar-distrito', [IglesiaController::class, 'cambiarDistrito'])->name('iglesias.cambiar');
-Route::post('/iglesias/{id}/liberar', [IglesiaController::class, 'liberar'])->name('iglesias.liberar');
-
-
-
-
-
-/*RUTAS EXTRAS PARA EL PASTOR */
-Route::get('/pastor_perfil/{id_pastor}', [PastorController::class, 'perfil_pastor'])
-    ->name('pastor.perfil');
+    Route::get('/panel', function () {
+        return view('panel/index');
+    })->name('panel');
 
     /**
-     * _____________________DESAFIOS DE DISTRITO 
+     *_________________DASHBOARDS PRINCIPAÑES
+    * 
+    */
+    Route::get('/dashboard/pastor/', [PanelController::class, 'dashboard_pastores'])
+        ->name('dashboard.pastor');
+
+    /**
+     *_________________BANCOS
+    * 
+    */
+    Route::get('/blancos/index/', [BlancoController::class, 'index'])
+        ->name('blancos.index');
+    /**
+     *_________________Bautisos
+    * 
+    */
+    Route::get('/bautizos/dashboard/', [BautisosController::class, 'dashboard_general'])
+        ->name('bautizos.dashboard');
+
+    /**
+     *_________________PUNTUALIDADES
+    * 
+    */
+    Route::get('/remesas/puntualidades/', [PuntualidadController::class, 'index'])
+        ->name('remesas.puntualidades');
+    /**
+     *_________________PENDIENTES
+    * 
+    */
+    Route::get('remesas/pendientes', [PendientesController::class, 'index'])
+        ->name('remesas.pendientes');
+    Route::post('/remesas/pendientes/anual/filtro', [PendientesController::class, 'filtro_anual'])->name('remesas.pendiente.anual.filtro');
+    Route::get('remesas/pendientes/mensual', [PendientesController::class, 'index_mensual'])
+        ->name('remesas.pendientes.mensual');
+
+    Route::get('remesas/pendientes/distrital', [PendientesController::class, 'index_distrital'])
+        ->name('remesas.pendientes.distrital');
+
+    /**
+     *_______________GRAFICOS DE REMESAS
+    * 
+    */
+
+    Route::get('remesas/distrital/dashboard', [RemesasDashboardController::class, 'index'])
+        ->name('remesas.distrital.dashboard');
+
+    Route::get('remesas/distrital/dash', [RemesasDashboardController::class, 'index_distrital'])
+        ->name('remesas.distrital.dash');
+    /**
+     *_______________DESAFIOS BAUTISOS POR DISTRITO
+    * 
+    */
+    Route::get('desafios/bautizos/distrital/', [DesafioController::class, 'index_desafio_bautizos'])
+        ->name('desafios.bautizos');
+
+    Route::put('/desafios/update_2/{id}', [DesafioController::class, 'update_2'])
+        ->name('desafios.update_2');
+    /**
+     *_______________DESAFIOS IGLESIAS ANUALES ESTUDIANTES Y INSTRUCTORES
+    * 
+    */
+
+    Route::post('/desafios/{id}/completar-iglesias', [DesafioController::class, 'asignarAnualIglesiasFaltantes_botom'])
+        ->name('desafios.completar-faltantes');
+
+    /**
+     *_________________IMPORTACION Y EXPOTACION DE ARCHIVOS EXCEL 
+    * 
+    */
+    Route::post('/remesas/importar', [RemesaExcelController::class, 'import'])->name('remesas.import');
+
+    Route::get('/remesas/index_import/', [RemesaExcelController::class, 'index'])
+        ->name('remesas.indeximport');
+
+    Route::delete('/remesas/importar/destroy/{id}', [RemesaExcelController::class, 'destroy'])->name('remesasimport.destroy');
+
+
+
+    Route::get('/remesas/procesar/{anio}', [RemesaExcelController::class, 'procesarRemesas'])->name('remesas.procesar');
+
+    /**
      * 
      */
-Route::get('/desafios/{id}/distrital', [DesafioController::class, 'index_distrital'])
-    ->name('desafios.index_distrital');
+    Route::get('/remesas/mes/{mes}/{anio}', [RemesaController::class, 'index_mes'])
+        ->name('remesas.index_mes');
 
-Route::put('/mensuales_desafios/{id}', [DesafioMensualController::class, 'update_desafios'])
-    ->name('mensuales_desafios.update');
+    Route::POST('/remesas/filial/', [RemesaController::class, 'llenar_filial'])
+        ->name('remesas.filial');
 
-Route::get('desafio_eventos/indexdelete', [DesafioEventoController::class, 'index_eliminado'])
-    ->name('desafio_eventos.indexdelete');
 
-Route::post('desafio_eventos/reactive/{id}', [DesafioEventoController::class, 'reactive'])
-    ->name('desafio_eventos.reactive');
+    Route::POST('/remesas/filial/registrar/{id}', [RemesaController::class, 'registrar_remesa_filial'])
+        ->name('remesasfilial.registrar');
 
-Route::get('desafio_eventos/indexasignaciones', [DesafioEventoController::class, 'index_asignaciones'])
-    ->name('desafio_eventos.indexasignaciones');
+    Route::POST('/remesas/iglesia/registrar/{id_remesa}', [RemesaController::class, 'registrar_remesa_iglesia'])
+        ->name('remesasiglesia.registrar');
 
-Route::get('desafio_eventos/asignar/{id}/distritos', [DesafioEventoController::class, 'asignar_evento_distrito'])
-    ->name('desafio_eventos.asignar_distritos');
 
-Route::get('desafio_eventos/mostrar_asignaciones/{id}/', [DesafioEventoController::class, 'mostrar_asignaciones_evento'])
-    ->name('desafio_eventos.mostrar_asignaciones');
 
-Route::put('desafio_eventos/asignaciones/{id}', [DesafioEventoController::class, 'update_asignacion_desafio'])
-    ->name('desafio_eventos.update_asignacion_desafio');
-    
+    // Ruta para procesar el formulario (POST)
+    Route::post('remesas/crear', [RemesaController::class, 'crear'])->name('remesas.crear');
 
-Route::resource('pastores', PastorController::class);
-Route::resource('personales', PersonalController::class);
-Route::resource('administrativos', AdministrativoController::class);
 
-Route::resource('distritos', DistritoController::class);
-Route::resource('iglesias', IglesiaController::class);
-Route::resource('grupo', GrupoController::class);
-Route::resource('bautisos', BautisosController::class);
-Route::resource('visitas', VisitasController::class);
-Route::resource('estudiantes', EstudiantesController::class);
-Route::resource('instructores', InstructoresController::class);
-Route::resource('desafios', DesafioController::class);
-Route::resource('remesas', RemesaController::class);
-Route::resource('blancos', BlancoController::class);
-Route::resource('anual_iglesias', DesafioAnualIglesiaController::class);
-Route::resource('desafios_mensuales', DesafioMensualController::class);
+    /*ruta extra para Pastores*/ 
+    Route::get('pastores/indexdelete', [PastorController::class, 'indexdelete'])
+        ->name('pastores.indexdelete');
+    Route::post('pastores/reactive/{id}', [PastorController::class, 'reactive'])
+        ->name('pastores.reactive');
+    /*ruta extra para Personales*/
+    Route::post('personales/reactive/{id}', [PersonalController::class, 'reactive'])
+        ->name('personales.reactive');
+    Route::get('personales/indexdelete', [PersonalController::class, 'indexdelete'])
+        ->name('personales.indexdelete');
 
-Route::resource('desafio_eventos', DesafioEventoController::class);
+    /*______________*/ 
+    Route::get('bautisos/dashboard', [BautisosController::class, 'dashboard'])
+        ->name('bautiso.dashboard');
 
+
+    /*ruta extra para Distritos*/ 
+    Route::get('distritos/asignaciones', [DistritoController::class, 'index_asignaciones'])
+        ->name('distritos.asignaciones');
+
+    Route::get('distritos/asiganual', [DistritoController::class, 'indexanual'])
+        ->name('distritos.asiganual');
+
+    Route::get('distritos/historiales', [DistritoController::class, 'index_historial'])
+        ->name('distritos.historiales');
+
+    Route::get('/distritos/historial/{id_distrito}', [DistritoController::class, 'historial'])
+        ->name('distritos.historial');
+
+    Route::get('/distritos/copiar-diriges', [DistritoController::class, 'copiarADiriges'])
+        ->name('distritos.copiar.diriges');
+
+    Route::get('/distritos/finalizar_asignaciones/{anio}', [DistritoController::class, 'Finalizar_Asignaciones'])
+        ->name('distritos.finalizar_asignaciones');
+
+    Route::get('distritos/indexdelete', [DistritoController::class, 'index_eliminado'])
+        ->name('distritos.indexdelete');
+        
+    Route::post('distritos/reactive/{id}', [DistritoController::class, 'reactive'])
+        ->name('distritos.reactive');
+
+    /*ruta para signaciones */
+    Route::get('/distritos/asignacion/mantener/{id_distrito}', [DistritoController::class, 'mantenerAsignacion'])->name('distritos.mantener');
+    Route::get('/distritos/asignaciones/liberar/{id_distrito}', [DistritoController::class, 'liberarAsignacion'])->name('distritos.liberar');
+
+    Route::get('/distritos/asignaciones/liberar_anual/{id_distrito}', [DistritoController::class, 'liberarAsignacionAnual'])->name('distritos.liberar_anual');
+    Route::post('/distritos/asignar/cambiar/{id_distrito}', [DistritoController::class, 'cambiarAsignacion'])->name('distritos.cambiar');
+    Route::post('/distritos/asignar/cambiaranual/{id_distrito}', [DistritoController::class, 'cambiarAsignacionAnual'])->name('distritos.cambiaranual');   
+
+    /*ruta para visitas */
+    Route::get('visitas/dashboard', [VisitasController::class, 'dashboard'])
+        ->name('visitas.dashboard');
+
+    Route::get('visitas/index_mes', [VisitasController::class, 'index_mes'])
+        ->name('visitas.index_mes');
+
+    Route::get('/visitas/llenar-mes/{id}', [VisitasController::class, 'index_llenar_visitas_mes'])
+        ->name('visitas.llenar_mes');
+
+    Route::delete('/visitas/{id_mensual}/{id_visita}', [VisitasController::class, 'destroy'])
+        ->name('visitas.destroy');
+
+    Route::get('/visitas/create/{id_mensual}', [VisitasController::class, 'create'])
+        ->name('visitas.create');
+
+    Route::get('/visitas/{id_mensual}/{id_visita}/edit', [VisitasController::class, 'edit'])
+        ->name('visitas.edit');
+
+    /*ruta para signaciones */
+
+    Route::get('instructores/dashboard', [InstructoresController::class, 'index_desafios_inst'])
+        ->name('instructores.dashboard');
+
+
+    Route::get('iglesias/dashboard_general', [IglesiaController::class, 'dashboard_general'])
+        ->name('iglesias.dashboard_general');
+    Route::post('iglesias/reactive/{id}', [IglesiaController::class, 'reactive'])
+        ->name('iglesias.reactive');
+
+
+
+
+
+        /*ruta extra para iglesias*/ 
+    Route::get('iglesias/indexdelete', [IglesiaController::class, 'index_eliminado'])
+        ->name('iglesias.indexdelete');
+    Route::get('iglesias/asignaciones', [IglesiaController::class, 'index_asignaciones'])
+        ->name('iglesias.asignaciones');
+        
+    Route::get('desafios/mesual', [DesafioController::class, 'index_mes'])
+        ->name('desafios.mes');
+
+    Route::post('/desafios/mes/store', [DesafioController::class, 'storeMes'])->name('desafios.store_mes');
+
+    Route::get('/desafios/mes/{mes}/{anio}', [DesafioController::class, 'show_mes'])
+        ->name('desafios.show_mes');
+
+    //pruebas
+    Route::post('/iglesias/{id}/asignar-distrito', [IglesiaController::class, 'asignarDistrito'])->name('iglesias.asignar');
+    Route::post('/iglesias/{id}/cambiar-distrito', [IglesiaController::class, 'cambiarDistrito'])->name('iglesias.cambiar');
+    Route::post('/iglesias/{id}/liberar', [IglesiaController::class, 'liberar'])->name('iglesias.liberar');
+
+
+
+
+
+    /*RUTAS EXTRAS PARA EL PASTOR */
+    Route::get('/pastor_perfil/{id_pastor}', [PastorController::class, 'perfil_pastor'])
+        ->name('pastor.perfil');
+
+        /**
+         * _____________________DESAFIOS DE DISTRITO 
+         * 
+         */
+    Route::get('/desafios/{id}/distrital', [DesafioController::class, 'index_distrital'])
+        ->name('desafios.index_distrital');
+
+    Route::put('/mensuales_desafios/{id}', [DesafioMensualController::class, 'update_desafios'])
+        ->name('mensuales_desafios.update');
+
+    Route::get('desafio_eventos/indexdelete', [DesafioEventoController::class, 'index_eliminado'])
+        ->name('desafio_eventos.indexdelete');
+
+    Route::post('desafio_eventos/reactive/{id}', [DesafioEventoController::class, 'reactive'])
+        ->name('desafio_eventos.reactive');
+
+    Route::get('desafio_eventos/indexasignaciones', [DesafioEventoController::class, 'index_asignaciones'])
+        ->name('desafio_eventos.indexasignaciones');
+
+    Route::get('desafio_eventos/asignar/{id}/distritos', [DesafioEventoController::class, 'asignar_evento_distrito'])
+        ->name('desafio_eventos.asignar_distritos');
+
+    Route::get('desafio_eventos/mostrar_asignaciones/{id}/', [DesafioEventoController::class, 'mostrar_asignaciones_evento'])
+        ->name('desafio_eventos.mostrar_asignaciones');
+
+    Route::put('desafio_eventos/asignaciones/{id}', [DesafioEventoController::class, 'update_asignacion_desafio'])
+        ->name('desafio_eventos.update_asignacion_desafio');
+        
+
+    Route::resource('pastores', PastorController::class);
+    Route::resource('personales', PersonalController::class);
+    Route::resource('administrativos', AdministrativoController::class);
+
+    Route::resource('distritos', DistritoController::class);
+    Route::resource('iglesias', IglesiaController::class);
+    Route::resource('grupo', GrupoController::class);
+    Route::resource('bautisos', BautisosController::class);
+    Route::resource('visitas', VisitasController::class);
+    Route::resource('estudiantes', EstudiantesController::class);
+    Route::resource('instructores', InstructoresController::class);
+    Route::resource('desafios', DesafioController::class);
+    Route::resource('remesas', RemesaController::class);
+    Route::resource('blancos', BlancoController::class);
+    Route::resource('anual_iglesias', DesafioAnualIglesiaController::class);
+    Route::resource('desafios_mensuales', DesafioMensualController::class);
+
+    Route::resource('desafio_eventos', DesafioEventoController::class);
+
+    Route::resource('roles', roleController::class);
 
 });
 require __DIR__.'/auth.php';

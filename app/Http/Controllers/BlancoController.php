@@ -15,9 +15,9 @@ use App\Http\Requests\DistritoRequest;
 class BlancoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * MUESTRA TODOS LOS DISTRITOS Y SUS BLANCO DE REMESAS
      */
-    public function index() 
+    public function index()  //PERMISO ver blanco y crear al mismo tiempo
     {
         $anioActual = now()->year;
 
@@ -109,7 +109,7 @@ class BlancoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-   public function update(Request $request, $id)
+   public function update(Request $request, $id)  //PERMISO editar blanco
     {
         $request->validate([
             'monto' => 'required|numeric|min:0',

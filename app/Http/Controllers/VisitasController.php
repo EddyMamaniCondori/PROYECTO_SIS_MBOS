@@ -20,7 +20,7 @@ class VisitasController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index() //PUEDES VER TODAS TUS VISITAS DE ESE
+    public function index() //PUEDES VER TODAS TUS VISITAS DE ESE // permission 'ver anual - visitas'
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
 
@@ -47,7 +47,7 @@ class VisitasController extends Controller
         return view('visitas.index', compact('visitas', 'anioActual'));
     }
 
-    public function index_mes() //obtenemos los meses desafiados al distrito 11
+    public function index_mes() //obtenemos los meses desafiados al distrito 11 //permision 'ver meses - visitas',
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
         $persona = Auth::user(); 
@@ -101,7 +101,7 @@ class VisitasController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create( $id_mensual)
+    public function create( $id_mensual) //permision 'crear - visitas',
     {
        $persona = Auth::user(); 
 
@@ -127,7 +127,7 @@ class VisitasController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(VisitaRequest $request)
+    public function store(VisitaRequest $request) //permision 'crear - visitas',
     {
         try {
             //dd($request->validated());
@@ -161,7 +161,7 @@ class VisitasController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id_mensual, $id_visita)
+    public function edit($id_mensual, $id_visita)//permision 'editar - visitas',
     {
         $persona = Auth::user(); 
 
@@ -189,7 +189,7 @@ class VisitasController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateVisitasRequest $request, string $id)
+    public function update(UpdateVisitasRequest $request, string $id)//permision 'editar - visitas',
     {
         try {
             DB::beginTransaction();
@@ -207,8 +207,8 @@ class VisitasController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id_mensual, $id_visita)
-    {
+    public function destroy($id_mensual, $id_visita)//permision 'elimnar- visitas',
+    { 
         //dd($id_mensual, $id_visita);
         try {
             DB::beginTransaction();
@@ -234,7 +234,7 @@ class VisitasController extends Controller
         }
     }
 
-    public function dashboard()
+    public function dashboard() //permision 'editar - visitas',
     {
         $anioActual = now()->year;
         $persona = Auth::user(); 
@@ -300,15 +300,16 @@ class VisitasController extends Controller
 
 
 
-    public function index_asignacion_desafios()
+    /*public function index_asignacion_desafios()
     {
-        $anioActual = now()->year; //muestro los estudiantes del año actual
+        $anioActual = now()->year; 
         $persona = Auth::user(); 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+
         if (!$distrito) {
             return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
         }
-        $id_distrito = $distrito->id_distrito; // todos los estudiantes del distrito Bolivar
+        $id_distrito = $distrito->id_distrito; 
 
         $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
                 ->select(
@@ -320,6 +321,6 @@ class VisitasController extends Controller
                 ->where('xi.distrito_id', $id_distrito) // solo distrito 11
                 ->get();
         return view('visitas.index', compact('visitas', 'anioActual'));
-    }
+    }*/
 
 }

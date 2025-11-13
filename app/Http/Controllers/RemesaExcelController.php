@@ -16,13 +16,13 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 class RemesaExcelController extends Controller
 {
-    public function index() //VERIFICADO
+    public function index() //VERIFICADO //permission  'ver - remesas excel',
     {
         $remesas = RemesaExcel::all();  // Trae todos los registros de la tabla asociada a RemesaImport
         return view('remesas.import_remsa', compact('remesas')); // Pasa esos datos a la vista
     }
 
-    public function import(Request $request)
+    public function import(Request $request) //permission  'importar - remesas excel',
     {
         //dd('si llego para exportar');
         $request->validate([
@@ -34,7 +34,7 @@ class RemesaExcelController extends Controller
         return redirect()->back()->with('success', 'Archivo Excel importado correctamente.');
     }
 
-    public function destroy(string $id)
+    public function destroy(string $id) //permission  'elimar - remesas excel',
     {
         DB::beginTransaction();
         try {
@@ -52,7 +52,7 @@ class RemesaExcelController extends Controller
     }
 
 
-    public function procesarRemesas($anio)
+    public function procesarRemesas($anio) // permissions 'guardar - remesas excel',
     {
         //dd('llego hasta qui', $anio);
         $meses = [

@@ -15,23 +15,24 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        //User::factory()->create([
+            //'name' => 'Test User',
+            //'email' => 'test@example.com',
+        //]);
         //llamamos al seeder de persona
 
         $this->call([
-            PersonaSeeder::class,
-            PastorSeeder::class,
-            AdministrativoSeeder::class,
-            GrupoSeeder::class,
-            DistritoSeeder::class,
-            IglesiaSeeder::class,
-            DirigeSeeder::class,
-            RemesaSeeder::class,
-            GastosSeeder::class,
-            GeneraSeeder::class,
+            //PersonaSeeder::class,
+            //PastorSeeder::class,
+            //AdministrativoSeeder::class,
+            //GrupoSeeder::class,
+            //DistritoSeeder::class,
+            //IglesiaSeeder::class,
+            //DirigeSeeder::class,
+            //RemesaSeeder::class,
+            //GastosSeeder::class,
+            //GeneraSeeder::class,
+            RolePermissionSeeder::class,
         ]); 
     }
 }

@@ -6,7 +6,7 @@
 @push('css')
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endpush
-
+<x-alerts />
 @section('content')
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
@@ -63,6 +63,8 @@
                         <!--fecha-->
                         <div class="col-md-4">
                             <label for="fecha_nac" class="form-label">Fecha nacimiento: <span class="text-danger">*</span></label>
+
+                            
                             <input type="date" name="fecha_nac" id="fecha_nac" class="form-control" value="{{@old('fecha_nac')}}"> <!--name= debe tener mismo valor de la base de datos-->
                             @error('fecha_nac')
                                 <small class="text-danger">{{$message}}</small>
@@ -82,6 +84,13 @@
                             <input type="text" name="celular" id="celular" class="form-control" value="{{@old('celular')}}"> <!--name= debe tener mismo valor de la base de datos-->
                             @error('celular')
                                 <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label for="email" class="form-label">Correo electrónico: <span class="text-danger">*</span></label>
+                            <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required>
+                            @error('email')
+                                <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
                     
@@ -118,6 +127,8 @@
                         <h5 class="mb-0"><strong>Datos Del Personal</strong></h5>
                         <hr>
                         <!--domicilio-->
+
+
                         <div class="col-md-6">
                             <label for="fecha_ingreso" class="form-label">Fecha de Ingreso:</label>
                             <input type="date" name="fecha_ingreso" id="fecha_ingreso" class="form-control" value="{{@old('fecha_ingreso')}}"> <!--name= debe tener mismo valor de la base de datos-->
@@ -125,6 +136,21 @@
                                 <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
+                        <div class="col-md-6">
+                            <label for="rol" class="form-label">Asignar Rol:</label>
+                            <select name="rol" id="rol" class="form-select">
+                                <option value="">-- Seleccione un rol --</option>
+                                @foreach($roles as $rol)
+                                    <option value="{{ $rol->name }}" {{ old('rol') == $rol->name ? 'selected' : '' }}>
+                                        {{ $rol->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('rol')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
                         <div>
                             <a href="{{route('personales.index')}}"><button type="button" class="btn btn-secondary"> Cancelar </button></a>
                             <button type="submit" class="btn btn-primary"> Guardar </button>

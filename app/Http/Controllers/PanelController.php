@@ -10,7 +10,7 @@ use App\Models\Mensual;
 use Illuminate\Support\Facades\DB;
 class PanelController extends Controller
 {
-    public function dashboard_pastores()
+    public function dashboard_pastores() //permision 'ver dashboard pastores - panel',
     {
         $anio = now()->year;
         $persona = Auth::user(); 

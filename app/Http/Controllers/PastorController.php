@@ -3,31 +3,27 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-
-
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Models\Persona; 
 use App\Models\Pastor;
-
 
 use App\Http\Requests\PastorRequest;
 use App\Http\Requests\UpdatePastorRequest;
 
 class PastorController extends Controller
 {
-    public function indexdelete()
+    public function indexdelete() //permission ver eliminados - pastores
     {
         $pastores = Persona::join('pastors as xp', 'personas.id_persona', '=', 'xp.id_pastor')
                     ->where('personas.estado', false)
                     ->get();
-        //dd($pastores);
-        
         return view('pastores.indexeliminados',['personas'=>$pastores]);
     }
 
-    public function index()
+    public function index() //permission ver  - pastores
     {
         /*$pastores = Persona::join('pastors as xp', 'personas.id_persona', '=', 'xp.id_pastor')
                     ->where('personas.estado', true)
@@ -46,30 +42,24 @@ class PastorController extends Controller
     }
 
 
-    public function indexEliminados()
-    {
-        $pacientes = Persona::join('pacientes as xp', 'personas.id', '=', 'xp.id')
-                    ->where('personas.estado', 0)
-                    ->get();
-        return view('paciente.indexEliminados',['personas'=>$pacientes]);
-    }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create() //VERIFICADO
-    {
+    public function create() //VERIFICADO //permission crear  - pastores
+    { 
         return view('pastores.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PastorRequest $request) //VERIFICADO
+    public function store(PastorRequest $request) //VERIFICADO //permission crear  - pastores
     {
         try {
             DB::beginTransaction();
-            $pers = Persona::create($request->validated()); // se crea el registro 
+            $pers = Persona::create($request->validated()); // se crea el registro
+             
             $pers->pastor()->create([
                 'id_pastor'          => $pers->id_persona,  
                 'fecha_ordenacion'   => $request->filled('fecha_ordenacion') ? $request->fecha_ordenacion : null,
@@ -79,14 +69,7 @@ class PastorController extends Controller
                 'contratado'         => $request->filled('fecha_contratacion'), // true si hay fecha, false si no
                 'nro_distritos'      => 0,
             ]);
-
-
-            /*$pers ->user()->create([
-                'id'=>$pers->id,
-                'name'=>$pers->nombre,
-                'email'=> $request->email,
-                'password'=>Hash::make($request->password), // Encripta la contraseña
-            ]);*/
+            $pers->assignRole('Pastor');
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -107,8 +90,8 @@ class PastorController extends Controller
 
     /**
      * Show the form for editing the specified resource.
-     */
-    public function edit(string $pastore) //verificado
+     */ 
+    public function edit(string $pastore) //verificado //permission editar  - pastores
     {
         //dd($pastore);
         $pastor = DB::table('personas as xp')
@@ -123,7 +106,7 @@ class PastorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePastorRequest $request, $id) //verificado
+    public function update(UpdatePastorRequest $request, $id) //verificado //permission editar  - pastores
     {
         try {
             $pastor = Pastor::findOrFail($id);
@@ -153,7 +136,7 @@ class PastorController extends Controller
     
     }
 
-    public function destroy(string $id) //VERIFICADO
+    public function destroy(string $id) //permission eliminar  - pastores
     {
         try {
             DB::beginTransaction();
@@ -168,7 +151,7 @@ class PastorController extends Controller
         return redirect()->route('pastores.index')->with('success','Pastor Eliminado Correctamente');
     }
 
-    public function reactive(string $id) //VERIFICADO
+    public function reactive(string $id) //VERIFICADO //permission reactivar  - pastores
     {
         try {
             DB::beginTransaction();
@@ -185,7 +168,7 @@ class PastorController extends Controller
 
     
 
-    public function perfil_pastor($id_pastor) //VERIFICADO
+    public function perfil_pastor($id_pastor) //EN DESAROLLO //permission ver perfil  - pastores
     {
         DB::beginTransaction();
         $pastor = DB::table('pastors as xp')

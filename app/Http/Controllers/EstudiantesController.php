@@ -17,9 +17,25 @@ use App\Models\Distrito;
 class EstudiantesController extends Controller
 {
     /**
+    *     'ver-estudiantes',
+    *     'ver avance-estudiantes',
+    *     'crear-estudiantes',
+    *     'editar-estudiantes',
+    *     'eliminar-estudiantes',
+
      * Display a listing of the resource. //TODO HECHO YA PARA LE DISTRITO 11
      */
-    public function index()
+    function __construct()
+    {
+        $this->middleware('permission:ver-estudiantes|ver avance-estudiantes|crear-estudiantes|editar-estudiantes|eliminar-estudiantes', ['only'=>['index']]);
+        $this->middleware('permission:ver avance-estudiantes', ['only'=>['index_desafios_inst']]);
+        $this->middleware('permission:crear-estudiantes', ['only'=>['create', 'store']]);
+        $this->middleware('permission:editar-estudiantes', ['only'=>['edit', 'update']]);
+        $this->middleware('permission:eliminar-estudiantes', ['only'=>['destroy']]);
+    }
+
+
+    public function index() // permision ver estudaintes
     {
         // 1️⃣ Definir el año actual y el distrito
         $anioActual = now()->year;
@@ -61,7 +77,7 @@ class EstudiantesController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create() // permision crear estudaintes
     {
         // Definimos el distrito actual
         $persona = Auth::user(); 
@@ -85,7 +101,7 @@ class EstudiantesController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(EstudianteRequest $request)
+    public function store(EstudianteRequest $request) // permision crear estudaintes
     {
         try {
             DB::beginTransaction();
@@ -146,7 +162,7 @@ class EstudiantesController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $id) // permision editar estudaintes
     {
         $persona = Auth::user(); 
 
@@ -167,7 +183,7 @@ class EstudiantesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEstudianteRequest $request, string $id)
+    public function update(UpdateEstudianteRequest $request, string $id) // permision editar estudaintes
     {
         try {
             DB::beginTransaction();
@@ -219,7 +235,8 @@ class EstudiantesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id) // permision eliminar estudaintes
+
     {
         try {
             DB::beginTransaction();
@@ -270,4 +287,89 @@ class EstudiantesController extends Controller
                 ->with('error', 'Error al Eliminar al Estudiante: ' . $e->getMessage());
         }
     }
+
+    public function index_desafios_inst() //PERMISION 'ver avance-estudiantes',
+    {
+        $anioActual = now()->year;
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
+        $id_distrito = $distrito->id_distrito;
+
+        $anioDistritos = DB::table('distritos')
+            ->where('estado', true)
+            ->value('año');
+
+        if (!$anioDistritos) {
+            return view('desafio.index', [
+                'desafios' => collect([]),
+                'anioActual' => $anioActual,
+                'mensaje' => 'No hay distritos activos en el sistema.'
+            ]);
+        }
+
+        $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
+
+        $desafios = DB::table('desafios as xd')
+            ->join('anual_iglesias as xai', 'xd.id_desafio', '=', 'xai.id_desafio')
+            ->join('iglesias as xi', 'xai.id_iglesia', '=', 'xi.id_iglesia')
+            ->where('xd.id_distrito', $id_distrito)
+            ->where('xd.anio', $anio)
+            ->select(
+                'xai.id_iglesia',
+                'xi.codigo',
+                'xi.nombre as nombre_iglesia',
+                'xai.desafio_estudiantes',
+                'xai.estudiantes_alcanzados',
+                'xai.desafio_instructores',
+                'xai.instructores_alcanzados'
+            )
+            ->get();
+
+        // Procesar los datos para el gráfico (ya listos) NUMEROS
+        $graficos = $desafios->map(function ($d) {
+            return [
+                'id_iglesia' => $d->id_iglesia,
+                'estudiantes' => [
+                    'desafio' => (int)$d->desafio_estudiantes,
+                    'alcanzado' => (int)$d->estudiantes_alcanzados,
+                    'diferencia' => (int)$d->desafio_estudiantes - (int)$d->estudiantes_alcanzados,
+                ],
+                'instructores' => [
+                    'desafio' => (int)$d->desafio_instructores,
+                    'alcanzado' => (int)$d->instructores_alcanzados,
+                    'diferencia' => (int)$d->desafio_instructores - (int)$d->instructores_alcanzados,
+                ]
+            ];
+        });
+        /*$graficos = $desafios->map(function ($d) { //EN PORCENTAJES
+            // Evitar división entre 0
+            $desafioEst = max((int)$d->desafio_estudiantes, 1);
+            $desafioInst = max((int)$d->desafio_instructores, 1);
+
+            // Cálculo de porcentajes (base 100%)
+            $porcEstAlcanzado = ((int)$d->estudiantes_alcanzados / $desafioEst) * 100;
+            $porcInstAlcanzado = ((int)$d->instructores_alcanzados / $desafioInst) * 100;
+
+            return [
+                'id_iglesia' => $d->id_iglesia,
+                'estudiantes' => [
+                    'desafio' => 100, // Siempre 100%
+                    'alcanzado' => round($porcEstAlcanzado, 2),
+                    'diferencia' => round(100 - $porcEstAlcanzado, 2),
+                ],
+                'instructores' => [
+                    'desafio' => 100, // Siempre 100%
+                    'alcanzado' => round($porcInstAlcanzado, 2),
+                    'diferencia' => round(100 - $porcInstAlcanzado, 2),
+                ]
+            ];
+        });*/
+
+        return view('instructores.dashboard', compact('desafios', 'anio', 'graficos'));
+    }
+
 }

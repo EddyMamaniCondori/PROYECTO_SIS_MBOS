@@ -13,7 +13,7 @@ class GrupoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index()// permision ver-grupos
     {
        $grupos = Grupo::leftJoin('administrativos as xa', 'grupos.administrativo_id', '=', 'xa.id_persona')
                 ->leftJoin('personas as xp', 'xa.id_persona', '=', 'xp.id_persona')
@@ -31,7 +31,7 @@ class GrupoController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create()// permision crear-grupos1
     {
         $administrativos = DB::table('personas as p')
             ->join('administrativos as a', 'p.id_persona', '=', 'a.id_persona')
@@ -46,7 +46,7 @@ class GrupoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request) // permision crear-grupos2
     {
         // ✅ 1. Validar datos
         $validator = Validator::make($request->all(), [
@@ -88,7 +88,7 @@ class GrupoController extends Controller
     /**
  * Show the form for editing the specified resource.
  */
-    public function edit(string $id)
+    public function edit(string $id) // permision editar-grupos1
     {
         $grupo = DB::table('grupos as g')
             ->where('g.id_grupo', $id)
@@ -113,7 +113,7 @@ class GrupoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id) // permision editar-grupos2
     {
         $request->validate([
             'nombre' => 'required|string|max:100',
@@ -144,7 +144,7 @@ class GrupoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id) // permision eliminar-grupos1
     {
         try {
             DB::beginTransaction();

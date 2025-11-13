@@ -7,9 +7,8 @@ use Illuminate\Support\Facades\DB;
 
 class RemesasDashboardController extends Controller
 {
-    public function index(){
-        //DD('ENTREO AQUI WIIIII');
-
+    public function index(){ 
+        
         $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
         $result =DB::select("
@@ -155,14 +154,6 @@ class RemesasDashboardController extends Controller
         //dd($dataDistritos);
         return view('remesas_dasboards.dashboard_distrital', compact('meses', 'dataDistritos'));
     }
-
-
-
-
-
-
-
-
 
      public function dashboard()
     {

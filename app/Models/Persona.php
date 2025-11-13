@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Spatie\Permission\Traits\HasRoles;
 use App\Models\Pastor;
 
 use App\Models\Persona; 
 
 class Persona extends Authenticatable
 {
-     use HasFactory;
+     use HasFactory, Notifiable, HasRoles; 
 
     protected $table = 'personas';
     protected $primaryKey = 'id_persona';

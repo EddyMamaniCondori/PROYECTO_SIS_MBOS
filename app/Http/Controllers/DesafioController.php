@@ -18,8 +18,8 @@ class DesafioController extends Controller
     /**
      * Display a listing of the resource.
      */
-
-    public function index_distrital(string $id) //MUESTRA TODOS LOS DESAFIOS ASIGNADOS A 1 DISTRITO ESPECIOFICO
+    //MUESTRA TODOS LOS DESAFIOS ASIGNADOS A 1 DISTRITO ESPECIOFICO 
+    public function index_distrital(string $id) // permission  'ver desafios distrital anuales'
     {
         $desafio = Desafio::find($id); // mejor usar findOrFail
         //dd($desafio); //bien
@@ -48,8 +48,6 @@ class DesafioController extends Controller
             )
             ->get();
         return view('desafio.desafio_distrital', compact('distrito','desafio', 'visitas', 'desafio_iglesias'));
-
-
     }
 
 
@@ -139,7 +137,9 @@ class DesafioController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update_2(Request $request, string $id)
+
+    //actualiza el desafio bautizos desde la todos los desafios de los distritos
+    public function update_2(Request $request, string $id) // permision 'editar desafio bautisos anuales'
     {
         try {
             // Validar los datos primero
@@ -171,8 +171,8 @@ class DesafioController extends Controller
                 ->with('error', 'Error al actualizar el Desafío de Bautizos: ' . $e->getMessage());
         }
     }
-
-    public function update(Request $request, string $id)
+    //actualiza el desafio bautizos desde una tabla con solo desafios
+    public function update(Request $request, string $id) // permision 'editar desafio bautisos anuales'
     {
         try {
             // Validar los datos primero
@@ -213,8 +213,8 @@ class DesafioController extends Controller
         //
     }
 
-    
-    public function index_desafio_bautizos() //muestra todos desafios y sus alcanzados en bautisos
+    //muestra todos desafios y sus alcanzados en bautisos de todos los distrito es MBOS
+    public function index_desafio_bautizos()  //permission 'ver desafios bautisos mbos anuales',
     {
         try {
             $anioActual = now()->year; //sacamos el año actual
@@ -248,7 +248,7 @@ class DesafioController extends Controller
                         )
                         ->get();
                 
-                return view('desafio.index_bautizo', compact('desafios', 'anioDistritos'));
+                return view('bautisos.index_bautizo', compact('desafios', 'anioDistritos'));
             }
             // Obtener todos los desafíos del año actual
             $desafios = Desafio::leftjoin('distritos as xd', 'desafios.id_distrito', '=', 'xd.id_distrito')
@@ -263,7 +263,7 @@ class DesafioController extends Controller
                         'xp.ape_materno as ape_materno_p'
                     )
                     ->get();
-            return view('desafio.index_bautizo', compact('desafios', 'anioActual'));
+            return view('bautisos.index_bautizo', compact('desafios', 'anioActual'));
             
         } catch (\Exception $e) {
             \Log::error('Error en index_bautisos de DesafioController: ' . $e->getMessage());
@@ -278,8 +278,8 @@ class DesafioController extends Controller
      * __________________________________________________________________________________________________________
      * 
      */
-    
-    public function index()  // ES EL ACTUALIZADOR Y CREAD0R DE SAFIOS PARA TODOS 
+     // ES EL ACTUALIZADOR Y CREAD0R DE SAFIOS PARA TODOS 
+    public function index()  //ver desafios
     {
         try {
             $anioActual = now()->year; //sacamos el año actual

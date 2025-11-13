@@ -19,7 +19,7 @@ class DesafioMensualController extends Controller
      * Display a listing of the resource.
      */
    
-     public function index() 
+     public function index()  //permision 'ver - desafios mensuales',
     {
         try {
             $anioActual = now()->year;
@@ -78,15 +78,15 @@ class DesafioMensualController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create() 
     {
         //
     }
 
     /**
      * Store a newly created resource in storage.
-     */
-    public function store(DesafioMensualRequest $request) ///CREA UN MES DESAFIO PARA TODOS LOS DESAFIOS
+     */ ///CREA UN MES DESAFIO PARA TODOS LOS DESAFIOS
+    public function store(DesafioMensualRequest $request)//permision 'crear - desafios mensuales',
     {
         try {
             // Los datos ya vienen validados
@@ -151,7 +151,7 @@ class DesafioMensualController extends Controller
      * Update the specified resource in storage.
      */
 
-    public function update(DesafioMensualRequest $request, string $id)
+    public function update(DesafioMensualRequest $request, string $id) //permision 'editar fechas - desafios mensuales',
     {
         try {
             // Los datos ya vienen validados
@@ -187,7 +187,7 @@ class DesafioMensualController extends Controller
     }
 
 
-    public function update_desafios(Request $request, $id)
+    public function update_desafios(Request $request, $id) //permission  'editar desafios - desafios mensuales',
     {
         //dd($request, $id);
         try {

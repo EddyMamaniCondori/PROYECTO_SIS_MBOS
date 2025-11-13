@@ -215,7 +215,4 @@ class PendientesController extends Controller
         return view('pendientes.vista_distrital', compact('datos')); 
     }
 
-
-
-
 }
