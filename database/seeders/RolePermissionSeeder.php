@@ -31,19 +31,30 @@ class RolePermissionSeeder extends Seeder
             'crear-bautisos',
             'editar-bautisos',
             'eliminar-bautisos',
-            'dashboard-mbos bautisos',
-
-            // 🔹 Blanco
+            // 🔹 Bautisos para para pastores distritales
+            'ver pastor-bautisos distrito',
+            'ver dashboard pastor-bautisos distrito',
+            // 🔹 Blanco //blanco de remesas
             'ver-blanco',
             'editar-blanco',
 
             // 🔹 Desafío
             'ver-desafios',
             'ver-desafios distrital anuales',
-            'ver-desafios bautisos mbos anuales',
-            'editar-desafio bautisos anuales',
 
-             // 🔹 Desafío Anual
+            // (DESAFIO) desafio bautisos
+            'ver-desafios bautisos mbos anuales',//bautisos general mbos
+            'editar-desafio bautisos anuales', //
+            'dashboard-mbos bautisos', //esta en BautisosController
+
+            //(DESAFIO) desafio de estudiantes y instructors
+            'ver mbos-desafios anual Est Inst',//esta en InstructorController
+            'editar mbos-desafios anual Est Inst',//esta en InstructorController
+            'ver estudiantes de distritos-desafios anual Est Inst',//esta en InstructorController
+            'ver instructores de distritos-desafios anual Est Inst',//esta en InstructorController
+            'ver detalle de iglesias de distritos-desafios anual Est Inst',//esta en InstructorController
+             
+            // 🔹 Desafío Anual
             'editar-desafios anual Est Inst',
             'eliminar-desafios anual Est Inst',
 
@@ -60,12 +71,20 @@ class RolePermissionSeeder extends Seeder
             'ver desafio-asignacion desafios eventos',
             'asignar evento a distrito-asignacion desafios eventos',
             'actualizar desafios-asignacion desafios eventos',
-
+            // (sub tabla) graficas  Desafío Evento 
+            'ver-dashboards desafios eventos',
+            'ver por evento-dashboards desafios eventos',
             // 🔹 Desafío Mensual //SATISFECHO
             'ver-desafios mensuales',
             'crear-desafios mensuales',
             'editar fechas-desafios mensuales',
             'editar desafios-desafios mensuales',
+            // 🔹 Desafío Mensual MBOS//SATISFECHO
+            'ver los blancos de 1 mes-desafios mensuales',
+            'editar desafios mes masivo-desafios mensuales',
+            'graficos x mes MBOS-desafios mensuales',
+            'graficos todos los meses MBOS-desafios mensuales',
+
 
             // 🔹 Distritos //SATISFECHO
             'ver-distritos',
@@ -75,6 +94,10 @@ class RolePermissionSeeder extends Seeder
             'editar-distritos',
             'eliminar-distritos',
             'reactivar-distritos',
+            //(DISTRITOS) //Asignacion de pastores, en año en curso
+            'cambiar asignaciones ACT - distritos',
+            //(DISTRITOS) //Asignaciones de pastores, para el siguiente año
+            'cambiar asignaciones SIG - distritos',
 
             // 🔹 Estudiantes // SATISFECHO
             'ver-estudiantes',
@@ -96,12 +119,14 @@ class RolePermissionSeeder extends Seeder
             'crear-iglesias',
             'editar-iglesias',
             'eliminar-iglesias',
-
+            'ver pastor-iglesias',
+            'editar pastor-iglesias',
+            // LIDERES_LOCALES
+            'ver x distritos-lideres locales',
+            'ver x iglesias-lideres locales',
+            'editar pastor iglesias-lideres locales',
             // (IGLESIAS) asignaciones aparte //SATISFECHO
-            'ver-asignacion iglesias',
-            'asignar-asignacion iglesias',
-            'cambiar-asignacion iglesias',
-            'liberar-asignacion iglesias',
+            'asignaciones-iglesias',
 
             // 🔹 Instructores //satisfecho
             'ver-instructores',
@@ -112,6 +137,7 @@ class RolePermissionSeeder extends Seeder
 
             // 🔹 Panel //safisfecho
             'ver dashboard pastores-panel',
+            'ver avance pastores-panel', //nose sabe que es
 
             // 🔹 Pastores  //SATISFECHO
             'ver-pastores',
@@ -135,7 +161,7 @@ class RolePermissionSeeder extends Seeder
             'reactivar-personal',
 
             // 🔹 Puntualidad// SATISFECHOS
-            'ver - puntualidad',
+            'ver-puntualidad',
 
             // 🔹 Remesas// SATISFECHOS
             'ver meses-remesas',
@@ -154,6 +180,9 @@ class RolePermissionSeeder extends Seeder
 
             // 🔹 Remesa Dashboard// FALTA EXPLORAR
             'ver-remesas dashboard',
+            'ver dashboar pastor-remesas dashboard',
+            'ver dashboar remesas filiales pastor-remesas dashboard',
+            'ver dashboar fondo local pastor-remesas dashboard',
 
             // 🔹 Visitas // SATISFECHOS
             'ver anual-visitas',
@@ -169,9 +198,10 @@ class RolePermissionSeeder extends Seeder
             //'exportar reportes',
             
             // Permisos de Roles y Permisos
-            'gestionar-roles',
-            'gestionar-permisos',
-            'asignar-roles',
+            'ver-roles',
+            'crear-roles',
+            'editar-roles',
+            'eliminar-roles',
         ];
 
         foreach ($permissions as $permission) {
@@ -187,8 +217,9 @@ class RolePermissionSeeder extends Seeder
         $superAdmin->givePermissionTo(Permission::all());
 
         // ROL: Administrador (casi todos los permisos excepto gestión de roles)
-        $admin = Role::create(['name' => 'Administrador']);
+        $admin = Role::create(['name' => 'Secretaria']);
         $admin->givePermissionTo([
+                       // 🔹 Administrativo
             'ver-administrativo',
 
             // 🔹 Bautisos
@@ -196,8 +227,8 @@ class RolePermissionSeeder extends Seeder
             'crear-bautisos',
             'editar-bautisos',
             'eliminar-bautisos',
-            'dashboard-mbos bautisos',
-
+            
+            
             // 🔹 Blanco
             'ver-blanco',
             'editar-blanco',
@@ -205,8 +236,14 @@ class RolePermissionSeeder extends Seeder
             // 🔹 Desafío
             'ver-desafios',
             'ver-desafios distrital anuales',
-            'ver-desafios bautisos mbos anuales',
-            'editar-desafio bautisos anuales',
+            // (DESAFIO) desafio bautisos
+            'ver-desafios bautisos mbos anuales',//bautisos general mbos
+            'editar-desafio bautisos anuales', //
+            'dashboard-mbos bautisos', //esta en BautisosController
+
+            //(DESAFIO) desafio de estudiantes y instructors
+            'ver mbos-desafios anual Est Inst',//esta en InstructorController
+            'editar mbos-desafios anual Est Inst',//esta en InstructorController
 
              // 🔹 Desafío Anual
             'editar-desafios anual Est Inst',
@@ -240,6 +277,10 @@ class RolePermissionSeeder extends Seeder
             'editar-distritos',
             'eliminar-distritos',
             'reactivar-distritos',
+            //(DISTRITOS) //Asignacion de pastores, en año en curso
+            'cambiar asignaciones ACT - distritos',
+            //(DISTRITOS) //Asignaciones de pastores, para el siguiente año
+            'cambiar asignaciones SIG - distritos',
 
             // 🔹 Estudiantes // SATISFECHO
             'ver-estudiantes',
@@ -263,10 +304,7 @@ class RolePermissionSeeder extends Seeder
             'eliminar-iglesias',
 
             // (IGLESIAS) asignaciones aparte //SATISFECHO
-            'ver-asignacion iglesias',
-            'asignar-asignacion iglesias',
-            'cambiar-asignacion iglesias',
-            'liberar-asignacion iglesias',
+            'asignaciones-iglesias',
 
             // 🔹 Instructores //satisfecho
             'ver-instructores',
@@ -300,7 +338,7 @@ class RolePermissionSeeder extends Seeder
             'reactivar-personal',
 
             // 🔹 Puntualidad// SATISFECHOS
-            'ver - puntualidad',
+            'ver-puntualidad',
 
             // 🔹 Remesas// SATISFECHOS
             'ver meses-remesas',
@@ -332,27 +370,44 @@ class RolePermissionSeeder extends Seeder
         // ROL: Editor (puede crear y editar, pero no eliminar)
         $pastor = Role::create(['name' => 'Pastor']);
         $pastor->givePermissionTo([
-            'ver dashboard pastores-panel',
-
+            'ver distrital-pendientes',
+            'ver dashboar pastor-remesas dashboard',
+            'ver dashboar remesas filiales pastor-remesas dashboard',
+            'ver dashboar fondo local pastor-remesas dashboard',
+            //el pastor puede ver sus bautisos 
+            'ver pastor-bautisos distrito',
+            'ver dashboard pastor-bautisos distrito',
+            // 🔹 Estudiantes // SATISFECHO
             'ver-estudiantes',
             'ver avance-estudiantes',
             'crear-estudiantes',
             'editar-estudiantes',
             'eliminar-estudiantes',
-
-            'ver-iglesias',
+            // 🔹 Iglesias // SATISFECHO
+            'ver pastor-iglesias',
+            'editar pastor-iglesias',
+            'editar pastor iglesias-lideres locales',
+            // 🔹 Instructores //satisfecho
             'ver-instructores',
             'ver avance-instructores',
             'crear-instructores',
             'editar-instructores',
             'eliminar-instructores',
+            // 🔹 Panel //safisfecho
+            'ver dashboard pastores-panel',
+            'ver avance pastores-panel',
+            // 🔹 Visitas // SATISFECHOS
             'ver anual-visitas',
             'ver meses-visitas',
             'crear-visitas',
             'editar-visitas',
             'eliminar-visitas',
             'dashboard-visitas',
-        ]);
+            // Permisos de Roles y Permisos
+            'ver-roles',
+            'crear-roles',
+            'editar-roles',
+            'eliminar-roles',]);
 
         // ========================================
         // CREAR PERSONA SUPER ADMINISTRADOR
@@ -364,7 +419,7 @@ class RolePermissionSeeder extends Seeder
         $pastor->assignRole('Pastor');
 
         $administrador = Persona::find(2);
-        $administrador->assignRole('Administrador');
+        $administrador->assignRole('Secretaria');
         $this->command->info('✅ Roles, permisos y usuarios de prueba creados exitosamente!');
 
         $pastor = Persona::find(4); $pastor->assignRole('Pastor');

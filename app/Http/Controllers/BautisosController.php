@@ -18,9 +18,29 @@ use Illuminate\Support\Facades\Auth;
 class BautisosController extends Controller
 {
     /**
-     * 
+     * 'ver-bautisos',
+    *        'crear-bautisos',
+    *        'editar-bautisos',
+    *        'eliminar-bautisos',
+    *        'dashboard-mbos bautisos',
      * Display a listing of the resource.
      */
+
+    function __construct()
+    {
+        // index(): PERMISO ver bautisos
+        $this->middleware('permission:ver-bautisos', ['only' => ['index']]);
+        // show() (Paso 1) y store() (Paso 2): PERMISO crear bautisos
+        $this->middleware('permission:crear-bautisos', ['only' => ['show', 'store']]);
+        // edit() y update(): PERMISO editar bautisos
+        $this->middleware('permission:editar-bautisos', ['only' => ['edit', 'update']]);
+        // destroy(): PERMISO eliminar bautisos
+        $this->middleware('permission:eliminar-bautisos', ['only' => ['destroy']]);
+        // dashboard_general(): PERMISO dashboard mbos bautisos
+        $this->middleware('permission:dashboard-mbos bautisos', ['only' => ['dashboard_general']]);
+        $this->middleware('permission:ver pastor-bautisos distrito', ['only' => ['bautisos_distrital']]);
+        $this->middleware('permission:ver dashboard pastor-bautisos distrito', ['only' => ['dashboard_general_pastores']]);
+    }
     public function index() //PERMISO ver bautisos
     {   
         $año = now()->year;
@@ -46,16 +66,12 @@ class BautisosController extends Controller
 
         return view('bautisos.index', compact('distritos','año'));
     }
-
-
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
     }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -101,7 +117,6 @@ class BautisosController extends Controller
             return response()->json(['error' => 'Error al crear el bautiso: ' . $e->getMessage()], 500);
         }
     }
-
     /**
      * Display the specified resource.
      */
@@ -321,9 +336,197 @@ class BautisosController extends Controller
                 ]
             ];
         });
-        return view('bautisos.dashboard_general', compact('graficos', 'anio','desafios', 'graficos_tipos', 'graficos_final'));
+        return view('bautisos.dashboard_general', compact('graficos', 'anio','desafios', 'graficos_tipos', 'graficos_final')); 
+    }
+    //
+    //_________________________________________________________DASBOAR PARA PASTOR DISTRITAL___________________________________________________________
+    //
 
+    public function dashboard_general_pastores() //PERMISO 'ver dashboard pastor-bautisos distrito',
+    {   
+        $anioActual = now()->year; //muestro los estudiantes del año actual
+        $persona = Auth::user(); 
         
+        
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        //$id_pastor = 3;
+        //$distrito = Distrito::where('id_pastor', $id_pastor)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
+        $id_distrito = $distrito->id_distrito;// todos los estudiantes del distrito Bolivar  
+
+        $anioDistritos = DB::table('distritos')
+            ->where('estado', true)
+            ->value('año');
+
+        if (!$anioDistritos) {
+            return view('desafio.index', [
+                'desafios' => collect([]),
+                'anioActual' => $anioActual,
+                'mensaje' => 'No hay distritos activos en el sistema.'
+            ]);
+        }
+        $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
+
+
+         /* ---------------------------------------------------------
+        1) DESAFÍO — SOLO PARA ESTE DISTRITO
+        --------------------------------------------------------- */
+        $desafio = DB::table('desafios')
+            ->where('anio', $anio)
+            ->where('id_distrito', $id_distrito)
+            ->select(
+                'desafio_bautizo',
+                'bautizos_alcanzados',
+                DB::raw('(desafio_bautizo - bautizos_alcanzados) AS diferencia')
+            )
+            ->first();
+
+        $grafico_desafio = [
+            'nombre' => $distrito->nombre,
+            'categorias' => ['Desafío', 'Alcanzado', 'Diferencia'],
+            'valores' => [
+                (int) ($desafio->desafio_bautizo ?? 0),
+                (int) ($desafio->bautizos_alcanzados ?? 0),
+                (int) ($desafio->diferencia ?? 0),
+            ]
+        ];
+
+        /* ---------------------------------------------------------
+            2) BAUTIZOS POR MES — SOLO ESTE DISTRITO
+        --------------------------------------------------------- */
+        $bautizosMes = DB::table('iglesias as i')
+            ->leftJoin('bautisos as b', function ($join) use ($anio) {
+                $join->on('b.id_iglesia', '=', 'i.id_iglesia')
+                    ->whereRaw('EXTRACT(YEAR FROM b.fecha_bautizo) = ?', [$anio]);
+            })
+            ->where('i.distrito_id', $id_distrito)
+            ->select(
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=1 THEN 1 ELSE 0 END),0) AS enero'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=2 THEN 1 ELSE 0 END),0) AS febrero'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=3 THEN 1 ELSE 0 END),0) AS marzo'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=4 THEN 1 ELSE 0 END),0) AS abril'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=5 THEN 1 ELSE 0 END),0) AS mayo'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=6 THEN 1 ELSE 0 END),0) AS junio'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=7 THEN 1 ELSE 0 END),0) AS julio'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=8 THEN 1 ELSE 0 END),0) AS agosto'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=9 THEN 1 ELSE 0 END),0) AS septiembre'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=10 THEN 1 ELSE 0 END),0) AS octubre'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=11 THEN 1 ELSE 0 END),0) AS noviembre'),
+                DB::raw('COALESCE(SUM(CASE WHEN EXTRACT(MONTH FROM b.fecha_bautizo)=12 THEN 1 ELSE 0 END),0) AS diciembre')
+            )
+            ->first();
+
+        $grafico_meses = [
+            'nombre' => $distrito->nombre,
+            'categorias' => [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ],
+            'valores' => [
+                (int) $bautizosMes->enero,
+                (int) $bautizosMes->febrero,
+                (int) $bautizosMes->marzo,
+                (int) $bautizosMes->abril,
+                (int) $bautizosMes->mayo,
+                (int) $bautizosMes->junio,
+                (int) $bautizosMes->julio,
+                (int) $bautizosMes->agosto,
+                (int) $bautizosMes->septiembre,
+                (int) $bautizosMes->octubre,
+                (int) $bautizosMes->noviembre,
+                (int) $bautizosMes->diciembre,
+            ]
+        ];
+
+        /* ---------------------------------------------------------
+        3) TIPOS DE BAUTIZO — SOLO ESTE DISTRITO
+        --------------------------------------------------------- */
+        $tipos = DB::table('iglesias as i')
+            ->leftJoin('bautisos as b', function ($join) use ($anio) {
+                $join->on('b.id_iglesia', '=', 'i.id_iglesia')
+                    ->whereRaw('EXTRACT(YEAR FROM b.fecha_bautizo)=?', [$anio]);
+            })
+            ->where('i.distrito_id', $id_distrito)
+            ->select(
+                DB::raw("COALESCE(SUM(CASE WHEN b.tipo = 'bautizo' THEN 1 ELSE 0 END),0) AS nro_bautizo"),
+                DB::raw("COALESCE(SUM(CASE WHEN b.tipo = 'profesion de fe' THEN 1 ELSE 0 END),0) AS nro_profesion_fe"),
+                DB::raw("COALESCE(SUM(CASE WHEN b.tipo = 'rebautismo' THEN 1 ELSE 0 END),0) AS nro_rebautismo")
+            )
+            ->first();
+
+        $grafico_tipos = [
+            'nombre' => $distrito->nombre,
+            'categorias' => ['Bautizos', 'Profesión de Fe', 'Rebautismos'],
+            'valores' => [
+                (int) $tipos->nro_bautizo,
+                (int) $tipos->nro_profesion_fe,
+                (int) $tipos->nro_rebautismo,
+            ]
+        ];
+        /* ---------------------------------------------------------
+        4) BAUTIZOS POR IGLESIA — SOLO ESTE DISTRITO
+        --------------------------------------------------------- */
+
+        $bautizosPorIglesia = DB::table('iglesias as i')
+            ->leftJoin('bautisos as b', function ($join) use ($anio) {
+                $join->on('b.id_iglesia', '=', 'i.id_iglesia')
+                    ->whereRaw('EXTRACT(YEAR FROM b.fecha_bautizo) = ?', [$anio]);
+            })
+            ->where('i.distrito_id', $id_distrito)
+            ->select(
+                'i.nombre as iglesia',
+                DB::raw('COUNT(b.id_bautiso) AS total_bautizos')
+            )
+            ->groupBy('i.nombre')
+            ->orderBy('i.nombre')
+            ->get();
+
+        // Preparar datos para ApexCharts
+        $grafico_iglesias = [
+            'nombre'     => $distrito->nombre,
+            'categorias' => $bautizosPorIglesia->pluck('iglesia'),
+            'valores'    => $bautizosPorIglesia->pluck('total_bautizos')->map(fn($v) => (int)$v),
+        ];
+        return view('bautisos.dashboard_general_distrital', compact('distrito', 'anio','grafico_desafio', 'grafico_meses', 'grafico_tipos','grafico_iglesias')); 
+    }
+    public function bautisos_distrital()//PERMISO 'ver pastor-bautisos distrito',
+    {
+        $anioActual = now()->year; //muestro los estudiantes del año actual
+        $persona = Auth::user(); 
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        //$id_pastor = 3;
+        //$distrito = Distrito::where('id_pastor', $id_pastor)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
+        $id_distrito = $distrito->id_distrito;// todos los estudiantes del distrito Bolivar  
+
+        $anioDistritos = DB::table('distritos')
+            ->where('estado', true)
+            ->value('año');
+
+        if (!$anioDistritos) {
+            return view('desafio.index', [
+                'desafios' => collect([]),
+                'anioActual' => $anioActual,
+                'mensaje' => 'No hay distritos activos en el sistema.'
+            ]);
+        }
+        $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
+
+        $bautizos = DB::table('bautisos as xb')
+        ->join('iglesias as xi', 'xb.id_iglesia', '=', 'xi.id_iglesia')
+        ->where('xi.distrito_id', $id_distrito) // puedes usar 1 o una variable
+        ->select('xi.nombre as iglesia',
+            'xi.tipo as tipo_iglesia',
+             'xb.*')
+        ->get();
+        return view('bautisos.bautisos_x_distrito', compact('distrito', 'anio','bautizos')); 
+    
     }
 
+
+    
 }

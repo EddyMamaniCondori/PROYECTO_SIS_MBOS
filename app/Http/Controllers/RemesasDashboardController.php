@@ -4,9 +4,25 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Auth;
+use App\Models\Distrito; 
 class RemesasDashboardController extends Controller
 {
+
+    /**
+     * 'ver-remesas dashboard',
+     */
+    function __construct()
+    {
+        // index() y index_distrital(): permission 'ver-remesas dashboard'
+        // Asumo que ambas funciones son vistas principales de dashboards que usan el mismo permiso de visualización general.
+        $this->middleware('permission:ver-remesas dashboard', ['only' => ['index', 'index_distrital', 'dashboard']]);
+        
+        // dashboard() no tiene etiqueta explícita de permiso.
+        $this->middleware('permission:ver dashboar pastor-remesas dashboard', ['only' => ['dashboard_finanzas_distrito']]);
+        $this->middleware('permission:ver dashboar remesas filiales pastor-remesas dashboard', ['only' => ['dashboard_finanzas_filiales_distrito']]);
+        $this->middleware('permission:ver dashboar fondo local pastor-remesas dashboard', ['only' => ['dashboard_fondo_local_filiales_distrito']]);
+    }
     public function index(){ 
         
         $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -85,8 +101,6 @@ class RemesasDashboardController extends Controller
         return view('remesas_dasboards.dashboard', compact('meses', 'series', 'series_mensual','series_baras', 'categorias'));
     }
 
-    /**ejemplo */
-
     public function index_distrital()
     {
         $anio = 2025;
@@ -154,7 +168,7 @@ class RemesasDashboardController extends Controller
         //dd($dataDistritos);
         return view('remesas_dasboards.dashboard_distrital', compact('meses', 'dataDistritos'));
     }
-
+    
      public function dashboard()
     {
         $result = DB::table('desafio_mensuales')
@@ -188,4 +202,194 @@ class RemesasDashboardController extends Controller
 
         return view('bautisos.dashboard', compact('meses','desafios','alcanzados'));
     }
+
+    //con esto obtnemos 
+    public function dashboard_finanzas_distrito() //permision'ver dashboar pastor-remesas dashboard',
+    {
+        $persona = Auth::user(); 
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
+        $id_distrito = $distrito->id_distrito;
+
+        $anio = 2025;
+        //$id_distrito =11;
+        /* ============================================================
+            1) TABLA DINÁMICA — REMESAS POR IGLESIA (MESES)
+        ============================================================ */
+
+        $remesasMes = DB::select("
+            SELECT
+                xi.codigo,
+                xi.nombre AS nombre_iglesia,
+                MAX(CASE WHEN xg.mes = 1 THEN xri.monto ELSE 0 END) AS mes_enero,
+                MAX(CASE WHEN xg.mes = 2 THEN xri.monto ELSE 0 END) AS mes_febrero,
+                MAX(CASE WHEN xg.mes = 3 THEN xri.monto ELSE 0 END) AS mes_marzo,
+                MAX(CASE WHEN xg.mes = 4 THEN xri.monto ELSE 0 END) AS mes_abril,
+                MAX(CASE WHEN xg.mes = 5 THEN xri.monto ELSE 0 END) AS mes_mayo,
+                MAX(CASE WHEN xg.mes = 6 THEN xri.monto ELSE 0 END) AS mes_junio,
+                MAX(CASE WHEN xg.mes = 7 THEN xri.monto ELSE 0 END) AS mes_julio,
+                MAX(CASE WHEN xg.mes = 8 THEN xri.monto ELSE 0 END) AS mes_agosto,
+                MAX(CASE WHEN xg.mes = 9 THEN xri.monto ELSE 0 END) AS mes_septiembre,
+                MAX(CASE WHEN xg.mes = 10 THEN xri.monto ELSE 0 END) AS mes_octubre,
+                MAX(CASE WHEN xg.mes = 11 THEN xri.monto ELSE 0 END) AS mes_noviembre,
+                MAX(CASE WHEN xg.mes = 12 THEN xri.monto ELSE 0 END) AS mes_diciembre
+            FROM iglesias xi
+            JOIN generas xg ON xi.id_iglesia = xg.id_iglesia
+            JOIN remesas_iglesias xri ON xg.id_remesa = xri.id_remesa
+            WHERE xi.distrito_id = ?
+            AND xg.anio = ?
+            GROUP BY xi.codigo, xi.nombre
+            ORDER BY xi.codigo;
+        ", [$id_distrito, $anio]);
+
+        /* ============================================================
+            2) BLANCO DEL DISTRITO
+        ============================================================ */
+
+        $blanco = DB::table('blanco_remesas')
+            ->where('id_distrito', $id_distrito)
+            ->where('anio', $anio)
+            ->value('monto') ?? 0;
+
+        /* ============================================================
+            3) ALCANZADO (TOTAL REMESAS DE TODAS LAS IGLESIAS)
+        ============================================================ */
+
+        $totalAlcanzado = DB::table('iglesias as xi')
+            ->join('generas as xg', 'xi.id_iglesia', '=', 'xg.id_iglesia')
+            ->join('remesas_iglesias as xri', 'xg.id_remesa', '=', 'xri.id_remesa')
+            ->where('xi.distrito_id', $id_distrito)
+            ->where('xg.anio', $anio)
+            ->sum('xri.monto');
+
+        $diferencia = $blanco - $totalAlcanzado;
+        //dd($blanco);
+        /* ============================================================
+            4) ARMAR DATOS PARA LAS GRÁFICAS
+        ============================================================ */
+
+        $graficoResumen = [
+            'categorias' => ['Blanco', 'Alcanzado', 'Diferencia'],
+            'valores'    => [
+                (float)$blanco,
+                (float)$totalAlcanzado,
+                (float)$diferencia
+            ]
+        ];
+
+        return view('remesas_dasboards.dashboard_pastor_distrital', [
+            'tablaMeses'    => $remesasMes,
+            'graficoResumen'=> $graficoResumen,
+            'blanco' => $blanco,
+            'alcanzado' => $totalAlcanzado,
+        ]);
+    }
+    //muestra las remesas de las filiales de 1 distrito
+    public function dashboard_finanzas_filiales_distrito() //permision 'ver dashboar remesas filiales pastor-remesas dashboard',
+    {
+        $persona = Auth::user(); 
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
+        $id_distrito = $distrito->id_distrito;
+
+        $anio = 2025;
+        //$id_distrito =1;
+        /* ============================================================
+            1) TABLA DINÁMICA — REMESAS POR IGLESIA (MESES)
+        ============================================================ */
+
+        $remesasMes = DB::select("
+            SELECT
+                xi.id_iglesia,
+                xi.codigo,
+                xi.nombre AS nombre_iglesia,
+                MAX(CASE WHEN xg.mes = 1 THEN xri.monto_remesa ELSE 0 END) AS mes_enero,
+                MAX(CASE WHEN xg.mes = 2 THEN xri.monto_remesa ELSE 0 END) AS mes_febrero,
+                MAX(CASE WHEN xg.mes = 3 THEN xri.monto_remesa ELSE 0 END) AS mes_marzo,
+                MAX(CASE WHEN xg.mes = 4 THEN xri.monto_remesa ELSE 0 END) AS mes_abril,
+                MAX(CASE WHEN xg.mes = 5 THEN xri.monto_remesa ELSE 0 END) AS mes_mayo,
+                MAX(CASE WHEN xg.mes = 6 THEN xri.monto_remesa ELSE 0 END) AS mes_junio,
+                MAX(CASE WHEN xg.mes = 7 THEN xri.monto_remesa ELSE 0 END) AS mes_julio,
+                MAX(CASE WHEN xg.mes = 8 THEN xri.monto_remesa ELSE 0 END) AS mes_agosto,
+                MAX(CASE WHEN xg.mes = 9 THEN xri.monto_remesa ELSE 0 END) AS mes_septiembre,
+                MAX(CASE WHEN xg.mes = 10 THEN xri.monto_remesa ELSE 0 END) AS mes_octubre,
+                MAX(CASE WHEN xg.mes = 11 THEN xri.monto_remesa ELSE 0 END) AS mes_noviembre,
+                MAX(CASE WHEN xg.mes = 12 THEN xri.monto_remesa ELSE 0 END) AS mes_diciembre
+            FROM iglesias xi
+            JOIN generas xg ON xi.id_iglesia = xg.id_iglesia
+            JOIN remesas_filiales xri ON xg.id_remesa = xri.id_remesa
+            WHERE xi.distrito_id = ?
+            AND xg.anio = ?
+            GROUP BY xi.id_iglesia, xi.codigo, xi.nombre
+            ORDER BY xi.codigo;
+        ", [$id_distrito, $anio]);
+
+
+        /* ============================================================
+            4) ARMAR DATOS PARA LAS GRÁFICAS
+        ============================================================ */
+
+
+        return view('remesas_dasboards.dashboard_filiales_pastor_distrital', [
+            'tablaMeses'    => $remesasMes,
+        ]);
+    }
+
+    public function dashboard_fondo_local_filiales_distrito()//permision'ver dashboar fondo local pastor-remesas dashboard',
+    {
+        $persona = Auth::user(); 
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
+        $id_distrito = $distrito->id_distrito;
+
+        $anio = 2025;
+        //$id_distrito =1;
+        /* ============================================================
+            1) TABLA DINÁMICA — REMESAS POR IGLESIA (MESES)
+        ============================================================ */
+
+        $remesasMes = DB::select("
+            SELECT
+                xi.id_iglesia,
+                xi.codigo,
+                xi.nombre AS nombre_iglesia,
+                MAX(CASE WHEN xg.mes = 1 THEN xri.fondo_local ELSE 0 END) AS mes_enero,
+                MAX(CASE WHEN xg.mes = 2 THEN xri.fondo_local ELSE 0 END) AS mes_febrero,
+                MAX(CASE WHEN xg.mes = 3 THEN xri.fondo_local ELSE 0 END) AS mes_marzo,
+                MAX(CASE WHEN xg.mes = 4 THEN xri.fondo_local ELSE 0 END) AS mes_abril,
+                MAX(CASE WHEN xg.mes = 5 THEN xri.fondo_local ELSE 0 END) AS mes_mayo,
+                MAX(CASE WHEN xg.mes = 6 THEN xri.fondo_local ELSE 0 END) AS mes_junio,
+                MAX(CASE WHEN xg.mes = 7 THEN xri.fondo_local ELSE 0 END) AS mes_julio,
+                MAX(CASE WHEN xg.mes = 8 THEN xri.fondo_local ELSE 0 END) AS mes_agosto,
+                MAX(CASE WHEN xg.mes = 9 THEN xri.fondo_local ELSE 0 END) AS mes_septiembre,
+                MAX(CASE WHEN xg.mes = 10 THEN xri.fondo_local ELSE 0 END) AS mes_octubre,
+                MAX(CASE WHEN xg.mes = 11 THEN xri.fondo_local ELSE 0 END) AS mes_noviembre,
+                MAX(CASE WHEN xg.mes = 12 THEN xri.fondo_local ELSE 0 END) AS mes_diciembre
+            FROM iglesias xi
+            JOIN generas xg ON xi.id_iglesia = xg.id_iglesia
+            JOIN remesas_filiales xri ON xg.id_remesa = xri.id_remesa
+            WHERE xi.distrito_id = ?
+            AND xg.anio = ?
+            GROUP BY xi.id_iglesia, xi.codigo, xi.nombre
+            ORDER BY xi.codigo;
+        ", [$id_distrito, $anio]);
+
+
+        /* ============================================================
+            4) ARMAR DATOS PARA LAS GRÁFICAS
+        ============================================================ */
+
+
+        return view('remesas_dasboards.dash_filial_fondo_local_pastor_distrital', [
+            'tablaMeses'    => $remesasMes,
+        ]);
+    }
+
+    
 }

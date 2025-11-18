@@ -16,12 +16,12 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-6"><h3 class="mb-0">Desafios Distritales - {{$anioActual}}</h3>
+                <div class="col-sm-6"><h3 class="mb-0">Desafios Instructores y Estudiantes Distritales - {{$anioActual}}</h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
                         <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Desafios Distritales</li>
+                        <li class="breadcrumb-item active" aria-current="page">Desafios Instructores e Estudiantes</li>
                     </ol>
               </div>
             </div>
@@ -34,39 +34,47 @@
             <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                Tabla de Desafios Mensuales
+                                Tabla de Desafios Distritales
                             </div>
                             <div class="card-body">
                                 <table id="example" class="display">
                                     <thead>
                                          <tr>
                                             <th>Distrito</th>
-                                            <th>Pastor</th>
-                                            <th>anio</th>
+                                            <th>Desf Estudiantes</th>
+                                            <th>Estudiantes Alcanzados</th>
+                                            <th>Desf Instructores</th>
+                                            <th>Instructores Alcanzados</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($desafios as $desafio)
+                                        @foreach ($resultados as $desafio)
                                         <tr>
                                             <td>
-                                                {{ $desafio->id_desafio }}  /{{ $desafio->id_distrito }}   {{ $desafio->nombre_distrito }}  
+                                                {{ $desafio->id_desafio }} /{{ $desafio->id_distrito }}   {{ $desafio->nombre}}  
                                             </td>
                                             <td>
-                                                {{ $desafio->nombre_p }} {{ $desafio->ape_paterno_p }}  {{ $desafio->ape_materno_p }}
+                                                {{ $desafio->total_desafios_estudiantes }}
                                             </td>
-                                            <td class="text-center">
-                                                {{ $desafio->anio}}
-                                            </td>      
+                                            <td>
+                                                {{ $desafio->total_estudiantes_alcanzados}}
+                                            </td> 
+                                            <td>
+                                                {{ $desafio->total_desafio_instructores }}
+                                            </td>
+                                            <td>
+                                                {{ $desafio->total_instructores_alcanzados}}
+                                            </td>       
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                    <a href="{{ route('dashboard.ver.pastor', ['id' => $desafio->id_distrito, 'anio' => $desafio->anio]) }}"
+                                                    <a href="{{ route('desafios.asignacion.distrital.masivo', $desafio->id_desafio) }}"
                                                         class="btn btn-primary">
-                                                        <i class="bi bi-graph-up"></i> Ver Avance
+                                                        <i class="bi bi-folder-plus"></i> Asignacion Masiva 
                                                     </a>
 
-                                                    <a href="{{ route('desafios.index_distrital', $desafio->id_desafio) }}" class="btn btn-success">
-                                                        <i class="bi bi-pencil-square"></i> Ver deafios
+                                                    <a href="{{ route('desafios.asignacion.distrital', $desafio->id_desafio) }}" class="btn btn-success">
+                                                        <i class="bi bi-pencil-square"></i> Ver desafios
                                                     </a>
                                                 </div>
                                             </td>
@@ -76,9 +84,11 @@
                                     <tfoot>
                                         <tr>
                                             <th>Distrito</th>
-                                            <th>Pastor</th>
-                                            <th>anio</th>
-                                            <th>acciones</th>
+                                            <th>Desf Estudiantes</th>
+                                            <th>Estudiantes Alcanzados</th>
+                                            <th>Desf Instructores</th>
+                                            <th>Instructores Alcanzados</th>
+                                            <th>Acciones</th>
                                         </tr>
                                     </tfoot>
                                 </table>

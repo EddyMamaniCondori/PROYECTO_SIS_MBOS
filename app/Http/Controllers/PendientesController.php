@@ -3,9 +3,33 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use App\Models\Distrito; 
 class PendientesController extends Controller
 {
+    /**
+     * 
+     * 'ver anual-pendientes',
+      *      'ver distrital-pendientes',
+      *      'ver mensual-pendientes',
+     */
+
+    function __construct()
+    {
+        // index(): permision ver anual-pendientes
+        // Nota: Esta función es un reporte anual general.
+        $this->middleware('permission:ver anual-pendientes', ['only' => ['index', 'filtro_anual']]); 
+
+        // index_distrital(): permision ver distrital-pendientes
+        $this->middleware('permission:ver distrital-pendientes', ['only' => ['index_distrital','filtro_anual']]);
+
+        // index_mensual(): permision ver mensual-pendientes
+        $this->middleware('permission:ver mensual-pendientes', ['only' => ['index_mensual','filtro_anual']]);
+
+        // La función 'filtro_anual' es el procesamiento del formulario de 'index', por lo que se agrupa con 'index'.
+        
+    }
+
     public function index() 
     {
         $datos = DB::select("
@@ -187,6 +211,15 @@ class PendientesController extends Controller
 
     public function index_distrital() 
     {
+        $persona = Auth::user(); 
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
+        }
+        $id_distrito = $distrito->id_distrito;
+
+        $anio = 2025;
+
         $datos = DB::select("
                     SELECT 
                     xi.id_iglesia,
@@ -207,11 +240,12 @@ class PendientesController extends Controller
                 FROM generas xg
                 JOIN remesas xr ON xg.id_remesa = xr.id_remesa
                 JOIN iglesias xi ON xg.id_iglesia = xi.id_iglesia
-                WHERE xi.distrito_id = 11
-                AND xg.anio = 2025
+                WHERE xi.distrito_id = ?
+                AND xg.anio = ?
                 GROUP BY xi.id_iglesia, xi.codigo, xi.nombre
                 ORDER BY xi.nombre;
-        ");  
+        ",[$id_distrito, $anio]);  
+
         return view('pendientes.vista_distrital', compact('datos')); 
     }
 

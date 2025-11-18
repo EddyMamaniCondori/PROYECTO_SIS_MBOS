@@ -12,8 +12,53 @@ use App\Http\Requests\DesafioEventoRequest;
 class DesafioEventoController extends Controller
 {
     /**
+     * 
+     * 'ver-desafios eventos',
+      *      'ver-eliminados-desafios eventos',
+      *      'crear-desafios eventos',
+      *      'editar-desafios eventos',
+       *     'eliminar-desafios eventos',
+       *     'reactivar-desafios eventos',
+       * 
+        *        'ver-asignacion desafios eventos',
+       *     'ver desafio-asignacion desafios eventos',
+       *     'asignar evento a distrito-asignacion desafios eventos',
+       *     'actualizar desafios-asignacion desafios eventos',
      * Display a listing of the resource.
      */
+
+
+    function __construct()
+    {
+        // index(): permision ver desafios eventos
+        $this->middleware('permission:ver-desafios eventos', ['only' => ['index']]);
+        // index_eliminado(): permision ver eliminados desafios eventos
+        $this->middleware('permission:ver-eliminados-desafios eventos', ['only' => ['index_eliminado']]);
+        
+        // Nota: El comentario de la función dice 'ver asignaciones-desafios eventos', que no está en tu lista inicial, así que usé 'ver-desafios eventos' como un permiso general de lectura.
+        // create() y store(): permision crear desafio eventos
+        $this->middleware('permission:crear-desafios eventos', ['only' => ['create', 'store']]);
+        // edit() y update(): permision editar desafio eventos
+        $this->middleware('permission:editar-desafios eventos', ['only' => ['edit', 'update']]);
+        // destroy(): permision eliminar desafio eventos (desactiva el registro)
+        $this->middleware('permission:eliminar-desafios eventos', ['only' => ['destroy']]);
+        // reactive(): permision reactivar-desafios eventos
+        $this->middleware('permission:reactivar-desafios eventos', ['only' => ['reactive']]);
+        
+        // index_asignaciones(): Asumo que tiene un permiso relacionado con 'ver' la gestión de asignaciones, pero como no lo pasaste explícitamente en la lista, usaré el permiso relacionado con la vista de asignaciones.
+        // Usaremos el permiso más cercano para la visualización: 'ver-desafios eventos' | 'ver desafio - asignacion desafios eventos'
+        $this->middleware('permission:ver-asignacion desafios eventos', ['only' => ['index_asignaciones']]); 
+        // mostrar_asignaciones_evento(): permision 'ver desafio - asignacion desafios eventos'
+        $this->middleware('permission:ver desafio-asignacion desafios eventos', ['only' => ['mostrar_asignaciones_evento']]);
+        // asignar_evento_distrito(): permision 'asignar evento a distrito - asignacion desafios eventos'
+        $this->middleware('permission:asignar evento a distrito-asignacion desafios eventos', ['only' => ['asignar_evento_distrito']]);
+        // update_asignacion_desafio(): permisoin 'actualizar desafios - asignacion desafios eventos'
+        $this->middleware('permission:actualizar desafios-asignacion desafios eventos', ['only' => ['update_asignacion_desafio']]);
+        $this->middleware('permission:ver-dashboards desafios eventos|ver por evento-dashboards desafios eventos', ['only' => ['index_dasboards_eventos']]);
+     $this->middleware('permission:ver por evento-dashboards desafios eventos', ['only' => ['dashboard_bautizos_evento']]);
+    }
+
+
     public function index() //permision ver desafios eventos
     {
         $eventos = DesafioEvento::where('estado', true)
@@ -234,7 +279,7 @@ class DesafioEventoController extends Controller
         }
     }
 
-   public function update_asignacion_desafio(Request $request, string $id) //permisoin 'actualizar desafios - asignacion desafios eventos', 
+    public function update_asignacion_desafio(Request $request, string $id) //permisoin 'actualizar desafios - asignacion desafios eventos', 
     {   
         //dd($request, $id);
         // Validar que el campo 'desafio' venga y sea entero
@@ -269,4 +314,60 @@ class DesafioEventoController extends Controller
         }
     }
 
+    public function index_dasboards_eventos()//permision ver-dashboards desafios eventos
+    {
+        $eventos = DesafioEvento::where('estado', true)
+                    ->get();
+        return view('desafio_eventos.index_dashboard_eventos',['desafio_eventos'=>$eventos]);
+    }
+
+    public function dashboard_bautizos_evento($id) //permision ver por evento-dashboards desafios eventos
+    {
+        $evento = DesafioEvento::findOrFail($id);
+        $resultados = DB::table('asigna_desafios as xad')
+            ->join('desafio_eventos as xde', 'xad.id_desafio_evento', '=', 'xde.id_desafio_evento')
+            ->join('desafios as xd', 'xd.id_desafio', '=', 'xad.id_desafio')
+            ->join('distritos as xdd', 'xd.id_distrito', '=', 'xdd.id_distrito')
+            ->select(
+                'xdd.id_distrito',
+                'xdd.nombre',
+                DB::raw('SUM(xad.desafio) AS total_desafio'),
+                DB::raw('SUM(xad.alcanzado) AS total_alcanzado')
+            )
+            ->where('xad.id_desafio_evento', $evento->id_desafio_evento)
+            ->groupBy('xdd.id_distrito', 'xdd.nombre')
+            ->get();
+
+        // Generar dataset para gráficos
+        $graficos = $resultados->map(function ($d) {
+            return [
+                'id_distrito' => $d->id_distrito,
+                'nombre' => $d->nombre,
+                'desafio' => (int)$d->total_desafio,
+                'alcanzado' => (int)$d->total_alcanzado,
+                'diferencia' => (int)($d->total_desafio - $d->total_alcanzado),
+            ];
+        });
+
+        // Totales globales
+        $totales = [
+            'desafio' => $graficos->sum('desafio'),
+            'alcanzado' => $graficos->sum('alcanzado'),
+        ];
+        $totales['diferencia'] = $totales['desafio'] - $totales['alcanzado'];
+        // Porcentaje general
+        $porcentajeGeneral = $totales['desafio'] > 0
+            ? round(($totales['alcanzado'] / $totales['desafio']) * 100, 2)
+            : 0;
+
+        return view('desafio_eventos.dashboard_x_evento_mbos', compact(
+            'evento',
+            'resultados',
+            'graficos',
+            'totales',
+            'porcentajeGeneral'
+        ));
+    }
+
+    
 }

@@ -15,6 +15,40 @@ use App\Http\Requests\UpdatePastorRequest;
 
 class PastorController extends Controller
 {
+    /**
+     *  'ver-pastores',
+     *       'ver eliminados-pastores',
+    *        'crear-pastores',
+    *        'editar-pastores',
+    *        'eliminar-pastores',
+    *        'reactivar-pastores',
+     */
+
+    function __construct()
+    {
+        // index(): permission ver-pastores
+        // Nota: Agrupamos permisos de CRUD para que la vista index sea accesible.
+        $this->middleware('permission:ver-pastores|crear-pastores|editar-pastores|eliminar-pastores|reactivar-pastores', ['only' => ['index']]);
+
+        // indexdelete(): permission ver eliminados-pastores
+        $this->middleware('permission:ver eliminados-pastores', ['only' => ['indexdelete']]);
+
+        // create() y store(): permission crear-pastores
+        $this->middleware('permission:crear-pastores', ['only' => ['create', 'store']]);
+
+        // edit() y update(): permission editar-pastores
+        $this->middleware('permission:editar-pastores', ['only' => ['edit', 'update']]);
+
+        // destroy(): permission eliminar-pastores (Inhabilitar)
+        $this->middleware('permission:eliminar-pastores', ['only' => ['destroy']]);
+
+        // reactive(): permission reactivar-pastores
+        $this->middleware('permission:reactivar-pastores', ['only' => ['reactive']]);
+
+        // perfil_pastor(): permission ver perfil-pastores
+        $this->middleware('permission:ver perfil-pastores', ['only' => ['perfil_pastor']]);
+    }
+
     public function indexdelete() //permission ver eliminados - pastores
     {
         $pastores = Persona::join('pastors as xp', 'personas.id_persona', '=', 'xp.id_pastor')

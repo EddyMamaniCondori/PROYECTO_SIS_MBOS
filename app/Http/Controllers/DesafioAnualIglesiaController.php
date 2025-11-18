@@ -9,9 +9,20 @@ use App\Models\AnualIglesia;
 
 class DesafioAnualIglesiaController extends Controller
 {
-    /**
+    /**'editar-desafios anual Est Inst',
+            'eliminar-desafios anual Est Inst',
      * Display a listing of the resource.
      */
+
+    function __construct()
+    {
+        // update(): permission 'editar-desafios anual Est Inst'
+        $this->middleware('permission:editar-desafios anual Est Inst', ['only' => ['update']]);
+
+        // destroy(): permission 'eliminar-desafios anual Est Inst'
+        $this->middleware('permission:eliminar-desafios anual Est Inst', ['only' => ['destroy']]);
+    }
+    
     public function index()
     {
         //

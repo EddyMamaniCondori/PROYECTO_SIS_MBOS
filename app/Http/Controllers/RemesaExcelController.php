@@ -16,6 +16,22 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 class RemesaExcelController extends Controller
 {
+
+    function __construct()
+    {
+        // index(): permission 'ver - remesas excel'
+        $this->middleware('permission:ver-remesas excel', ['only' => ['index']]);
+
+        // import(): permission 'importar - remesas excel'
+        $this->middleware('permission:importar-remesas excel', ['only' => ['import']]);
+
+        // destroy(): permission 'eliminar - remesas excel'
+        $this->middleware('permission:eliminar-remesas excel', ['only' => ['destroy']]);
+
+        // procesarRemesas(): permissions 'guardar - remesas excel'
+        $this->middleware('permission:guardar-remesas excel', ['only' => ['procesarRemesas']]);
+    }
+    
     public function index() //VERIFICADO //permission  'ver - remesas excel',
     {
         $remesas = RemesaExcel::all();  // Trae todos los registros de la tabla asociada a RemesaImport

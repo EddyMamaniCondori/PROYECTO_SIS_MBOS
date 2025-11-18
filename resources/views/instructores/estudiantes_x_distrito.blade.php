@@ -1,0 +1,161 @@
+@extends('template')
+
+
+@section('title', 'Bautisos')
+
+@push('css')
+    <!--data table-->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endpush
+
+@section('content')
+
+<x-alerts/>
+        <!-- CONTENIDO DEL Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <h4 class="mb-0">Estudiantes Biblicos - {{$anio}}<br>
+                    <span class="text-primary"> <strong> Distrito:</strong>&nbsp;{{$distrito->nombre}}</span> <br>
+                    <span class="text-primary"><strong> Pastor:</strong> &nbsp;{{$persona->nombre}}&nbsp;{{$persona->ape_paterno}}&nbsp;{{$persona->ape_materno}}</span></h4>
+                </div>
+                
+                <div class="col-sm-6 mb-3">
+                    <!-- Contenedor Flexbox que apila verticalmente (flex-column) y alinea todo a la DERECHA (align-items-end) -->
+                    <div class="d-flex flex-column align-items-end">
+                        <ol class="breadcrumb mb-2"> 
+                            <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('instructores.mbos.distrital.ver') }}">Seguiento Distrital</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Estudiantes</li>
+                        </ol>
+                        <a href="{{ route('instructores.mbos.distrital.ver') }}" class="btn btn-primary ">
+                            <i class="bi bi-box-arrow-in-left"></i> Volver
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--contenido-->
+        <div class="app-content">
+          <div class="container-fluid">
+            <!--begin::TABLA-->
+            <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                Tabla de Estudiantes biblicos
+                            </div>
+                            <div class="card-body">
+                                <table id="example" class="display">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Sexo</th>
+                                            <th>Contacto</th>
+                                            <th>Edad</th>
+                                            <th>Celular</th>
+                                            <th>Estado civil</th>
+                                            <th>Ci</th>
+                                            <th>Curso biblico</th>
+                                            <th>Bautizado</th>
+                                            <th>Iglesia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($estudiantes as $estudiante)
+                                        <tr>
+                                            <td>
+                                            {{$estudiante->id_est}} &nbsp {{$estudiante->nombre}} &nbsp {{$estudiante->ape_paterno}} &nbsp {{$estudiante->ape_materno}} 
+                                            </td>
+                                            <td>
+                                                {{$estudiante->sexo}}
+                                            </td>
+                                            <td>
+                                                {{$estudiante->opcion_contacto}}
+                                            </td>
+                                            <td>
+                                                {{$estudiante->edad}}
+                                            </td>
+                                            <td>
+                                                {{$estudiante->celular}}
+                                            </td>
+                                            <td> 
+                                                {{$estudiante->estado_civil}}
+                
+                                            </td>
+                                            <td> 
+                                                {{$estudiante->ci}}
+                                            </td>
+                                            <td> 
+                                                {{$estudiante->curso_biblico_usado}}
+                                            </td>
+                                            <td> 
+                                                @if($estudiante->bautizado)
+                                                    <i class="bi bi-check2-circle" style="color: green;"></i>
+                                                @else
+                                                    <i class="bi bi-x-circle" style="color: red"></i>
+                                                @endif
+                                            </td>
+                                            <td> 
+                                                {{$estudiante->nombre_iglesia}}
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>nombre Completo</th>
+                                            <th>sexo</th>
+                                            <th>opcion de contacto</th>
+                                            <th>edad</th>
+                                            <th>celular</th>
+                                            <th>estado civil</th>
+                                            <th>ci</th>
+                                            <th>curso biblico usado</th>
+                                            <th>bautizado</th>
+                                            <th>iglesia</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+                        </div>
+            <div class="card-body">
+          </div>
+          <!--end::Container-->
+        </div>
+        @endsection
+
+
+
+@push('js')
+    <!--JQUERY-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <!--data table-->
+    <script src="https://cdn.datatables.net/2.3.4/js/dataTables.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('#example').DataTable({
+            scrollX: true,
+            language: {
+                search: "Buscar:",   // Cambia el texto de "Search"
+                lengthMenu: "Mostrar _MENU_ registros por página",
+                info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                infoEmpty: "No hay registros disponibles",
+                infoFiltered: "(filtrado de _MAX_ registros totales)",
+                zeroRecords: "No se encontraron resultados",
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                },
+            }
+        });
+    });
+</script>
+
+
+
+@endpush

@@ -6,7 +6,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class PuntualidadController extends Controller
 {
-    public function index() //permissions 'ver puntualidad',
+
+    /*🔹 Puntualidad// SATISFECHOS
+    *'ver - puntualidad',
+    */
+    function __construct()
+    {
+        // index(): permissions 'ver puntualidad'
+        // La etiqueta en la lista era 'ver - puntualidad', usaremos 'ver - puntualidad' para ser exactos.
+        $this->middleware('permission:ver-puntualidad', ['only' => ['index']]);
+    }
+
+     public function index() //permissions 'ver puntualidad',
     {
  
 

@@ -17,9 +17,36 @@ use Illuminate\Support\Facades\Auth;
 
 class VisitasController extends Controller
 {
-    /**
+    /**'ver anual-visitas',
+      *      'ver meses-visitas',
+         *   'crear-visitas',
+       *     'editar-visitas',
+         *   'eliminar-visitas',
+         *   'dashboard-visitas',
      * Display a listing of the resource.
      */
+
+    function __construct()
+    {
+        // index(): PUEDES VER TODAS TUS VISITAS DE ESE // permission 'ver anual - visitas'
+        // Agrupamos la lectura principal con el acceso a la vista del mes específico.
+        $this->middleware('permission:ver anual-visitas', ['only' => ['index', 'index_llenar_visitas_mes']]);
+
+        // index_mes(): //permision 'ver meses - visitas'
+        $this->middleware('permission:ver meses-visitas', ['only' => ['index_mes']]);
+
+        // create() y store(): permision 'crear - visitas'
+        $this->middleware('permission:crear-visitas', ['only' => ['create', 'store']]);
+
+        // edit() y update(): permision 'editar - visitas'
+        $this->middleware('permission:editar-visitas', ['only' => ['edit', 'update']]);
+        
+        // destroy(): permision 'elimnar- visitas'
+        $this->middleware('permission:eliminar-visitas', ['only' => ['destroy']]);
+
+        // dashboard(): permision 'dashboard-visitas' (El comentario dice editar-visitas, pero la lista de permisos dice dashboard-visitas, priorizamos la lista de permisos y la función).
+        $this->middleware('permission:dashboard-visitas', ['only' => ['dashboard']]);
+    }
     public function index() //PUEDES VER TODAS TUS VISITAS DE ESE // permission 'ver anual - visitas'
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
@@ -290,37 +317,5 @@ class VisitasController extends Controller
         // Enviar datos a la vista
         return view('visitas.dashboard', compact('meses', 'desafios', 'alcanzados'));
     }
-
-
-
-
-
-
-
-
-
-
-    /*public function index_asignacion_desafios()
-    {
-        $anioActual = now()->year; 
-        $persona = Auth::user(); 
-        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
-
-        if (!$distrito) {
-            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
-        }
-        $id_distrito = $distrito->id_distrito; 
-
-        $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
-                ->select(
-                    'visitas.*',
-                    'xi.nombre as nombre_iglesia'
-                )
-                ->whereYear('visitas.fecha_visita', $anioActual) // mismo año
-                ->where('xi.estado', true) // iglesias activas
-                ->where('xi.distrito_id', $id_distrito) // solo distrito 11
-                ->get();
-        return view('visitas.index', compact('visitas', 'anioActual'));
-    }*/
 
 }

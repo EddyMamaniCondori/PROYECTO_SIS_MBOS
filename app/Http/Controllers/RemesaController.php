@@ -17,8 +17,46 @@ use App\Http\Controllers\RemesaController;
 class RemesaController extends Controller
 {
     /**
+     * 
+     * // 🔹 Remesas// SATISFECHOS
+     *       'ver meses-remesas',
+     *       'crear meses-remesas',
+     *       'ver remesas mes-remesas',
+*
+      *      'ver remesas filiales-remesas',
+      *      'llenar remesas filiales-remesas',
+      *      'registra remesas filiales-remesas',
+
      * Display a listing of the resource.
      */
+
+    function __construct()
+    {
+        // index(): 'ver meses - remesas'
+        $this->middleware('permission:ver meses-remesas', ['only' => ['index']]);
+
+        // crear(): 'crear meses - remesas' (Asumo que esta es la función que genera los registros)
+        $this->middleware('permission:crear meses-remesas', ['only' => ['crear']]);
+
+        // index_mes(): 'ver remesas mes - remesas'
+        $this->middleware('permission:ver remesas mes-remesas', ['only' => ['index_mes', 'registrar_remesa_iglesia']]); 
+        // Nota: Agrupé registrar_remesa_iglesia con la vista, asumo que al registrar la remesa de iglesia regresa al index_mes.
+
+        // llenar_filial(): 'ver remesas filiales - remesas'
+        $this->middleware('permission:ver remesas filiales-remesas', ['only' => ['llenar_filial']]);
+
+        // registrar_remesa_filial(): 'llenar remesas filiales - remesas'
+        $this->middleware('permission:llenar remesas filiales-remesas', ['only' => ['registrar_remesa_filial']]);
+
+        // registrar_remesa_iglesia() (ya cubierta arriba, pero le aplica el permiso de registro de filiales por la lista que proporcionaste)
+        // Usamos el permiso que parece más aplicable a la acción de registro, aunque el nombre dice 'filiales'.
+        $this->middleware('permission:registra remesas filiales-remesas', ['only' => ['registrar_remesa_iglesia']]);
+        
+        // El método 'registrar_remesa_iglesia' tiene dos permisos aplicados en la lista, priorizaremos la más específica (registro).
+
+        // Los métodos store, show, edit, update, destroy y asignar_puntualidad() se dejan sin protección por no tener etiqueta.
+    }
+
     public function index() //'ver meses - remesas',
     {
         $meses = DB::select("

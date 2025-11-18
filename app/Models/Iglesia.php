@@ -73,5 +73,8 @@ class Iglesia extends Model
         return $this->hasMany(AnualIglesia::class, 'id_iglesia', 'id_iglesia');
     }
 
-
+    public function liderLocal(): HasOne
+    {
+        return $this->hasOne(LiderLocal::class, 'id_iglesia', 'id_iglesia');
+    }
 }

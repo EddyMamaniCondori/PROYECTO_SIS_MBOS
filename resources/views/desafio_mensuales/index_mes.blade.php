@@ -7,29 +7,12 @@
     <!--data table-->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    
 @endpush
 
 @section('content')
-
-@if (session('success'))
-    <script>
-        const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-        });
-        Toast.fire({
-        icon: "success",
-        title: "{{ session('success') }}"
-        });
-    </script>
-@endif
 
 @php
             $meses_array = [
@@ -48,6 +31,7 @@
                     ];
             
 @endphp
+    <x-alerts/>
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
@@ -128,12 +112,55 @@
                                             <td class="text-center">
                                                 {{ $mensual->anio}}
                                             </td>
-                                            <td class="text-cent ber">
-                                                {{ $mensual->fecha_limite}}
+                                             @php
+                                                $fechaLimite = \Carbon\Carbon::parse($mensual->fecha_limite);
+                                                $fechaHoy = \Carbon\Carbon::now();
+                                                if ($fechaLimite->greaterThanOrEqualTo($fechaHoy)) {
+                                                    $claseColor = 'text-success'; // Verde
+                                                } else {
+                                                    $claseColor = 'text-danger'; // Rojo
+                                                }
+                                            @endphp
+                                            <td >
+                                                <span class="{{ $claseColor }} fw-bold">{{ $fechaLimite->format('d/m/Y') }} </span>
                                             </td>
                                             <td> 
-                                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$mensual->mes}}"> <i class="bi bi-pencil-square"></i> Editar</button>
+                                                <div class="btn-group btn-group" role="group" aria-label="Acciones Mensuales">
+                                                    
+                                                    <!-- 1. Ver Avance (Acción Principal de Lectura) -->
+                                                    @can('graficos x mes MBOS-desafios mensuales')
+                                                    <a href="{{ route('mensuales.dashboard', ['mes' => $mensual->mes, 'anio' => $mensual->anio]) }}"
+                                                    class="btn btn-success" title="Ver gráficas y resumen">
+                                                        <i class="bi bi-bar-chart"></i> Ver Avance
+                                                    </a>
+                                                    @endcan
+
+                                                    <!-- 2. Asignación Masiva (Acción Importante de Escritura) -->
+                                                    @can('editar desafios mes masivo-desafios mensuales')
+                                                    <a href="{{ route('mensuales.asignar_desafio.masivo', ['mes' => $mensual->mes, 'anio' => $mensual->anio]) }}"
+                                                    class="btn btn-info" title="Asignar desafíos a todas las iglesias">
+                                                        <i class="bi bi-diagram-3"></i> Asignación Masiva
+                                                    </a>
+                                                    @endcan
+
+                                                    <!-- 3. Asignar/Detalle (Acción de Escritura Menos Masiva) -->
+                                                    @can('editar desafios-desafios mensuales')
+                                                    <a href="{{ route('mensuales.asignar_desafio', ['mes' => $mensual->mes, 'anio' => $mensual->anio]) }}"
+                                                    class="btn btn-primary" title="Asignar o editar desafíos individualmente">
+                                                        <i class="bi bi-pencil-square"></i> Asignar
+                                                    </a>
+                                                    @endcan
+                                                    
+                                                    <!-- 4. Editar (Abre Modal de Edición, Acción secundaria) -->
+                                                    @can('editar fechas-desafios mensuales')
+                                                    <button type="button" 
+                                                            class="btn btn-danger" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#confirmModal-{{$mensual->mes}}"
+                                                            title="Editar la fecha límite del mes"> 
+                                                        <i class="bi bi-calendar"></i> Editar
+                                                    </button>
+                                                    @endcan
                                                 </div>
                                             </td>
                                         </tr>

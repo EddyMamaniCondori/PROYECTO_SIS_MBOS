@@ -14,8 +14,42 @@ use Exception;
 class PersonalController extends Controller
 {
     /**
+     * 
+     * 'ver-personal',
+      *      'ver eliminados-personal',
+       *     'crear-personal',
+     *       'editar-personal',
+     *       'eliminar-personal',
+     *       'reactivar-personal',
+
      * Display a listing of the resource.
      */
+
+    function __construct()
+    {
+        // index(): permission ver personal
+        // Nota: Agrupamos todos los permisos de gestión para acceder al índice principal.
+        $this->middleware('permission:ver-personal|crear-personal|editar-personal|eliminar-personal|reactivar-personal', ['only' => ['index']]);
+
+        // indexdelete(): permission ver eliminados-personal
+        $this->middleware('permission:ver eliminados-personal', ['only' => ['indexdelete']]);
+
+        // create() y store(): permission crear personal
+        $this->middleware('permission:crear-personal', ['only' => ['create', 'store']]);
+
+        // edit() y update(): permission editar personal
+        $this->middleware('permission:editar-personal', ['only' => ['edit', 'update']]);
+
+        // destroy(): permission eliminar personal (Inhabilitar)
+        $this->middleware('permission:eliminar-personal', ['only' => ['destroy']]);
+
+        // reactive(): permission reactivar personal
+        $this->middleware('permission:reactivar-personal', ['only' => ['reactive']]);
+
+        // show() y perfil_pastor() no tienen permiso explícito y se dejan sin protección aquí.
+    }
+
+
     public function indexdelete() // permission ver elimnado -personal
     {
         $personales = Persona::join('personales as xp', 'personas.id_persona', '=', 'xp.id_personal')

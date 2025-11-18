@@ -7,22 +7,25 @@
     <!--data table-->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!--bootstrap select-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+
 @endpush
 
 @section('content')
-
-<x-alerts />
+<x-alerts/>
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-6"><h3 class="mb-0">Desafios Distritales - {{$anioActual}}</h3>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Desafios Distritales</li>
-                    </ol>
+              <div class="col-sm-6"><h3 class="mb-0">Mis Bautizos - {{$distrito->nombre}} - {{$anio}}</h3></div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                  <li class="breadcrumb-item"><a href="{{ route('bautisos.index')}}">Inicio</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Bautisos Distrital</li>
+                </ol>
               </div>
             </div>
           </div>
@@ -34,51 +37,42 @@
             <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                Tabla de Desafios Mensuales
+                                Tabla de Bautisos
                             </div>
                             <div class="card-body">
                                 <table id="example" class="display">
                                     <thead>
-                                         <tr>
-                                            <th>Distrito</th>
-                                            <th>Pastor</th>
-                                            <th>anio</th>
-                                            <th>Acciones</th>
+                                        <tr>
+                                            <th>Iglesia</th>
+                                            <th>Tipo</th>
+                                            <th>Tipo</th>
+                                            <th>fecha de bautizo</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($desafios as $desafio)
+                                        @foreach ($bautizos as $bautiso)
                                         <tr>
                                             <td>
-                                                {{ $desafio->id_desafio }}  /{{ $desafio->id_distrito }}   {{ $desafio->nombre_distrito }}  
+                                            {{$bautiso->iglesia}} 
                                             </td>
                                             <td>
-                                                {{ $desafio->nombre_p }} {{ $desafio->ape_paterno_p }}  {{ $desafio->ape_materno_p }}
+                                                {{$bautiso->tipo_iglesia}}
                                             </td>
-                                            <td class="text-center">
-                                                {{ $desafio->anio}}
-                                            </td>      
-                                            <td> 
-                                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                    <a href="{{ route('dashboard.ver.pastor', ['id' => $desafio->id_distrito, 'anio' => $desafio->anio]) }}"
-                                                        class="btn btn-primary">
-                                                        <i class="bi bi-graph-up"></i> Ver Avance
-                                                    </a>
-
-                                                    <a href="{{ route('desafios.index_distrital', $desafio->id_desafio) }}" class="btn btn-success">
-                                                        <i class="bi bi-pencil-square"></i> Ver deafios
-                                                    </a>
-                                                </div>
+                                            <td>
+                                                {{$bautiso->tipo}}
+                                            </td>
+                                            <td>
+                                                {{$bautiso->fecha_bautizo}}
                                             </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Distrito</th>
-                                            <th>Pastor</th>
-                                            <th>anio</th>
-                                            <th>acciones</th>
+                                            <th>Iglesia</th>
+                                            <th>Tipo</th>
+                                            <th>Tipo</th>
+                                            <th>fecha de bautizo</th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -104,6 +98,7 @@
     $(document).ready(function() {
         $('#example').DataTable({
             scrollX: true,
+            ordering: false, 
             language: {
                 search: "Buscar:",   // Cambia el texto de "Search"
                 lengthMenu: "Mostrar _MENU_ registros por página",
@@ -121,6 +116,10 @@
         });
     });
 </script>
+
+        <!--bootstrap select-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+  
 
 
 

@@ -11,8 +11,30 @@ use Illuminate\Support\Facades\Validator;
 class GrupoController extends Controller
 {
     /**
+     * 
+     * 'ver-grupos',
+      *      'crear-grupos',
+     **       'editar-grupos',
+      *      'eliminar-grupos',
+
      * Display a listing of the resource.
      */
+
+    function __construct()
+    {
+        // index(): permision ver-grupos
+        $this->middleware('permission:ver-grupos', ['only' => ['index']]);
+
+        // create(), store(): permision crear-grupos
+        $this->middleware('permission:crear-grupos', ['only' => ['create', 'store']]);
+
+        // edit(), update(): permision editar-grupos
+        $this->middleware('permission:editar-grupos', ['only' => ['edit', 'update']]);
+
+        // destroy(): permision eliminar-grupos
+        $this->middleware('permission:eliminar-grupos', ['only' => ['destroy']]);
+    }
+
     public function index()// permision ver-grupos
     {
        $grupos = Grupo::leftJoin('administrativos as xa', 'grupos.administrativo_id', '=', 'xa.id_persona')

@@ -1,7 +1,7 @@
 @extends('template')
 
 
-@section('title', 'Bautisos')
+@section('title', 'Tablas')
 
 @push('css')
     <!--data table-->
@@ -11,18 +11,35 @@
 
 @section('content')
 
-<x-alerts />
+@if (session('success'))
+    <script>
+        const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+        });
+        Toast.fire({
+        icon: "success",
+        title: "{{ session('success') }}"
+        });
+    </script>
+@endif
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-6"><h3 class="mb-0">Desafios Distritales - {{$anioActual}}</h3>
-                </div>
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-end">
-                        <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Desafios Distritales</li>
-                    </ol>
+              <div class="col-sm-6"><h3 class="mb-0">Asignar Campañas</h3></div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Campañas</li>
+                </ol>
               </div>
             </div>
           </div>
@@ -34,40 +51,48 @@
             <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                Tabla de Desafios Mensuales
+                                Tabla de Eventos
                             </div>
                             <div class="card-body">
                                 <table id="example" class="display">
                                     <thead>
-                                         <tr>
-                                            <th>Distrito</th>
-                                            <th>Pastor</th>
-                                            <th>anio</th>
-                                            <th>Acciones</th>
+                                        <tr>
+                                            <th>Codigo Evento</th>
+                                            <th>Nombre</th>
+                                            <th>Año</th>
+                                            <th>Fecha inicio</th>
+                                            <th>Fecha final</th>
+                                            <th>acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($desafios as $desafio)
+                                        @foreach ($desafio_eventos as $desafio)
                                         <tr>
                                             <td>
-                                                {{ $desafio->id_desafio }}  /{{ $desafio->id_distrito }}   {{ $desafio->nombre_distrito }}  
+                                                {{$desafio->id_desafio_evento}} 
                                             </td>
                                             <td>
-                                                {{ $desafio->nombre_p }} {{ $desafio->ape_paterno_p }}  {{ $desafio->ape_materno_p }}
+                                                {{$desafio->nombre}}
                                             </td>
-                                            <td class="text-center">
-                                                {{ $desafio->anio}}
-                                            </td>      
-                                            <td> 
-                                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                    <a href="{{ route('dashboard.ver.pastor', ['id' => $desafio->id_distrito, 'anio' => $desafio->anio]) }}"
-                                                        class="btn btn-primary">
-                                                        <i class="bi bi-graph-up"></i> Ver Avance
-                                                    </a>
+                                            <td>
+                                                {{$desafio->anio}}
+                                            </td>
+                                            <td>
+                                                {{$desafio->fecha_inicio}}
+                                            </td>
 
-                                                    <a href="{{ route('desafios.index_distrital', $desafio->id_desafio) }}" class="btn btn-success">
-                                                        <i class="bi bi-pencil-square"></i> Ver deafios
+                                            <td>
+                                                {{$desafio->fecha_final}}
+                                            </td>
+                                            <td> 
+
+                                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                                    @can('ver por evento-dashboards desafios eventos')
+                                                        <a href="{{ route('desafio_evento.dashboard.bautizos', $desafio->id_desafio_evento) }}" class="btn btn-success">
+                                                            <i class="bi bi-eye"></i> Ver Resultados
                                                     </a>
+                                                    @endcan
+                                                    
                                                 </div>
                                             </td>
                                         </tr>
@@ -75,9 +100,11 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Distrito</th>
-                                            <th>Pastor</th>
-                                            <th>anio</th>
+                                            <th>Codigo Evento</th>
+                                            <th>Nombre</th>
+                                            <th>Año</th>
+                                            <th>Fecha inicio</th>
+                                            <th>Fecha final</th>
                                             <th>acciones</th>
                                         </tr>
                                     </tfoot>

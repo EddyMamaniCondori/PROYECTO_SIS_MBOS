@@ -10,8 +10,30 @@ use Illuminate\Support\Facades\DB;
 class roleController extends Controller
 {
     /**
+     * 
+     * 'gestionar-roles',
+     *       'gestionar-permisos',
+     *       'asignar-roles',
+
      * Display a listing of the resource.
      */
+    function __construct()
+    {
+        // index(): permission ver roles
+        $this->middleware('permission:ver-roles|crear-roles|editar-roles|eliminar-roles', ['only' => ['index']]);
+
+        // create() y store(): permission crear roles
+        $this->middleware('permission:crear-roles', ['only' => ['create', 'store']]);
+
+        // edit() y update(): permission editar roles
+        $this->middleware('permission:editar-roles', ['only' => ['edit', 'update']]);
+
+        // destroy(): permission eliminar roles
+        $this->middleware('permission:eliminar-roles', ['only' => ['destroy']]);
+
+        // Los permisos 'gestionar-permisos' y 'asignar-roles' se usan típicamente en otros controladores, por lo que no se aplican directamente aquí.
+    }
+    
     public function index() // permission ver roles
     {
         $roles = Role::all();

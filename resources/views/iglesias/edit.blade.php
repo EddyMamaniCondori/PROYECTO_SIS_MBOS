@@ -41,7 +41,10 @@
                     <div class="col-md-4">
                         <label for="nombre" class="form-label">Nombre de la Iglesia: <strong><span class="text-danger">*</span></strong></label>
                         <input type="text" name="nombre" id="nombre" 
-                            class="form-control" value="{{@old('nombre', $iglesia->nombre)}}">
+                            class="form-control" value="{{@old('nombre', $iglesia->nombre)}}" 
+                            @cannot('editar-iglesias')
+                                disabled 
+                            @endcannot>
                         @error('nombre')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -50,7 +53,9 @@
                     <div class="col-md-3">
                         <label for="codigo" class="form-label">Codigo: <strong><span class="text-danger">*</span></strong></label>
                         <input type="number" name="codigo" id="codigo" 
-                            class="form-control" value="{{ old('codigo', $iglesia->codigo)}}"  min="0"  step="1" >
+                            class="form-control" value="{{ old('codigo', $iglesia->codigo)}}"  min="0"  step="1" @cannot('editar-iglesias')
+                                disabled 
+                            @endcannot>
                         @error('codigo')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -59,7 +64,9 @@
 
                     <div class="col-md-3 mt-4">
                         <label for="tipo" class="form-label">Tipo: <strong><span class="text-danger">*</span></strong> </label>
-                        <select name="tipo" id="tipo" class="form-select" required>
+                        <select name="tipo" id="tipo" class="form-select" required @cannot('editar-iglesias')
+                                disabled 
+                            @endcannot>
                             <option value="">-- Seleccione un tipo --</option>
                             <option value="Iglesia" {{ old('tipo', $iglesia->tipo) == 'Iglesia' ? 'selected' : '' }}>Iglesia</option>
                             <option value="Grupo" {{ old('tipo', $iglesia->tipo) == 'Grupo' ? 'selected' : '' }}>Grupo</option>
@@ -73,7 +80,9 @@
 
                     <div class="col-md-3 mt-4">
                         <label for="lugar" class="form-label">Lugar: <strong><span class="text-danger">*</span></strong></label>
-                        <select name="lugar" id="lugar" class="form-select" required>
+                        <select name="lugar" id="lugar" class="form-select" required @cannot('editar-iglesias')
+                                disabled 
+                            @endcannot>
                             <option value="">-- Seleccione un lugar--</option>
                             <option value="ALTIPLANO" {{ old('lugar', $iglesia->lugar) == 'ALTIPLANO' ? 'selected' : '' }}>Altiplano</option>
                             <option value="EL ALTO" {{ old('lugar', $iglesia->lugar) == 'EL ALTO' ? 'selected' : '' }}>El Alto</option>
@@ -86,7 +95,9 @@
                     <div class="col-md-2">
                         <label for="feligresia" class="form-label">Cantidad de feligreses:</label>
                         <input type="number" name="feligresia" id="feligresia" 
-                            class="form-control" value="{{ old('feligresia',$iglesia->feligresia )  }}" min="0"  step="1">
+                            class="form-control" value="{{ old('feligresia',$iglesia->feligresia )  }}" min="0"  step="1" @cannot('editar-iglesias')
+                                disabled 
+                            @endcannot>
                         @error('feligresia')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
@@ -139,11 +150,13 @@
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+                    @can('asignaciones-iglesias')
+                        
+                    
                     <!-- Checkbox: ¿Tiene distrito? -->
                     <h5 class="mb-0"><strong>Datos Relacionales </strong></h5>
                     <hr> 
                     <span class="text-danger">En caso de no pertenecer a un distrito no llene este espacio</span>
-
                     <!-- Select de distritos (oculto al inicio) -->
                     <div class="col-md-6 mt-3">
                         <label for="id_distrito" class="form-label">Distrito:</label>
@@ -160,10 +173,19 @@
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
+                    @endcan
                     <!-- Botón Guardar -->
                     <div class="col-12 mt-3">
-                        <button type="submit" class="btn btn-primary">Actualizar</button>
-                        <a href="{{ route('iglesias.index') }}" class="btn btn-secondary">Cancelar</a>
+                        @canany(['editar-iglesias','editar pastor-iglesias'])
+                            <button type="submit" class="btn btn-primary">Actualizar</button>
+                        @endcanany
+                        
+                        @can('ver-iglesias')
+                            <a href="{{ route('iglesias.index') }}" class="btn btn-secondary">Cancelar</a>
+                        @endcan
+                        @can('ver pastor-iglesias')
+                            <a href="{{ route('iglesias.index_pastores') }}" class="btn btn-secondary">Cancelar</a>
+                        @endcan
                     </div>
                 </div>
             </form> 

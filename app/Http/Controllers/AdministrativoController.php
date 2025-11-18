@@ -17,9 +17,19 @@ use App\Http\Requests\UpdatePastorRequest;
 
 class AdministrativoController extends Controller
 {
+
+
     /**
+     * 'ver-administrativo',
      * Display a listing of the resource.
      */
+
+    function __construct()
+    {
+        // index(): Permiso ver administrativo
+        $this->middleware('permission:ver-administrativo', ['only' => ['index']]);
+    }
+    
     public function index() //Permiso  ver administrativo
     {
         $administrativos = Persona::join('administrativos as xp', 'personas.id_persona', '=', 'xp.id_persona')

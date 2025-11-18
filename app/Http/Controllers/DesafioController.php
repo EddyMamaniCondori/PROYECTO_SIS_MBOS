@@ -16,9 +16,30 @@ use Exception;
 class DesafioController extends Controller
 {
     /**
+     * 
+     * 'ver-desafios',
+    *   'ver-desafios distrital anuales',
+        *    'ver-desafios bautisos mbos anuales',
+        *    'editar-desafio bautisos anuales',
+
      * Display a listing of the resource.
      */
     //MUESTRA TODOS LOS DESAFIOS ASIGNADOS A 1 DISTRITO ESPECIOFICO 
+    
+    function __construct()
+    {
+        // index(): permision ver desafios
+        $this->middleware('permission:ver-desafios', ['only' => ['index']]);
+        // index_distrital(): permision ver desafios distrital anuales
+        $this->middleware('permission:ver-desafios distrital anuales', ['only' => ['index_distrital']]);
+        // index_desafio_bautizos(): permision ver desafios bautisos mbos anuales
+        $this->middleware('permission:ver-desafios bautisos mbos anuales', ['only' => ['index_desafio_bautizos']]);
+        // update() y update_2(): permision editar desafio bautisos anuales
+        $this->middleware('permission:editar-desafio bautisos anuales', ['only' => ['update', 'update_2']]);
+        // Los métodos store(), create(), edit(), destroy(), show() se dejan sin protección por no tener etiqueta de permiso explícita.
+    }
+
+   
     public function index_distrital(string $id) // permission  'ver desafios distrital anuales'
     {
         $desafio = Desafio::find($id); // mejor usar findOrFail
@@ -138,39 +159,7 @@ class DesafioController extends Controller
      * Update the specified resource in storage.
      */
 
-    //actualiza el desafio bautizos desde la todos los desafios de los distritos
-    public function update_2(Request $request, string $id) // permision 'editar desafio bautisos anuales'
-    {
-        try {
-            // Validar los datos primero
-            $validated = $request->validate([
-                'desafio_bautizo' => 'required|integer|min:0',
-            ]);
-
-            DB::beginTransaction();
-
-            $desafio = Desafio::find($id);
-            
-            $desafio->update($validated);
-            
-            $id_desafio = $desafio->id_desafio;
-            
-            DB::commit();
-
-            return redirect()->route('desafios.bautizos')
-                ->with('success', 'Desafío Bautizos actualizado correctamente.');
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()
-                ->withErrors($e->validator)
-                ->withInput();
-                
-        } catch (Exception $e) {
-            DB::rollBack();
-            return redirect()->back()
-                ->with('error', 'Error al actualizar el Desafío de Bautizos: ' . $e->getMessage());
-        }
-    }
+    
     //actualiza el desafio bautizos desde una tabla con solo desafios
     public function update(Request $request, string $id) // permision 'editar desafio bautisos anuales'
     {
@@ -212,11 +201,18 @@ class DesafioController extends Controller
     {
         //
     }
-
+/***
+     * 
+     * 
+     * ____________________PARA DESAFIO BAUTISOS_________________________________
+     * 
+     */
     //muestra todos desafios y sus alcanzados en bautisos de todos los distrito es MBOS
+    
     public function index_desafio_bautizos()  //permission 'ver desafios bautisos mbos anuales',
     {
         try {
+
             $anioActual = now()->year; //sacamos el año actual
 
              // Obtener el año configurado en la tabla distritos
@@ -247,8 +243,11 @@ class DesafioController extends Controller
                             'xp.ape_materno as ape_materno_p'
                         )
                         ->get();
-                
-                return view('bautisos.index_bautizo', compact('desafios', 'anioDistritos'));
+
+                $anioActual = $anioDistritos;
+                $anioMen = $anioActual+1; 
+                return view('bautisos.index_bautizo', compact('desafios', 'anioActual'))
+                        ->with('info', "Desafíos del {$anioMen} pendientes. Habilita el nuevo período en ADMINISTRAR DESAFÍOS.");
             }
             // Obtener todos los desafíos del año actual
             $desafios = Desafio::leftjoin('distritos as xd', 'desafios.id_distrito', '=', 'xd.id_distrito')
@@ -271,6 +270,39 @@ class DesafioController extends Controller
         }
     }
     
+    //actualiza el desafio bautizos desde la todos los desafios de los distritos
+    public function update_2(Request $request, string $id) // permision 'editar desafio bautisos anuales'
+    {
+        try {
+            // Validar los datos primero
+            $validated = $request->validate([
+                'desafio_bautizo' => 'required|integer|min:0',
+            ]);
+
+            DB::beginTransaction();
+
+            $desafio = Desafio::find($id);
+            
+            $desafio->update($validated);
+            
+            $id_desafio = $desafio->id_desafio;
+            
+            DB::commit();
+
+            return redirect()->route('desafios.bautizos')
+                ->with('success', 'Desafío Bautizos actualizado correctamente.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+                
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->with('error', 'Error al actualizar el Desafío de Bautizos: ' . $e->getMessage());
+        }
+    }
     
     /***
      * 

@@ -15,8 +15,19 @@ use App\Http\Requests\DistritoRequest;
 class BlancoController extends Controller
 {
     /**
+     * 'ver-blanco',
+    *'editar-blanco',
+
      * MUESTRA TODOS LOS DISTRITOS Y SUS BLANCO DE REMESAS
      */
+    function __construct()
+    {
+        // index(): PERMISO ver blanco y crear (combinamos los permisos de lectura/creación para el listado inicial)
+        $this->middleware('permission:ver-blanco|editar-blanco', ['only' => ['index']]);
+        // update(): PERMISO editar blanco
+        $this->middleware('permission:editar-blanco', ['only' => ['update']]);
+    }
+
     public function index()  //PERMISO ver blanco y crear al mismo tiempo
     {
         $anioActual = now()->year;

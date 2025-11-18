@@ -16,6 +16,61 @@ use App\Http\Requests\DistritoRequest;
 
 class DistritoController extends Controller
 {
+    /**
+     * 
+     * // 🔹 Distritos //SATISFECHO
+      *      'ver-distritos',
+     *       'ver eliminados-distritos',
+    *        'ver historial-distritos',
+    *        'crear-distritos',
+    *        'editar-distritos',
+    *        'eliminar-distritos',
+     *       'reactivar-distritos',
+    *        //(DISTRITOS) //Asignacion de pastores, en año en curso
+    *        'cambiar asignaciones ACT - distritos',
+     *       //(DISTRITOS) //Asignaciones de pastores, para el siguiente año
+    *        'cambiar asignaciones SIG - distritos',
+     */
+     function __construct()
+    {
+        // Permisos de Lectura
+        // index(): PERMISION ver distritos
+        $this->middleware('permission:ver-distritos', ['only' => ['index']]);
+
+        // index_eliminado(): PERMISION ver eliminados -distritos
+        $this->middleware('permission:ver eliminados-distritos', ['only' => ['index_eliminado']]);
+
+        // index_historial() y historial(): PERMISION ver historial -distritos
+        $this->middleware('permission:ver historial-distritos', ['only' => ['index_historial', 'historial']]);
+
+        // Permisos de Escritura
+        // create() y store(): permissions creaer distritos
+        $this->middleware('permission:crear-distritos', ['only' => ['create', 'store']]);
+
+        // update(): permissions editar distritos (Nota: el método 'edit' no tiene etiqueta explícita)
+        $this->middleware('permission:editar-distritos', ['only' => ['edit', 'update']]);
+
+        // destroy(): permissions eliminar distritos
+        $this->middleware('permission:eliminar-distritos', ['only' => ['destroy']]);
+
+        // reactive(): permissions reactivar distritos
+        $this->middleware('permission:reactivar-distritos', ['only' => ['reactive']]);
+        
+        // ___________________ Asignaciones del Año Actual (ACT) ___________________
+        // index_asignaciones(), cambiarAsignacion(), liberarAsignacion(): permissions 'cambiar asignaciones ACT - distritos'
+        $this->middleware('permission:cambiar asignaciones ACT - distritos', ['only' => ['index_asignaciones', 'cambiarAsignacion', 'liberarAsignacion']]);
+
+        // ___________________ Asignaciones Anuales (SIG) ___________________
+        // Múltiples métodos para la gestión anual: copiarADiriges, mantenerAsignacion, liberarAsignacionAnual, indexanual, cambiarAsignacionAnual, Finalizar_Asignaciones
+        $this->middleware('permission:cambiar asignaciones SIG - distritos', ['only' => [
+            'copiarADiriges', 
+            'mantenerAsignacion', 
+            'liberarAsignacionAnual', 
+            'indexanual', 
+            'cambiarAsignacionAnual', 
+            'Finalizar_Asignaciones'
+        ]]);
+    }
     public function index() //PERMISION ver distritos
     {
         $anios = DB::select('SELECT DISTINCT xd.año FROM distritos xd');
@@ -319,7 +374,7 @@ class DistritoController extends Controller
 
     //_______________________________FUNCIONES PARA ASIGNACIONES*_______________________________*/
     // normal para cambiar durante todo el año (este si se reflejara en la tabla de disrtito)
-    public function index_asignaciones()
+    public function index_asignaciones() //permissions 'cambiar asignaciones ACT - distritos',
     {
         $anios = DB::select('SELECT DISTINCT xd.año FROM distritos xd');
 
@@ -347,7 +402,7 @@ class DistritoController extends Controller
         return view('distritos.index_asignaciones', compact('distritos', 'anios', 'pastores_libres'));
     }
     /*cambiar asignacion en año en curso */  
-    public function cambiarAsignacion(Request $request, $id_distrito)
+    public function cambiarAsignacion(Request $request, $id_distrito) //permissions 'cambiar asignaciones ACT - distritos',
     {
         $request->validate([
             'id_pastor' => 'required|exists:pastors,id_pastor',
@@ -375,7 +430,7 @@ class DistritoController extends Controller
     }
 
     /*liberar al pastor em gestion en curso */
-    public function liberarAsignacion($id_distrito)
+    public function liberarAsignacion($id_distrito)//permissions 'cambiar asignaciones ACT - distritos',
     {
         //buscamos al distrito
         $distrito = Distrito::find($id_distrito);
@@ -401,13 +456,8 @@ class DistritoController extends Controller
         return redirect()->back()->with('success', 'Pastor liberado correctamente.');
     }
 
-
-
-
-    
-
     /*** _________________________ASIGNACIONES ANAULES_______________________ */
-    public function copiarADiriges()
+    public function copiarADiriges() //permissions 'cambiar asignaciones SIG - distritos',
     {   
         $anio = DB::table('distritos')
             ->where('estado', true)
@@ -430,7 +480,7 @@ class DistritoController extends Controller
         return redirect()->back()->with('success', 'Habilitacion Correcta, para asignacion de Pastores Distritales');
     }
 
-     public function mantenerAsignacion($id_distrito)
+     public function mantenerAsignacion($id_distrito) //permissions 'cambiar asignaciones SIG - distritos',
     {
         DB::table('asignacion_distritos')
             ->where('id_distrito_asignaciones', $id_distrito)
@@ -439,7 +489,7 @@ class DistritoController extends Controller
         return redirect()->back()->with('success', 'Asignación mantenida.');
     }
 
-    public function liberarAsignacionAnual($id_distrito)
+    public function liberarAsignacionAnual($id_distrito) //permissions 'cambiar asignaciones SIG - distritos',
     {
         try {
             // 🔹 Ejecutar el UPDATE
@@ -462,7 +512,7 @@ class DistritoController extends Controller
         }
     }
 
-    public function indexanual()
+    public function indexanual() //permissions 'cambiar asignaciones SIG - distritos',
     {
         $sw_cambio = DB::table('distritos')
             ->where('estado', true)
@@ -497,7 +547,7 @@ class DistritoController extends Controller
         return view('distritos.asignacion_anual', compact('distritos', 'anio', 'pastores_libres'));
     }
 
-    public function cambiarAsignacionAnual(Request $request, $id_distrito)
+    public function cambiarAsignacionAnual(Request $request, $id_distrito) //permissions 'cambiar asignaciones SIG - distritos',
     {
         $request->validate([
             'id_pastor' => 'required|exists:pastors,id_pastor',
@@ -516,7 +566,7 @@ class DistritoController extends Controller
     }
     
 
-    public function Finalizar_Asignaciones($anio)
+    public function Finalizar_Asignaciones($anio) //permissions 'cambiar asignaciones SIG - distritos',
     {
         try {
             //  1: ACTULIZAR HISTORIAL
@@ -572,6 +622,5 @@ class DistritoController extends Controller
                 ->with('error', 'Error al finalizar asignaciones: ' . $e->getMessage());
         }
     }
-
 
 }
