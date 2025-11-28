@@ -159,28 +159,13 @@
                                                     </form>
 
 
-                                                    <!-- Informe -->
-                                                    <form action="#"  class="d-inline">
-                                                        <button type="submit" class="btn btn-success" title="Generar informe">
-                                                            <i class="bi bi-file-earmark-bar-graph"></i> Informe
-                                                        </button>
-                                                    </form>
-
-                                                    <!-- Gráficos -->
-                                                    <form action="#"  class="d-inline">
-                                                        <button type="submit" class="btn btn-info" title="Ver gráficos">
-                                                            <i class="bi bi-graph-up"></i> Gráficos
-                                                        </button>
-                                                    </form>
-
-                                                    <!-- Cerrar Mes -->
-                                                    <button type="button" 
-                                                            class="btn btn-danger"
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#confirmModal-{{ $mes->mes }}"
-                                                            title="Cerrar mes">
-                                                        <i class="bi bi-x-circle"></i> Finalizar
-                                                    </button>
+                                                    
+                                                    <div class="d-flex justify-content-end ">
+                                                        <a href="{{ route('pdf.remesas.mensual', ['anio' => $mes->anio, 'mes' => $mes->mes]) }} " target="_blank"
+                                                        class="btn btn-success fw-bold shadow-sm">
+                                                            <i class="bi bi-file-earmark-bar-graph"></i>  Informe PDF
+                                                        </a>
+                                                    </div>
 
                                                 </div>
                                             </td>

@@ -150,6 +150,7 @@ class PanelController extends Controller
     //MBOS - puede ver el avance en graficos de los pastores
     public function ver_avance_pastores($id, $anio) //permision 'ver avanve pastores - panel',
     {
+
         $distrito = Distrito::findOrFail($id);
         $pastor = Persona::findOrFail($distrito->id_pastor);
         if (!$distrito) {
@@ -295,5 +296,187 @@ class PanelController extends Controller
         });
         return view('dashboards.dashboard_pastor_mbos', compact('pastor','graficos_ins_est','desafios_ins_est','resumenIglesias', 'graficos_final', 'distrito','meses', 'desafios', 'alcanzados', 'grafico_estudiantes', 'grafico_instructores' ));
     }
+
+
+    public function dashboardTesorero() //para ver panel de tesoreros
+    {
+        $anioActual = date('Y');
+         // ¿Hay blancos para este año?
+        $hayBlancos = DB::table('blanco_remesas')
+        ->where('anio', $anioActual)
+        ->exists();
+
+        // ¿Hay remesas para este año?
+        $hayRemesas = DB::table('generas')
+            ->where('anio', $anioActual)
+            ->exists();
+
+        if ($hayBlancos && $hayRemesas) {
+            $anio = $anioActual;
+        }else{
+            $anio = $anioActual -1;
+        }
+
+        // A) Total blanco
+        $blanco = DB::table('blanco_remesas')
+            ->where('anio', $anio)
+            ->sum('monto');
+
+        // B) Total alcanzado
+
+        $alcanzado = DB::table('remesas_iglesias as ri')
+            ->join('generas as g', 'g.id_remesa', '=', 'ri.id_remesa')
+            ->where('g.anio', $anio)
+            ->sum('ri.monto');
+
+        // C) Porcentaje
+        $porcentaje = $blanco > 0 ? ($alcanzado / $blanco) * 100 : 0;
+
+        // D) Diferencia
+        // positivo = superó el desafío
+        // negativo = falta alcanzar
+        $diferencia = $alcanzado - $blanco;
+
+        // E) Gráfica mensual
+        $mensual = DB::select("
+            SELECT xg.mes, SUM(xri.monto) AS total_mes
+            FROM generas xg
+            JOIN remesas_iglesias xri ON xri.id_remesa = xg.id_remesa
+            WHERE xg.anio = ?
+            GROUP BY xg.mes
+            ORDER BY xg.mes
+        ", [$anio]);
+
+        // Formatear para JS
+        $meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+        $dataMensual = array_fill(0, 12, 0);
+        foreach ($mensual as $row) {
+            $dataMensual[$row->mes - 1] = (float)$row->total_mes;
+        }
+        // PROMEDIO MENSUAL (solo meses con datos)
+        $promedioMensual = array_sum($dataMensual) / max(1, count(array_filter($dataMensual)));
+        // Ranking top 5 distritos
+        $topDistritos = DB::select("
+            SELECT d.nombre AS distrito, SUM(xri.monto) AS total
+            FROM iglesias i
+            JOIN distritos d ON d.id_distrito = i.distrito_id
+            JOIN generas xg ON xg.id_iglesia = i.id_iglesia
+            JOIN remesas_iglesias xri ON xri.id_remesa = xg.id_remesa
+            WHERE xg.anio = ?
+            GROUP BY d.nombre
+            ORDER BY total DESC
+            LIMIT 5
+        ", [$anio]);
+
+        // Distritos de alerta (< 50%)
+        $alertas = DB::select("
+            SELECT 
+                d.id_distrito,
+                d.nombre AS distrito,
+                SUM(xri.monto) AS total,
+                br.monto AS blanco
+            FROM iglesias i
+            JOIN distritos d ON d.id_distrito = i.distrito_id
+            JOIN generas xg ON xg.id_iglesia = i.id_iglesia
+            JOIN remesas_iglesias xri ON xri.id_remesa = xg.id_remesa
+            JOIN blanco_remesas br ON br.id_distrito = d.id_distrito
+            WHERE xg.anio = ?
+            GROUP BY d.id_distrito, d.nombre, br.monto
+            HAVING SUM(xri.monto) < br.monto * 0.5;", [$anio]);
+        return view('panel.tesorero', [
+            'blanco' => $blanco,
+            'alcanzado' => $alcanzado,
+            'porcentaje' => round($porcentaje, 2),
+            'diferencia' => $diferencia,
+            'meses' => $meses,
+            'dataMensual' => $dataMensual,
+            'promedioMensual' => $promedioMensual,
+            'topDistritos' => $topDistritos,
+            'alertas' => $alertas
+        ]);
+    }
+
+    public function dashboardSecretario()
+    {
+        // ==============================
+        // 🔵 1. KPIs BASE - IGLESIAS
+        // ==============================
+        $totalIglesias = DB::table('iglesias')
+            ->where('estado', true)
+            ->count();
+
+        $iglesiasTipoIglesia = DB::table('iglesias')
+            ->where('tipo', 'Iglesia')
+            ->where('estado', true)
+            ->count();
+
+        $iglesiasTipoGrupo = DB::table('iglesias')
+            ->where('tipo', 'Grupo')
+            ->where('estado', true)
+            ->count();
+
+        $iglesiasTipoFilial = DB::table('iglesias')
+            ->where('tipo', 'Filial')
+            ->where('estado', true)
+            ->count();
+
+
+        // ============================
+    // 🔵 2. BAUTISMOS – GENERAL MBOS
+    // ============================
+    $b_desafio = DB::table('desafios')->sum('desafio_bautizo');
+    $b_alcanzado = DB::table('desafios')->sum('bautizos_alcanzados');
+    $b_diferencia = $b_alcanzado - $b_desafio;
+
+
+    // ============================
+    // 🔵 3. BAUTISMOS – DISTRITOS (2025)
+    // ============================
+    $anio = 2025;
+
+    $b_desafio_d = DB::table('desafios')
+        ->where('anio', $anio)
+        ->sum('desafio_bautizo');
+
+    $b_alcanzado_d = DB::table('desafios')
+        ->where('anio', $anio)
+        ->sum('bautizos_alcanzados');
+
+    $b_diferencia_d = $b_alcanzado_d - $b_desafio_d;
+
+
+    // ============================
+    // 🔵 4. Datos para Gráfica — Iglesias por Distrito
+    // ============================
+    $iglesiasPorDistrito = DB::table('iglesias as i')
+        ->join('distritos as d', 'd.id_distrito', '=', 'i.distrito_id')
+        ->select('d.nombre as distrito', DB::raw('COUNT(*) as total'))
+        ->where('i.estado', true)
+        ->groupBy('d.nombre')
+        ->orderBy('total', 'DESC')
+        ->get();
+    $porcentajeGeneral = $b_desafio > 0 
+    ? round(($b_alcanzado / $b_desafio) * 100, 1)
+    : 0;
+
+    return view('panel.secretario', compact(
+        'totalIglesias',
+        'iglesiasTipoIglesia',
+        'iglesiasTipoGrupo',
+        'iglesiasTipoFilial',
+        'b_desafio',
+        'b_alcanzado',
+        'b_diferencia',
+        'b_desafio_d',
+        'b_alcanzado_d',
+        'b_diferencia_d',
+        'anio',
+        'iglesiasPorDistrito',
+        'porcentajeGeneral'
+    ));
+    }
+
+
 
 }

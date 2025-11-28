@@ -25,41 +25,43 @@ use App\Http\Controllers\DesafioMensualController;
 use App\Http\Controllers\DesafioEventoController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\roleController;
+use App\Http\Controllers\PerfilController;
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
 
-})->middleware(['auth', 'verified'])->name('dashboard');
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
+
+Route::redirect('/', '/login');
 
 // ===== TUS RUTAS ANTIGUAS (las reconstruimos juntos) =====
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', function () {
-        return view('welcome');
-    });
 
-    Route::get('/template', function () {
-        return view('template');
-    });
 
-    Route::get('/panel', function () {
-        return view('panel/index');
-    })->name('panel');
+    Route::get('/perfil', [PerfilController::class, 'index'])
+        ->name('perfil.index');
+    // 1) Actualizar datos personales
+    Route::put('/perfil/datos', [PerfilController::class, 'updateData'])->name('profile.updateData');
 
+    // 2) Cambiar contraseña
+    Route::put('/perfil/password', [PerfilController::class, 'updatePassword'])->name('profile.updatePassword');
+
+    // 3) Subir foto
+    Route::post('/perfil/foto', [PerfilController::class, 'updatePhoto'])->name('profile.updatePhoto');
     /**
      *_________________DASHBOARDS PRINCIPALES
     * 
     */
+     //pastor
     Route::get('/dashboard/pastor/', [PanelController::class, 'dashboard_pastores'])
         ->name('dashboard.pastor');
 
     Route::get('/dashboard/ver/pastor/{id}/{anio}', [PanelController::class, 'ver_avance_pastores'])
         ->name('dashboard.ver.pastor');
+    //tesorero
+    Route::get('/tesoreria/dashboard', [PanelController::class, 'dashboardTesorero'])
+    ->name('dashboard.tesorero');
+    //secretario
+    Route::get('/secretario/dashboard', [PanelController::class, 'dashboardSecretario'])
+    ->name('dashboard.secretario');
 
     /**
      *_________________BANCOS
@@ -80,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::get('/remesas/puntualidades/', [PuntualidadController::class, 'index'])
         ->name('remesas.puntualidades');
+    
     /**
      *_________________PENDIENTES
     * 
@@ -98,8 +101,6 @@ Route::middleware(['auth'])->group(function () {
     * 
     */
 
-    Route::get('remesas/distrital/dashboard', [RemesasDashboardController::class, 'index'])
-        ->name('remesas.distrital.dashboard');
 
     Route::get('remesas/distrital/dash', [RemesasDashboardController::class, 'index_distrital'])
         ->name('remesas.distrital.dash');
@@ -113,6 +114,10 @@ Route::middleware(['auth'])->group(function () {
     //muestra la grafica  de fondos locales de las filiales de 1 distrito
     Route::get('remesas/fondo_local/distrital/filial/dash_general', [RemesasDashboardController::class, 'dashboard_fondo_local_filiales_distrito'])
         ->name('remesas.fondo_local.distrital.filial.dash_general');
+
+    Route::get('/remesas/tabla-distrital', [RemesasDashboardController::class, 'tabla_distrital'])
+     ->name('remesas.tabla.distrital');
+
     /**
      *_______________DESAFIOS BAUTISOS POR DISTRITO
     * 
@@ -370,6 +375,32 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('mensuales/dashboard_meses', [DesafioMensualController::class, 'resumenMensualGeneral'])
         ->name('mensuales.dashboard_meses');
+    //REMESAS
+    Route::get('/pdf/remesas/{anio}/{mes}', [RemesaController::class, 'exportRemesaMensualPDF'])
+    ->name('pdf.remesas.mensual');
+
+        /**
+         * _____________________EXPORTACIONES DE PDF Y EXCEL
+         */
+    Route::get('/puntualidad/export-excel', [PuntualidadController::class, 'exportExcel']);
+    Route::get('/puntualidad/export-pdf', [PuntualidadController::class, 'exportPdf'])
+        ->name('puntualidad.exportPdf');
+
+    Route::get('/remesas/tabla-distrital/excel-direct', [RemesasDashboardController::class, 'exportDistritalExcelDirect'])
+        ->name('remesas.tabla.excel.direct');
+    Route::get('/remesas/tabla-distrital/pdf', [RemesasDashboardController::class, 'exportDistritalPDF'])
+        ->name('remesas.tabla.pdf');
+    //remsas filiales
+    Route::get('/remesas/filiales-mensual', [RemesasDashboardController::class, 'tablaFilialesPivot'])
+        ->name('remesas.filiales.pivot');
+
+    Route::get('/remesas/filiales-mensual/excel', 
+    [RemesasDashboardController::class, 'exportFilialesExcel'])
+    ->name('remesas.filiales.excel');
+Route::get('/remesas/filiales-mensual/pdf', 
+    [RemesasDashboardController::class, 'exportFilialesPDF'])
+    ->name('remesas.filiales.pdf');
+
 
     Route::resource('pastores', PastorController::class);
     Route::resource('personales', PersonalController::class);

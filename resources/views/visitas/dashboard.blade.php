@@ -19,8 +19,6 @@
       crossorigin="anonymous"
     />  
 @endpush
-
-
         @section('content')
         <!--begin::App Content Header-->
         <div class="app-content-header">
@@ -44,13 +42,9 @@
         <!--begin::App Content-->
         <div class="app-content">
           <!--begin::Container-->
-
-
-
-
           <div class="container-fluid">
             <div class="row">
-              <div class="col-lg-7 connectedSortable">
+              <div class="col-lg connectedSortable">
                 <div class="card mb-4">
                   <div class="card-header"><h3 class="card-title">Visitas Mensuales</h3></div>
                   <div class="card-body"><div id="revenue-chart"></div></div>

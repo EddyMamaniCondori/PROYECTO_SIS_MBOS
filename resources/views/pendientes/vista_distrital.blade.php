@@ -91,12 +91,6 @@
                   </div>
                 </div>
               </div>
-              <div class="col-4">
-                <div class="card mb-4 p-2">
-                  <button type="button" class="btn btn-primary w-100 mb-2"> <i class="bi bi-filetype-xlsx"></i> &nbsp;  Descargar EXCEL</button>
-                  <button type="button" class="btn btn-success w-100"> <i class="bi bi-filetype-pdf"></i>  &nbsp; Descargar PDF</button>
-                </div>
-              </div>
 
             </div>
             <!--begin::TABLA-->

@@ -11,8 +11,8 @@
         <div class="sidebar-wrapper">
           <nav class="mt-2">
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview"  role="navigation" aria-label="Main navigation" data-accordion="false"  id="navigation">
-              <li class="nav-item menu-open">
-                <a href="#" class="nav-link active">
+              <li class="nav-item">
+                <a href="#" class="nav-link ">
                   <i class="nav-icon bi bi-speedometer"></i>
                   <p>
                     Dashboard
@@ -21,26 +21,29 @@
                 </a>
                 <ul class="nav nav-treeview">
                   @can('ver dashboard pastores-panel')
-                      <li class="nav-item">
-                        <a href="{{ route('dashboard.pastor')}}" class="nav-link active">
-                          <i class="nav-icon bi bi-circle"></i>
+                      <li class="nav-item ms-3">
+                        <a href="{{ route('dashboard.pastor')}}" class="nav-link ">
+                          <i class="bi bi-pie-chart-fill"></i>
                           <p>Dashboard Pastores</p>
                         </a>
                       </li>
+                      
                   @endcan
-                  @can('prueba')
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Dashboard distrital</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="{{ route('iglesias.dashboard_general')  }}" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Dashboard iglesia</p>
-                    </a>
-                  </li>
+                  @can('ver meses-remesas')
+                      <li class="nav-item ms-3">
+                        <a href="{{ route('dashboard.tesorero')}}" class="nav-link ">
+                          <i class="bi bi-pie-chart-fill"></i>
+                          <p>Dashboard Tesorería</p>
+                        </a>
+                      </li>
+                  @endcan
+                  @can('ver-desafios bautisos mbos anuales')
+                      <li class="nav-item ms-3">
+                        <a href="{{ route('dashboard.secretario')}}" class="nav-link ">
+                          <i class="bi bi-pie-chart-fill"></i>
+                          <p>Dashboard Secretaria</p>
+                        </a>
+                      </li>
                   @endcan
                 </ul>
               </li>
@@ -493,7 +496,7 @@
               @canany(['ver meses-remesas', 'ver-remesas excel','ver-blanco', 'ver-puntualidad', 'ver distrital-pendientes','ver dashboar pastor-remesas dashboard'])
                   <li class="nav-header">FINANCIERO</li>
                 <!--PANEL-->
-                @can('update')
+                @can('ver meses-remesas')
                     <li class="nav-item">
                       <a href="#" class="nav-link">
                         <i class="bi bi-wallet2"></i>
@@ -503,14 +506,18 @@
                         </p>
                       </a>
                       <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                          <a href="{{ route('remesas.distrital.dashboard')  }}" class="nav-link">
-                            <i class="bi bi-speedometer2"></i>
-                            <p> Dashboard Distrital General</p>
-                          </a>
+  
+                        <li class="nav-item ms-3">
                           <a href="{{ route('remesas.distrital.dash')  }}" class="nav-link">
                             <i class="bi bi-graph-up"></i>
-                            <p> Dashboard Distrital</p>
+                            <p> Dashboard General</p>
+                          </a>
+                        </li>
+                        
+                        <li class="nav-item ms-3">
+                          <a href="{{ route('remesas.filiales.pivot')  }}" class="nav-link">
+                            <i class="bi bi-graph-up"></i>
+                            <p> Remesas Filiales</p>
                           </a>
                         </li>
                       </ul>
@@ -546,7 +553,7 @@
                 @endcan
                 
                 <!--REMESAS-->
-                @can('update')
+                @can('ver-puntualidad')
                     <li class="nav-item">
                       <a href="{{ route('remesas.puntualidades')  }}" class="nav-link">
                         <i class="fa-solid fa-business-time"></i>
@@ -556,12 +563,30 @@
                 @endcan
                   
                 @can('ver-blanco')
-                    <li class="nav-item">
-                    <a href="{{ route('blancos.index')  }}" class="nav-link">
-                      <i class="bi bi-stopwatch"></i>
-                      <p> Blanco de remesas</p>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                      <i class="bi bi-clipboard-data-fill"></i>
+                      <p>
+                        Blancos
+                        <i class="nav-arrow bi bi-chevron-right"></i>
+                      </p>
                     </a>
-                  </li>
+                    <ul class="nav nav-treeview">
+
+                      <li class="nav-item ms-3">
+                        <a href="{{ route('blancos.index')  }}" class="nav-link">
+                          <i class="bi bi-clipboard2-data"></i>
+                          <p> Blanco de remesas</p>
+                        </a>
+                      </li>
+                      <li class="nav-item ms-3">
+                            <a href="{{ route('remesas.tabla.distrital')  }}" class="nav-link">
+                              <i class="bi bi-graph-up"></i>
+                              <p> Remesas Distrital</p>
+                            </a>
+                      </li>
+                    </ul>
+                </li>
                 @endcan
                   
                 @canany(['ver anual-pendientes', 'ver distrital-pendientes', 'ver mensual-pendientes', 'ver dashboar remesas filiales pastor-remesas dashboard'])

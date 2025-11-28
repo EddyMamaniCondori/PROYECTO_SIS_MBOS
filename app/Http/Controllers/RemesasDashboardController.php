@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Distrito; 
+use App\Exports\DistritalDirectExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\FilialesMensualExport;
+
 class RemesasDashboardController extends Controller
 {
 
@@ -101,7 +106,7 @@ class RemesasDashboardController extends Controller
         return view('remesas_dasboards.dashboard', compact('meses', 'series', 'series_mensual','series_baras', 'categorias'));
     }
 
-    public function index_distrital()
+    public function index_distrital() // muestra el dashboard distrital  
     {
         $anio = 2025;
         $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
@@ -146,8 +151,7 @@ class RemesasDashboardController extends Controller
 
             $alcanzado = array_sum($datosRemesas);
             $desafioAnual = $row->blanco_monto ?: 0; // valor por defecto si no tiene blanco
-            $diferencia = max($desafioAnual - $alcanzado, 0); //garantisa una diferencia >0
-
+            $diferencia = $alcanzado-$desafioAnual ; //garantisa una diferencia >0
             $dataDistritos[] = [
                 'nombre_distrito' => $row->nombre_distrito,
                 'series_mensual' => [
@@ -168,7 +172,90 @@ class RemesasDashboardController extends Controller
         //dd($dataDistritos);
         return view('remesas_dasboards.dashboard_distrital', compact('meses', 'dataDistritos'));
     }
-    
+    public function tabla_distrital() // muestra las remesas por distrito para exportar en excel y pdf
+    {
+        $anio = 2025;
+
+        $result = DB::select("
+            SELECT
+                xd.id_distrito,
+                xd.nombre AS nombre_distrito,
+                COALESCE(xbr.monto, 0) AS blanco_monto,
+                SUM(CASE WHEN xg.mes = 1 THEN xri.monto ELSE 0 END) AS enero,
+                SUM(CASE WHEN xg.mes = 2 THEN xri.monto ELSE 0 END) AS febrero,
+                SUM(CASE WHEN xg.mes = 3 THEN xri.monto ELSE 0 END) AS marzo,
+                SUM(CASE WHEN xg.mes = 4 THEN xri.monto ELSE 0 END) AS abril,
+                SUM(CASE WHEN xg.mes = 5 THEN xri.monto ELSE 0 END) AS mayo,
+                SUM(CASE WHEN xg.mes = 6 THEN xri.monto ELSE 0 END) AS junio,
+                SUM(CASE WHEN xg.mes = 7 THEN xri.monto ELSE 0 END) AS julio,
+                SUM(CASE WHEN xg.mes = 8 THEN xri.monto ELSE 0 END) AS agosto,
+                SUM(CASE WHEN xg.mes = 9 THEN xri.monto ELSE 0 END) AS septiembre,
+                SUM(CASE WHEN xg.mes = 10 THEN xri.monto ELSE 0 END) AS octubre,
+                SUM(CASE WHEN xg.mes = 11 THEN xri.monto ELSE 0 END) AS noviembre,
+                SUM(CASE WHEN xg.mes = 12 THEN xri.monto ELSE 0 END) AS diciembre,
+                SUM(xri.monto) AS total_anual
+            FROM iglesias xi
+            JOIN generas xg ON xg.id_iglesia = xi.id_iglesia
+            JOIN remesas_iglesias xri ON xg.id_remesa = xri.id_remesa
+            LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
+            LEFT JOIN blanco_remesas xbr ON xbr.id_distrito = xd.id_distrito
+            WHERE xg.anio = ?
+            GROUP BY xd.id_distrito, xd.nombre, xbr.monto
+            ORDER BY xd.nombre;
+        ", [$anio]);
+        return view('remesas_dasboards.tabla_distrital', compact('result', 'anio'));
+    }
+    public function exportDistritalExcelDirect()
+    {
+        //dd('hola');
+        $anio = 2025;
+
+        $result = DB::select("
+            SELECT
+                xd.nombre AS nombre_distrito,
+                COALESCE(xbr.monto, 0) AS blanco_monto,
+                SUM(xri.monto) AS total_anual
+            FROM iglesias xi
+            JOIN generas xg ON xg.id_iglesia = xi.id_iglesia
+            JOIN remesas_iglesias xri ON xg.id_remesa = xri.id_remesa
+            LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
+            LEFT JOIN blanco_remesas xbr ON xbr.id_distrito = xd.id_distrito
+            WHERE xg.anio = ?
+            GROUP BY xd.id_distrito, xd.nombre, xbr.monto
+            ORDER BY xd.nombre;
+        ", [$anio]);
+
+        return Excel::download(new DistritalDirectExport($result), "reporte_distrital_$anio.xlsx");
+    }
+
+    public function exportDistritalPDF()
+    {
+        $anio = 2025;
+        $fecha = date('d/m/Y');
+        $hora = date('H:i');
+
+        $result = DB::select("
+            SELECT
+                xd.nombre AS nombre_distrito,
+                COALESCE(xbr.monto, 0) AS blanco_monto,
+                SUM(xri.monto) AS total_anual
+            FROM iglesias xi
+            JOIN generas xg ON xg.id_iglesia = xi.id_iglesia
+            JOIN remesas_iglesias xri ON xg.id_remesa = xri.id_remesa
+            LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
+            LEFT JOIN blanco_remesas xbr ON xbr.id_distrito = xd.id_distrito
+            WHERE xg.anio = ?
+            GROUP BY xd.id_distrito, xd.nombre, xbr.monto
+            ORDER BY total_anual desc;
+        ", [$anio]);
+
+        $pdf = Pdf::loadView('pdf.pdf_distrital_estilo', compact('result','anio','fecha','hora'))
+                ->setPaper('a4','portrait'); // horizontal mejor para tablas
+
+        return $pdf->stream("reporte_distrital_$anio.pdf");
+    }
+
+
      public function dashboard()
     {
         $result = DB::table('desafio_mensuales')
@@ -391,5 +478,220 @@ class RemesasDashboardController extends Controller
         ]);
     }
 
-    
+
+    /**___________________________REMESAS FILIAL PARA VISUALIZACIONES_________ */
+
+    public function tablaFilialesPivot()
+    {
+        $anio = 2025;
+
+        $sql = "
+                    SELECT 
+                base.id_iglesia,
+                base.codigo,
+                base.nombre,
+                base.tipo,
+                base.distrito,
+
+                SUM(CASE WHEN base.mes = 1  THEN base.monto_remesa ELSE 0 END) AS enero,
+                SUM(CASE WHEN base.mes = 2  THEN base.monto_remesa ELSE 0 END) AS febrero,
+                SUM(CASE WHEN base.mes = 3  THEN base.monto_remesa ELSE 0 END) AS marzo,
+                SUM(CASE WHEN base.mes = 4  THEN base.monto_remesa ELSE 0 END) AS abril,
+                SUM(CASE WHEN base.mes = 5  THEN base.monto_remesa ELSE 0 END) AS mayo,
+                SUM(CASE WHEN base.mes = 6  THEN base.monto_remesa ELSE 0 END) AS junio,
+                SUM(CASE WHEN base.mes = 7  THEN base.monto_remesa ELSE 0 END) AS julio,
+                SUM(CASE WHEN base.mes = 8  THEN base.monto_remesa ELSE 0 END) AS agosto,
+                SUM(CASE WHEN base.mes = 9  THEN base.monto_remesa ELSE 0 END) AS septiembre,
+                SUM(CASE WHEN base.mes = 10 THEN base.monto_remesa ELSE 0 END) AS octubre,
+                SUM(CASE WHEN base.mes = 11 THEN base.monto_remesa ELSE 0 END) AS noviembre,
+                SUM(CASE WHEN base.mes = 12 THEN base.monto_remesa ELSE 0 END) AS diciembre,
+
+                SUM(base.monto_remesa) AS total_anual
+
+            FROM (
+                SELECT 
+                    xg.mes,
+                    xg.anio,
+                    xi.id_iglesia,
+                    xi.codigo,
+                    xi.nombre,
+                    xi.tipo,
+                    xd.nombre AS distrito,
+                    xrf.monto_remesa
+
+                FROM remesas xr
+                JOIN generas xg 
+                    ON xg.id_remesa = xr.id_remesa
+                JOIN remesas_filiales xrf 
+                    ON xrf.id_remesa = xr.id_remesa
+                JOIN iglesias xi 
+                    ON xi.id_iglesia = xg.id_iglesia
+                LEFT JOIN distritos xd 
+                    ON xd.id_distrito = xi.distrito_id
+
+                WHERE xg.anio = ?
+            ) AS base
+
+            GROUP BY 
+                base.id_iglesia,
+                base.codigo,
+                base.nombre,
+                base.tipo,
+                base.distrito
+            ORDER BY total_anual DESC
+        ";
+
+        $result = DB::select($sql, [$anio]);
+
+        // TOTALES GLOBALES
+        $top10 = collect($result)->sortByDesc('total_anual')->take(10)->values();
+        $totales = [
+            'enero'      => array_sum(array_column($result, 'enero')),
+            'febrero'    => array_sum(array_column($result, 'febrero')),
+            'marzo'      => array_sum(array_column($result, 'marzo')),
+            'abril'      => array_sum(array_column($result, 'abril')),
+            'mayo'       => array_sum(array_column($result, 'mayo')),
+            'junio'      => array_sum(array_column($result, 'junio')),
+            'julio'      => array_sum(array_column($result, 'julio')),
+            'agosto'     => array_sum(array_column($result, 'agosto')),
+            'septiembre' => array_sum(array_column($result, 'septiembre')),
+            'octubre'    => array_sum(array_column($result, 'octubre')),
+            'noviembre'  => array_sum(array_column($result, 'noviembre')),
+            'diciembre'  => array_sum(array_column($result, 'diciembre')),
+            'total'      => array_sum(array_column($result, 'total_anual')),
+        ];
+
+        return view('remesas_dasboards.filiales_pivot', compact('top10','result', 'anio', 'totales'));
+    }
+
+    public function exportFilialesPDF()
+    {
+        $anio = 2025;
+        $fecha = date('d/m/Y');
+        $hora = date('H:i');
+        $sql = "
+                    SELECT 
+                base.id_iglesia,
+                base.codigo,
+                base.nombre,
+                base.tipo,
+                base.distrito,
+                SUM(CASE WHEN base.mes = 1  THEN base.monto_remesa ELSE 0 END) AS enero,
+                SUM(CASE WHEN base.mes = 2  THEN base.monto_remesa ELSE 0 END) AS febrero,
+                SUM(CASE WHEN base.mes = 3  THEN base.monto_remesa ELSE 0 END) AS marzo,
+                SUM(CASE WHEN base.mes = 4  THEN base.monto_remesa ELSE 0 END) AS abril,
+                SUM(CASE WHEN base.mes = 5  THEN base.monto_remesa ELSE 0 END) AS mayo,
+                SUM(CASE WHEN base.mes = 6  THEN base.monto_remesa ELSE 0 END) AS junio,
+                SUM(CASE WHEN base.mes = 7  THEN base.monto_remesa ELSE 0 END) AS julio,
+                SUM(CASE WHEN base.mes = 8  THEN base.monto_remesa ELSE 0 END) AS agosto,
+                SUM(CASE WHEN base.mes = 9  THEN base.monto_remesa ELSE 0 END) AS septiembre,
+                SUM(CASE WHEN base.mes = 10 THEN base.monto_remesa ELSE 0 END) AS octubre,
+                SUM(CASE WHEN base.mes = 11 THEN base.monto_remesa ELSE 0 END) AS noviembre,
+                SUM(CASE WHEN base.mes = 12 THEN base.monto_remesa ELSE 0 END) AS diciembre,
+                SUM(base.monto_remesa) AS total_anual
+            FROM (
+                SELECT 
+                    xg.mes,
+                    xg.anio,
+                    xi.id_iglesia,
+                    xi.codigo,
+                    xi.nombre,
+                    xi.tipo,
+                    xd.nombre AS distrito,
+                    xrf.monto_remesa
+
+                FROM remesas xr
+                JOIN generas xg 
+                    ON xg.id_remesa = xr.id_remesa
+                JOIN remesas_filiales xrf 
+                    ON xrf.id_remesa = xr.id_remesa
+                JOIN iglesias xi 
+                    ON xi.id_iglesia = xg.id_iglesia
+                LEFT JOIN distritos xd 
+                    ON xd.id_distrito = xi.distrito_id
+
+                WHERE xg.anio = ?
+            ) AS base
+
+            GROUP BY 
+                base.id_iglesia,
+                base.codigo,
+                base.nombre,
+                base.tipo,
+                base.distrito
+            ORDER BY total_anual DESC
+        ";
+        $result = DB::select($sql, [$anio]);
+
+
+        $pdf = Pdf::loadView('pdf.pdf_filiales', compact('result', 'anio', 'fecha', 'hora'))
+                ->setPaper('a4', 'portrait');   // horizontal
+
+        return $pdf->stream("reporte_filiales_$anio.pdf");
+    }
+
+
+public function exportFilialesExcel()
+{
+    $anio = 2025;
+    $sql = "
+                    SELECT 
+                base.id_iglesia,
+                base.codigo,
+                base.nombre,
+                base.tipo,
+                base.distrito,
+                SUM(CASE WHEN base.mes = 1  THEN base.monto_remesa ELSE 0 END) AS enero,
+                SUM(CASE WHEN base.mes = 2  THEN base.monto_remesa ELSE 0 END) AS febrero,
+                SUM(CASE WHEN base.mes = 3  THEN base.monto_remesa ELSE 0 END) AS marzo,
+                SUM(CASE WHEN base.mes = 4  THEN base.monto_remesa ELSE 0 END) AS abril,
+                SUM(CASE WHEN base.mes = 5  THEN base.monto_remesa ELSE 0 END) AS mayo,
+                SUM(CASE WHEN base.mes = 6  THEN base.monto_remesa ELSE 0 END) AS junio,
+                SUM(CASE WHEN base.mes = 7  THEN base.monto_remesa ELSE 0 END) AS julio,
+                SUM(CASE WHEN base.mes = 8  THEN base.monto_remesa ELSE 0 END) AS agosto,
+                SUM(CASE WHEN base.mes = 9  THEN base.monto_remesa ELSE 0 END) AS septiembre,
+                SUM(CASE WHEN base.mes = 10 THEN base.monto_remesa ELSE 0 END) AS octubre,
+                SUM(CASE WHEN base.mes = 11 THEN base.monto_remesa ELSE 0 END) AS noviembre,
+                SUM(CASE WHEN base.mes = 12 THEN base.monto_remesa ELSE 0 END) AS diciembre,
+                SUM(base.monto_remesa) AS total_anual
+            FROM (
+                SELECT 
+                    xg.mes,
+                    xg.anio,
+                    xi.id_iglesia,
+                    xi.codigo,
+                    xi.nombre,
+                    xi.tipo,
+                    xd.nombre AS distrito,
+                    xrf.monto_remesa
+
+                FROM remesas xr
+                JOIN generas xg 
+                    ON xg.id_remesa = xr.id_remesa
+                JOIN remesas_filiales xrf 
+                    ON xrf.id_remesa = xr.id_remesa
+                JOIN iglesias xi 
+                    ON xi.id_iglesia = xg.id_iglesia
+                LEFT JOIN distritos xd 
+                    ON xd.id_distrito = xi.distrito_id
+
+                WHERE xg.anio = ?
+            ) AS base
+
+            GROUP BY 
+                base.id_iglesia,
+                base.codigo,
+                base.nombre,
+                base.tipo,
+                base.distrito
+            ORDER BY total_anual DESC
+        ";
+
+    $result = DB::select($sql, [$anio]);
+
+    return Excel::download(
+        new FilialesMensualExport($result),
+        "reporte_filiales_$anio.xlsx"
+    );
+}
 }

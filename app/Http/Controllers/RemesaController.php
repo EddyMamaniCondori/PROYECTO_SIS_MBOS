@@ -498,4 +498,58 @@ class RemesaController extends Controller
                     $remesa->estrella = $estrella;
                 }
     }
+
+    /**________________________________________________EXPORTACIONES______________________________________ */
+    public function exportRemesaMensualPDF($anio, $mes)
+    {
+        // VALIDAR PARÁMETROS
+        if ($mes < 1 || $mes > 12) {
+            abort(404, "Mes inválido");
+        }
+
+        // CONSULTA SQL
+        $result = DB::select("
+            SELECT 
+                xi.codigo,
+                xi.nombre,
+                xi.tipo,
+                d.nombre AS distrito,
+                xr.cierre,
+                xr.deposito,
+                xr.documentacion,
+                xr.fecha_entrega,
+                xr.estado_dias,
+                xr.estado
+            FROM generas xg
+            JOIN iglesias xi ON xg.id_iglesia = xi.id_iglesia
+            JOIN distritos d ON d.id_distrito = xi.distrito_id
+            JOIN remesas xr ON xr.id_remesa = xg.id_remesa
+            WHERE xg.anio = ?
+            AND xg.mes = ?
+            ORDER BY xi.nombre ASC
+        ", [$anio, $mes]);
+
+        // Hora y fecha
+        $fecha = now()->format('d/m/Y');
+        $hora  = now()->format('H:i:s');
+
+        // Nombre del mes
+        $mesNombre = [
+            1=>"Enero",2=>"Febrero",3=>"Marzo",4=>"Abril",
+            5=>"Mayo",6=>"Junio",7=>"Julio",8=>"Agosto",
+            9=>"Septiembre",10=>"Octubre",11=>"Noviembre",12=>"Diciembre"
+        ][$mes];
+
+        // GENERAR PDF
+        $pdf = \PDF::loadView('pdf.remesas_mensual', [
+            'result' => $result,
+            'anio' => $anio,
+            'mes' => $mesNombre,
+            'fecha' => $fecha,
+            'hora' => $hora
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream("Reporte_Remesas_{$mesNombre}_{$anio}.pdf");
+    }
+
 }

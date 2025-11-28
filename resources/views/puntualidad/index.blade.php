@@ -42,6 +42,17 @@
                 </ol>
               </div>
             </div>
+            <div class="row">
+                <div class="d-flex gap-2 mb-3">
+
+                    <a href="{{ url('/puntualidad/export-excel') }}" class="btn btn-success">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                    </a>
+                    <a href="{{ route('puntualidad.exportPdf') }}" class="btn btn-danger" target="_blank">
+                        <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                    </a>
+                </div>
+            </div>
           </div>
         </div>
         <!--contenido-->
@@ -63,18 +74,18 @@
                                             <th>Tipo</th>
                                             <th>Lugar</th>
                                             <th>anio</th>
-                                            <th>P_enero</th>
-                                            <th>P_febrero</th>
-                                            <th>P_marzo</th>
-                                            <th>P_abril</th>
-                                            <th>P_mayo</th>
-                                            <th>P_junio</th>
-                                            <th>P_julio</th>
-                                            <th>P_agosto</th>
-                                            <th>P_septiembre</th>
-                                            <th>P_octubre</th>
-                                            <th>P_noviembre</th>
-                                            <th>P_diciembre</th>
+                                            <th>Ene</th>
+                                            <th>Feb</th>
+                                            <th>Mar</th>
+                                            <th>Abr</th>
+                                            <th>May</th>
+                                            <th>Jun</th>
+                                            <th>Jul</th>
+                                            <th>Ago</th>
+                                            <th>Sep</th>
+                                            <th>Oct</th>
+                                            <th>Nov</th>
+                                            <th>Dic</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -279,18 +290,18 @@
                                             <th>Tipo</th>
                                             <th>Lugar</th>
                                             <th>anio</th>
-                                            <th>P_enero</th>
-                                            <th>P_febrero</th>
-                                            <th>P_marzo</th>
-                                            <th>P_abril</th>
-                                            <th>P_mayo</th>
-                                            <th>P_junio</th>
-                                            <th>P_julio</th>
-                                            <th>P_agosto</th>
-                                            <th>P_septiembre</th>
-                                            <th>P_octubre</th>
-                                            <th>P_noviembre</th>
-                                            <th>P_diciembre</th>
+                                            <th>Ene</th>
+                                            <th>Feb</th>
+                                            <th>Mar</th>
+                                            <th>Abr</th>
+                                            <th>May</th>
+                                            <th>Jun</th>
+                                            <th>Jul</th>
+                                            <th>Ago</th>
+                                            <th>Sep</th>
+                                            <th>Oct</th>
+                                            <th>Nov</th>
+                                            <th>Dic</th>
                                         </tr>
                                     </tfoot>
                                 </table>

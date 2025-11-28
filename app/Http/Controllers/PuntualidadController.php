@@ -4,6 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
+
+use App\Exports\PuntualidadExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+
+
 class PuntualidadController extends Controller
 {
 
@@ -19,8 +26,6 @@ class PuntualidadController extends Controller
 
      public function index() //permissions 'ver puntualidad',
     {
- 
-
         // Traemos todas las iglesias junto con su distrito
         $iglesias = DB::select("
                     SELECT 
@@ -59,4 +64,78 @@ class PuntualidadController extends Controller
         ");
         return view('puntualidad.index', compact('iglesias'));
     }
+
+    public function exportExcel()
+    {
+        return Excel::download(new PuntualidadExport, 'puntualidad.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        $iglesias = DB::select("
+            SELECT 
+                xd.nombre as nombre_distrito,
+                xi.codigo, 
+                xi.nombre,
+                xi.tipo,
+                xi.lugar,
+                xp.anio,
+
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 1) AS INTEGER) AS puntualidad_enero,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 2) AS INTEGER) AS puntualidad_febrero,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 3) AS INTEGER) AS puntualidad_marzo,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 4) AS INTEGER) AS puntualidad_abril,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 5) AS INTEGER) AS puntualidad_mayo,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 6) AS INTEGER) AS puntualidad_junio,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 7) AS INTEGER) AS puntualidad_julio,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 8) AS INTEGER) AS puntualidad_agosto,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 9) AS INTEGER) AS puntualidad_septiembre,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 10) AS INTEGER) AS puntualidad_octubre,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 11) AS INTEGER) AS puntualidad_noviembre,
+                CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 12) AS INTEGER) AS puntualidad_diciembre,
+
+                (
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 1) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 2) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 3) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 4) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 5) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 6) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 7) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 8) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 9) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 10) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 11) AS INTEGER), 0) +
+                    COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 12) AS INTEGER), 0)
+                ) AS total_puntaje
+
+            FROM iglesias xi 
+            LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
+            JOIN puntualidades xp ON xp.id_iglesia = xi.id_iglesia
+            JOIN mes xm ON xm.id_puntualidad = xp.id_puntualidad
+            WHERE xp.anio = 2025
+            AND xi.estado = true
+            GROUP BY 
+                xd.nombre,
+                xi.codigo, 
+                xi.nombre,
+                xi.tipo,
+                xi.lugar,
+                xp.anio
+            ORDER BY total_puntaje DESC;
+
+        ");
+
+        $fecha = date('d/m/Y');
+        $hora = date('H:i:s');
+
+        $pdf = app('dompdf.wrapper');   // ← compatible con Laravel 12
+        $pdf->loadView('pdf.puntualidad', compact('iglesias','fecha','hora'))
+            ->setPaper('A4', 'landscape');
+        return $pdf->stream('puntualidad.pdf');
+        //return $pdf->download('puntualidad.pdf');
+    }
+
+
+
 }

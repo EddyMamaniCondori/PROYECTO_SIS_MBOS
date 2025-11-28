@@ -28,7 +28,30 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        //return redirect()->intended(route('pastores.index', absolute: false));
+        $user = Auth::user();
+
+        // Redirecciones por rol usando Spatie
+        if ($user->hasRole('Super Administrador')) {
+            return redirect()->route('dashboard.tesorero');
+        }
+
+        if ($user->hasRole('Administrativo')) {
+            return redirect()->route('dashboard.tesorero');
+        }
+
+        if ($user->hasRole('Tesorero')) {
+            return redirect()->route('dashboard.tesorero');
+        }
+
+        if ($user->hasRole('Secretaria')) {
+            return redirect()->route('dashboard.secretario');
+        }
+
+        if ($user->hasRole('Pastor')) {
+            return redirect()->route('dashboard.pastor');
+        }
+
+        // fallback si no tiene rol
         return redirect()->route('panel');
     }
 

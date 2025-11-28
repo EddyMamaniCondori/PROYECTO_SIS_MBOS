@@ -123,9 +123,6 @@
                                                         <button type="submit" class="btn btn-primary"> <i class="bi bi-graph-up"></i> Ver Avance</button>
                                                     </form>
 
-                                                    <a href="#" class="btn btn-warning">
-                                                        <i class="bi bi-pencil-square"></i> Editar
-                                                    </a>
                                                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$dato->id_blanco}}"> <i class="bi bi-pencil-square"></i> Asignar</button>
                                              </td>
 

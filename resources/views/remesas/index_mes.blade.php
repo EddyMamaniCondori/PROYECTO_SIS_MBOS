@@ -10,31 +10,29 @@
 @endpush
 
 @section('content')
+                @php
+                    $meses_array = [
+                        1 => 'Enero',
+                        2 => 'Febrero',
+                        3 => 'Marzo',
+                        4 => 'Abril',
+                        5 => 'Mayo',
+                        6 => 'Junio',
+                        7 => 'Julio',
+                        8 => 'Agosto',
+                        9 => 'Septiembre',
+                        10 => 'Octubre',
+                        11 => 'Noviembre',
+                        12 => 'Diciembre'
+                    ];
+                @endphp
 
-@if (session('success'))
-    <script>
-        const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-        });
-        Toast.fire({
-        icon: "success",
-        title: "{{ session('success') }}"
-        });
-    </script>
-@endif
+    <x-alerts/>
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><center><h3 class="mb-0">Remesas {{$mes}} - {{$anio}} </h3></center></div>
+              <div class="col-sm-6"><center><h3 class="mb-0">Registro de Remesas {{ $meses_array[$mes]}} - {{$anio}} </h3></center></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -134,10 +132,6 @@
 
                                             <td>
                                                 <div class="btn-group  justify-content-center" role="group" >
-
-                                                    <button type="button" class="btn btn-warning">Editar</button>
-                                                    <button type="button" class="btn btn-success">ver</button>
-
                                                    @if($dato->tipo_igle == 'Filial')
                                                        <form action="{{ route('remesas.filial') }}" method="POST">@csrf
 

@@ -35,7 +35,7 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><center><h3 class="mb-0">IMPOTACION DE REMESAS </h3></center></div>
+              <div class="col-sm-6"><center><h3 class="mb-0">IMPORTACION DE REMESAS </h3></center></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -51,11 +51,11 @@
                             <label for="file" class="form-label">Subir archivo Excel:</label>
                             <input type="file" name="file" class="form-control" accept=".xls,.xlsx" required>
                         </div>
-                        <button type="submit" class="btn btn-success">Importar</button>
+                        <button type="submit" class="btn btn-success"><i class="bi bi-filetype-xlsx"></i>  &nbsp;Importar Archivo</button>
                     </form>
                 </div>
                 <div class="col">
-                    <a href="{{ route('remesas.procesar', ['anio' => 2025]) }}" class="btn btn-primary">Procesar Remesas</a>
+                    <a href="{{ route('remesas.procesar', ['anio' => 2025]) }}" class="btn btn-primary"> <i class="bi bi-database-fill-down"></i>&nbsp;Guardar en Base de Datos</a>
                 </div>
             </div>
             
