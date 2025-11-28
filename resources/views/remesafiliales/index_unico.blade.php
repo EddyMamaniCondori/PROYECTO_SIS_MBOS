@@ -222,7 +222,7 @@
                                                                 <label for="ofrenda" class="form-label">Ofrenda:</label>
                                                             </div>
                                                             <div class="col-8">
-                                                                <input type="number" name="ofrenda" id="ofrenda" class="form-control" step="0.001" min="0" value="{{$dato->ofrenda}}" required>
+                                                                <input type="number" name="ofrenda" class="ofrenda" class="form-control" step="0.001" min="0" value="{{$dato->ofrenda}}" required>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -233,7 +233,7 @@
                                                                 <label for="diezmo" class="form-label">Diezmo:</label>
                                                             </div>
                                                             <div class="col-8">
-                                                                <input type="number" name="diezmo" id="diezmo" class="form-control" step="0.001" min="0" value="{{$dato->diezmo}}" required>
+                                                                <input type="number" name="diezmo" class="diezmo" class="form-control" step="0.001" min="0" value="{{$dato->diezmo}}" required>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -244,7 +244,7 @@
                                                                 <label for="pro_templo" class="form-label">Pro Templo:</label>
                                                             </div>
                                                             <div class="col-8">
-                                                                <input type="number" name="pro_templo" id="pro_templo" class="form-control" step="0.001" min="0" value="{{$dato->pro_templo}}" required>
+                                                                <input type="number" name="pro_templo" class="pro_templo" class="form-control" step="0.001" min="0" value="{{$dato->pro_templo}}" required>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -258,7 +258,7 @@
                                                              60% Ofrenda = 
                                                             </div>
                                                             <div class="col-8">
-                                                                <input type="number" id="porcentaje_ofrenda" class="form-control" min="0" value="0" step="0.001" readonly>
+                                                                <input type="number" class="porcentaje_ofrenda" class="form-control" min="0" value="0" step="0.001" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -266,7 +266,7 @@
                                                                 Pro Templo =
                                                             </div>
                                                             <div class="col-8">
-                                                                <input type="number" id="input_pro_templo" class="form-control" min="0" value="0" step="0.001" readonly>
+                                                                <input type="number" class="input_pro_templo" class="form-control" min="0" value="0" step="0.001" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -281,7 +281,7 @@
                                                                 TOTAL FONDO LOCAL=
                                                             </div>
                                                             <div class="col-8">
-                                                                <input type="number" name="fondo_local" id="fondo_local" class="form-control" min="0" value="0" step="0.01" readonly>
+                                                                <input type="number" name="fondo_local" class="fondo_local" class="form-control" min="0" value="0" step="0.01" readonly>
                                                             </div>
                                                         </div> 
                                                     </div>
@@ -293,7 +293,7 @@
                                                              40% Ofrenda = 
                                                             </div>
                                                             <div class="col-8">
-                                                                <input type="number" id="porcentaje_ofrenda_rem" class="form-control" min="0" value="0" step="0.001" readonly>
+                                                                <input type="number" class="porcentaje_ofrenda_rem" class="form-control" min="0" value="0" step="0.001" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -301,7 +301,7 @@
                                                                 Diezmos =
                                                             </div>
                                                             <div class="col-8">
-                                                                <input type="number" id="input_diezmo" class="form-control" min="0" value="0" step="0.001" readonly>
+                                                                <input type="number" class="input_diezmo" class="form-control" min="0" value="0" step="0.001" readonly>
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -316,7 +316,7 @@
                                                                 TOTAL REMESA =
                                                             </div>
                                                             <div class="col-8">
-                                                                <input type="number" name="monto_remesa" id="monto_remesa" class="form-control" step="0.01" min="0" value="0" readonly>
+                                                                <input type="number" name="monto_remesa" class="monto_remesa" class="form-control" step="0.01" min="0" value="0" readonly>
                                                             </div>
                                                         </div> 
                                                     
@@ -396,51 +396,36 @@
 </script>
 
 <script>
+$(document).on('input', '.ofrenda, .diezmo, .pro_templo', function() {
 
-    document.addEventListener('DOMContentLoaded', function() {
-    const fechaInput = document.getElementById('fecha_entrega');
-    const hoy = new Date().toISOString().split('T')[0];
-    fechaInput.value = hoy;
-});
+    let modal = $(this).closest('.modal'); // ← Modal actual
 
+    let ofrenda = parseFloat(modal.find('.ofrenda').val()) || 0;
+    let diezmo = parseFloat(modal.find('.diezmo').val()) || 0;
+    let proTemplo = parseFloat(modal.find('.pro_templo').val()) || 0;
 
-$(document).ready(function() {
+    // Evitar negativos
+    if (ofrenda < 0) ofrenda = 0;
+    if (diezmo < 0) diezmo = 0;
+    if (proTemplo < 0) proTemplo = 0;
 
-  function calcularValores() {
-    let ofrenda = parseFloat($('#ofrenda').val()) || 0;
-    let diezmo = parseFloat($('#diezmo').val()) || 0;
-    let proTemplo = parseFloat($('#pro_templo').val()) || 0;
+    // Calculos
+    let p60 = ofrenda * 0.6;
+    let p40 = ofrenda * 0.4;
 
-    // Validar que los 3 sean mayores o iguales a 0
-    if (ofrenda < 0) { $('#ofrenda').val(0); ofrenda = 0; }
-    if (diezmo < 0) { $('#diezmo').val(0); diezmo = 0; }
-    if (proTemplo < 0) { $('#pro_templo').val(0); proTemplo = 0; }
+    let fondoLocal = p60 + proTemplo;
+    let remesa = diezmo + p40;
 
-    // Cálculos automáticos
-    let ofrenda_p1 = ofrenda * 0.6;
-    let ofrenda_p2 = ofrenda * 0.4;
-
-    let fondoLocal = (ofrenda * 0.6) + proTemplo;
-    let montoRemesa = diezmo + (ofrenda * 0.4);
-
-    // Mostrar resultados con 2 decimales
-    $('#porcentaje_ofrenda').val(ofrenda_p1.toFixed(2));
-    $('#input_pro_templo').val(proTemplo.toFixed(2));
-    $('#porcentaje_ofrenda_rem').val(ofrenda_p2.toFixed(2));
-    $('#input_diezmo').val(diezmo.toFixed(2));
-    $('#fondo_local').val(fondoLocal.toFixed(2));
-    $('#monto_remesa').val(montoRemesa.toFixed(2));
-  }
-
-  // Escuchar los cambios de los tres campos principales
-  $('#ofrenda, #diezmo, #pro_templo').on('input', calcularValores);
-
-  // Cuando se abre el modal, reiniciar valores
-  $('#confirmModal').on('show.bs.modal', function() {
-    calcularValores();
-  });
+    // Setear valores al modal actual
+    modal.find('.porcentaje_ofrenda').val(p60.toFixed(2));
+    modal.find('.input_pro_templo').val(proTemplo.toFixed(2));
+    modal.find('.porcentaje_ofrenda_rem').val(p40.toFixed(2));
+    modal.find('.input_diezmo').val(diezmo.toFixed(2));
+    modal.find('.fondo_local').val(fondoLocal.toFixed(2));
+    modal.find('.monto_remesa').val(remesa.toFixed(2));
 
 });
 </script>
+
 
 @endpush

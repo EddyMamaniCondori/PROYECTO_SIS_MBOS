@@ -158,7 +158,8 @@ class PersonalController extends Controller
                 'calle'        => $request->calle,
                 'nro'          => $request->nro,
             ]);
-            
+            //dd($request->password);
+            $persona->password = Hash::make($request->password);
             // Actualizar datos específicos del personal
             $personal->update([
                 'fecha_ingreso'       => $request->fecha_ingreso
