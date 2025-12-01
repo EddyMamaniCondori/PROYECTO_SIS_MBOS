@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
+        // 2. AGREGA ESTO: Excepción de CSRF para que JMeter pase sin token
+        $middleware->validateCsrfTokens(except: [
+            'estudiantes',      // La ruta exacta del POST
+            'estudiantes/*',    // Por si acaso tienes sub-rutas
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

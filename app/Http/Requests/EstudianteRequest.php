@@ -33,7 +33,7 @@ class EstudianteRequest extends FormRequest
             'ci' => 'nullable|string|max:20',
             'curso_biblico_usado' => 'required|string|max:255',
             'bautizado' => 'required|boolean',
-            'id_iglesia' => 'required|exists:iglesias,id_iglesia',
+            'id_iglesia' => 'nullable|exists:iglesias,id_iglesia',
         ];
     }
     public function messages(): array

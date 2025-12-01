@@ -34,8 +34,6 @@ Route::redirect('/', '/login');
 
 // ===== TUS RUTAS ANTIGUAS (las reconstruimos juntos) =====
 Route::middleware(['auth'])->group(function () {
-
-
     Route::get('/perfil', [PerfilController::class, 'index'])
         ->name('perfil.index');
     // 1) Actualizar datos personales
@@ -397,7 +395,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/remesas/filiales-mensual/excel', 
     [RemesasDashboardController::class, 'exportFilialesExcel'])
     ->name('remesas.filiales.excel');
-Route::get('/remesas/filiales-mensual/pdf', 
+    Route::get('/remesas/filiales-mensual/pdf', 
     [RemesasDashboardController::class, 'exportFilialesPDF'])
     ->name('remesas.filiales.pdf');
 

@@ -96,7 +96,7 @@ class VisitasController extends Controller
         return view('visitas.index_mes', compact('visitas', 'anioActual'));
     }
 
-    public function index_llenar_visitas_mes($id)
+    public function index_llenar_visitas_mes($id) 
     {
         $mensual = Mensual::find($id);
         if (!$mensual) {
@@ -124,6 +124,7 @@ class VisitasController extends Controller
 
         return view('visitas.index_visitas_mensuales', compact('visitas', 'mensual', 'anioActual'));
     }
+
              // todas las visitas asociadas al desafío
     /**
      * Show the form for creating a new resource.

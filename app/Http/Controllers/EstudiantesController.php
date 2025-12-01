@@ -60,7 +60,11 @@ class EstudiantesController extends Controller
         }
         $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
         // 2️⃣ Consultar estudiantes bíblicos con los filtros
-        $estudiantes = EstudianteBiblico::join('iglesias as xi', 'estudiante_biblicos.id_iglesia', '=', 'xi.id_iglesia')
+
+        $estudiantes = EstudianteBiblico::whereNull('id_iglesia')
+            ->whereYear('fecha_registro', $anio)
+            ->get();
+        $estudiantes = EstudianteBiblico::leftjoin('iglesias as xi', 'estudiante_biblicos.id_iglesia', '=', 'xi.id_iglesia')
             ->select(
                 'estudiante_biblicos.*',
                 'xi.nombre as nombre_iglesia'
@@ -113,6 +117,7 @@ class EstudiantesController extends Controller
                 $request->validated(),
                 ['fecha_registro' => $fechaHoy]
             ));
+            //dd($estudiante);
             $anioActual = now()->year;
             // Obtener el distrito
             $persona = Auth::user(); 

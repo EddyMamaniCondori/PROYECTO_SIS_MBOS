@@ -214,7 +214,6 @@
             </ul>
 
 
-
             <!--begin::User Menu Dropdown-->
             <li class="nav-item dropdown user-menu">
               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -271,6 +270,7 @@
                 <!--end::Menu Footer-->
               </ul>
             </li>
+            
             <!--end::User Menu Dropdown-->
           </ul>
           <!--end::End Navbar Links-->
