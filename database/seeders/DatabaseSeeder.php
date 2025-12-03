@@ -22,16 +22,16 @@ class DatabaseSeeder extends Seeder
         //llamamos al seeder de persona
 
         $this->call([
-            //PersonaSeeder::class,
-            //PastorSeeder::class,
-            //AdministrativoSeeder::class,
-            //GrupoSeeder::class,
-            //DistritoSeeder::class,
-            //IglesiaSeeder::class,
-            //DirigeSeeder::class,
-            //RemesaSeeder::class,
+            PersonaSeeder::class,
+            PastorSeeder::class,
+            AdministrativoSeeder::class,
+            GrupoSeeder::class,
+            DistritoSeeder::class,
+            IglesiaSeeder::class,
+            DirigeSeeder::class,
+            RemesaSeeder::class,
             //GastosSeeder::class,
-            //GeneraSeeder::class,
+            GeneraSeeder::class,
             RolePermissionSeeder::class,
         ]); 
     }

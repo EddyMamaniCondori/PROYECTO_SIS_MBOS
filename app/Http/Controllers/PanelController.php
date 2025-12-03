@@ -28,11 +28,9 @@ class PanelController extends Controller
         $anio = now()->year;
         $persona = Auth::user(); 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
-
-       
-
+        
         if (!$distrito) {
-            return redirect()->route('panel')
+            return redirect()->route('perfil')
                 ->with('error', 'No tienes un distrito asignado. ¡Comunícate con el Administrador!');
         }
         $id_distrito = $distrito->id_distrito;
@@ -63,17 +61,13 @@ class PanelController extends Controller
             )
             ->first();
 
-        if (!$bautiso) {
-            return redirect()->route('panel')
-                ->with('info', 'Aún no hay desafíos asignados a tu distrito este año.');
-        }
 
         $graficos_final = [
             'categorias' => ['Desafío', 'Alcanzado', 'Diferencia'],
             'valores' => [
-                (int) $bautiso->desafio_bautizo,
-                (int) $bautiso->bautizos_alcanzados,
-                (int) $bautiso->diferencia
+                (int) $bautiso?->desafio_bautizo,
+                (int) $bautiso?->bautizos_alcanzados,
+                (int) $bautiso?->diferencia
             ]
         ];
         /**DATOS DE VISITAS DEL DISTRITO */

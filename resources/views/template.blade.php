@@ -6,6 +6,8 @@
     
     <title>MBOS - @yield('title')</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('/img/logo.png') }}">
+
     <!--begin::Accessibility Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
     <meta name="color-scheme" content="light dark" />

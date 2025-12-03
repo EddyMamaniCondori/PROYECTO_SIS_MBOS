@@ -28,7 +28,7 @@ return new class extends Migration
                 ->on('distritos')
                 ->onDelete('cascade');
 
-            $table->foreign('id_pastor')
+            $table->foreign('id_pastor')->default(0)
                 ->references('id_pastor')
                 ->on('pastors')
                 ->onDelete('cascade');

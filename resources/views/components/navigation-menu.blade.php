@@ -238,7 +238,7 @@
                 <a href="#" class="nav-link">
                   <i class="fa-solid fa-dove"></i>
                   <p>
-                    Bautisos
+                    Bautismos
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
@@ -247,7 +247,7 @@
                      <li class="nav-item ms-3">
                       <a href="{{ route('bautisos.index')}}" class="nav-link">
                         <i class="fa-solid fa-dove"></i>
-                        <p>Registrar Bautisos</p>
+                        <p>Registrar Bautismos</p>
                       </a>
                     </li> 
                   @endcan
@@ -255,7 +255,7 @@
                     <li class="nav-item ms-3">
                       <a href="{{ route('bautiso.pastor')}}" class="nav-link">
                         <i class="bi bi-bar-chart-fill"></i>
-                        <p>Mis Bautizos</p>
+                        <p>Mis Bautismos</p>
                       </a>
                     </li>
                   @endcan
@@ -264,7 +264,7 @@
                     <li class="nav-item ms-3">
                       <a href="{{ route('bautiso.dashboard.pastoral')}}" class="nav-link">
                         <i class="bi bi-bar-chart-fill"></i>
-                        <p>Seguimiento Bautizos</p>
+                        <p>Seguimiento </p>
                       </a>
                     </li>
                   @endcan
@@ -363,7 +363,7 @@
                     <a href="#" class="nav-link">
                       <i class="fa-solid fa-dove"></i>
                       <p>
-                        Bautizos
+                        Bautismos
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
@@ -380,7 +380,7 @@
                       <li class="nav-item ms-3">
                         <a href="{{ route('bautizos.dashboard')}}" class="nav-link">
                           <i class="bi bi-graph-up-arrow"></i>
-                          <p>Seguimiento Distrital</p>
+                          <p>Seguimiento </p>
                         </a>
                       </li>
                       @endcan
@@ -444,7 +444,7 @@
                         <li class="nav-item ms-3">
                           <a href="{{ route('instructores.mbos.distrital.ver')  }}" class="nav-link">
                             <i class="bi bi-graph-up-arrow"></i>
-                            <p>Seguimiento Distrital</p>
+                            <p>Seguimiento MBOS</p>
                           </a>
                         </li>
                       @endcan 
@@ -482,7 +482,7 @@
                           <li class="nav-item ms-3">
                           <a href="{{ route('desafio_eventos.dashboard_asignaciones')  }}" class="nav-link">
                             <i class="bi bi-graph-up-arrow"></i>       
-                            <p>Dashboard Resultados</p>
+                            <p>Seguimiento MBOS</p>
                           </a>
                         </li> 
                       @endcan

@@ -69,6 +69,7 @@
                                             <th>celular</th>
                                             <th>edad</th>
                                             <th>Informacion</th>
+                                            <th>foto</th>
                                             <th>acciones</th>
                                         </tr>
                                     </thead>
@@ -91,6 +92,7 @@
                                                 {{ \Carbon\Carbon::parse($persona->fecha_nac)->age }}
 
                                             </td>
+                                           
                                             <td> 
                                                 @if ($persona->fecha_ordenacion)
                                                     <span class="badge bg-success fs-6">
@@ -112,12 +114,13 @@
                                                     </span>
                                                 @endif
                                             </td>
+                                             <td>
+                                                <img src="{{ $persona->foto_perfil ? Storage::url($persona->foto_perfil) : asset('img/user-default.png') }}" class="shadow" alt="User Image" height="120px"/>
+                                            </td>
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
                                                 
-                                                    <form action="{{ route('pastor.perfil', $persona->id_persona) }}" method="GET">
-                                                        <button type="submit" class="btn btn-info"> <i class="bi bi-file-earmark-bar-graph-fill"></i> Ver Perfil</button>
-                                                    </form>
+                                                    
 
                                                     <a href="{{ route('pastores.edit', $persona->id_persona) }}" class="btn btn-warning">
                                                         <i class="bi bi-pencil-square"></i> Editar

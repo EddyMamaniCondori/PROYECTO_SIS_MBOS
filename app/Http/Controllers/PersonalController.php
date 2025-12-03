@@ -59,13 +59,14 @@ class PersonalController extends Controller
         return view('personales.indexeliminados',['personas'=>$personales]);
     }   
  
-    public function index() // permission ver personal
+    public function index()
     {
-        $personales = Persona::with(['personal', 'roles']) // incluye personal y roles
+        $personales = Persona::with(['personal', 'roles'])
             ->where('estado', true)
+            ->whereHas('personal') // 🔥 solo personas que son personal
             ->get();
-        
-        return view('personales.index',['personas'=>$personales]);
+
+        return view('personales.index', ['personas' => $personales]);
     }
 
 

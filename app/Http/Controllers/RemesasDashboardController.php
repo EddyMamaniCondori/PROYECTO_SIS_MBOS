@@ -111,6 +111,11 @@ class RemesasDashboardController extends Controller
         $anio = 2025;
         $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
+        $anios = DB::table('generas')
+            ->select(DB::raw('DISTINCT anio'))
+            ->orderByDesc('anio')
+            ->get();
+
         $result = DB::select("
             SELECT
                 xd.id_distrito,
@@ -134,10 +139,11 @@ class RemesasDashboardController extends Controller
             JOIN remesas_iglesias xri ON xg.id_remesa = xri.id_remesa
             LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
             LEFT JOIN blanco_remesas xbr ON xbr.id_distrito = xd.id_distrito
-            WHERE xg.anio = ?
+            where xbr.anio = ?
+            and xg.anio = ?
             GROUP BY xd.id_distrito, xd.nombre, xbr.monto
             ORDER BY xd.nombre;
-        ", [$anio]);
+        ", [$anio, $anio]);
 
         // Construimos datos por distrito
         $dataDistritos = [];
@@ -170,8 +176,81 @@ class RemesasDashboardController extends Controller
             ];
         }
         //dd($dataDistritos);
-        return view('remesas_dasboards.dashboard_distrital', compact('meses', 'dataDistritos'));
+        return view('remesas_dasboards.dashboard_distrital', compact('meses', 'dataDistritos', 'anio', 'anios'));
     }
+    /**POR EL MOMENTO SE CREO PORFAVOR DE AJUSTA PARA MAS ADELANTE */
+    public function index_distrital_filtro($anio) // muestra el dashboard distrital  
+    {
+        $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+        $anios = DB::table('generas')
+            ->select(DB::raw('DISTINCT anio'))
+            ->orderByDesc('anio')
+            ->get();
+
+        $result = DB::select("
+            SELECT
+                xd.id_distrito,
+                xd.nombre AS nombre_distrito,
+                COALESCE(xbr.monto, 0) AS blanco_monto,
+                SUM(CASE WHEN xg.mes = 1  THEN xri.monto ELSE 0 END) AS monto_enero,
+                SUM(CASE WHEN xg.mes = 2  THEN xri.monto ELSE 0 END) AS monto_febrero,
+                SUM(CASE WHEN xg.mes = 3  THEN xri.monto ELSE 0 END) AS monto_marzo,
+                SUM(CASE WHEN xg.mes = 4  THEN xri.monto ELSE 0 END) AS monto_abril,
+                SUM(CASE WHEN xg.mes = 5  THEN xri.monto ELSE 0 END) AS monto_mayo,
+                SUM(CASE WHEN xg.mes = 6  THEN xri.monto ELSE 0 END) AS monto_junio,
+                SUM(CASE WHEN xg.mes = 7  THEN xri.monto ELSE 0 END) AS monto_julio,
+                SUM(CASE WHEN xg.mes = 8  THEN xri.monto ELSE 0 END) AS monto_agosto,
+                SUM(CASE WHEN xg.mes = 9  THEN xri.monto ELSE 0 END) AS monto_septiembre,
+                SUM(CASE WHEN xg.mes = 10 THEN xri.monto ELSE 0 END) AS monto_octubre,
+                SUM(CASE WHEN xg.mes = 11 THEN xri.monto ELSE 0 END) AS monto_noviembre,
+                SUM(CASE WHEN xg.mes = 12 THEN xri.monto ELSE 0 END) AS monto_diciembre,
+                SUM(xri.monto) AS total_anual
+            FROM iglesias xi
+            JOIN generas xg ON xg.id_iglesia = xi.id_iglesia
+            JOIN remesas_iglesias xri ON xg.id_remesa = xri.id_remesa
+            LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
+            LEFT JOIN blanco_remesas xbr ON xbr.id_distrito = xd.id_distrito
+            where xbr.anio = ?
+            and xg.anio = ?
+            GROUP BY xd.id_distrito, xd.nombre, xbr.monto
+            ORDER BY xd.nombre;
+        ", [$anio, $anio]);
+
+        // Construimos datos por distrito
+        $dataDistritos = [];
+        foreach ($result as $row) {
+            $datosRemesas = [
+                $row->monto_enero, $row->monto_febrero, $row->monto_marzo,
+                $row->monto_abril, $row->monto_mayo, $row->monto_junio,
+                $row->monto_julio, $row->monto_agosto, $row->monto_septiembre,
+                $row->monto_octubre, $row->monto_noviembre, $row->monto_diciembre
+            ];
+
+            $alcanzado = array_sum($datosRemesas);
+            $desafioAnual = $row->blanco_monto ?: 0; // valor por defecto si no tiene blanco
+            $diferencia = $alcanzado-$desafioAnual ; //garantisa una diferencia >0
+            $dataDistritos[] = [
+                'nombre_distrito' => $row->nombre_distrito,
+                'series_mensual' => [
+                    ['name' => 'Remesas Totales', 'data' => $datosRemesas],
+                ],
+                'series_baras' => [
+                    ['name' => 'Blanco Anual', 'data' => [$desafioAnual]],
+                    ['name' => 'Alcanzado', 'data' => [$alcanzado]],
+                    ['name' => 'Diferencia', 'data' => [$diferencia]],
+                ],
+                'totales' => [
+                    'desafio' => $desafioAnual,
+                    'alcanzado' => $alcanzado,
+                    'diferencia' => $diferencia
+                ]
+            ];
+        }
+        //dd($dataDistritos);
+        return view('remesas_dasboards.dashboard_distrital', compact('meses', 'dataDistritos', 'anio', 'anios'));
+    }
+
     public function tabla_distrital() // muestra las remesas por distrito para exportar en excel y pdf
     {
         $anio = 2025;

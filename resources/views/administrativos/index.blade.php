@@ -63,7 +63,6 @@
                                             <th>Ministerio</th>
                                             <th>celular</th>
                                             <th>edad</th>
-                                            <th>acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -88,13 +87,7 @@
                                                 {{ \Carbon\Carbon::parse($persona->fecha_nac)->age }}
 
                                             </td>
-                                            <td> 
-                                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                
-                                                    <form action="{{ route('pastor.perfil', $persona->id_persona) }}" method="GET">
-                                                        <button type="submit" class="btn btn-info"> <i class="bi bi-file-earmark-bar-graph-fill"></i> Ver Perfil</button>
-                                                    </form>
-                                            </td>
+                                            
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -106,7 +99,6 @@
                                             <th>Ministerio</th>
                                             <th>celular</th>
                                             <th>edad</th>
-                                            <th>acciones</th>
                                         </tr>
                                     </tfoot>
                                 </table>

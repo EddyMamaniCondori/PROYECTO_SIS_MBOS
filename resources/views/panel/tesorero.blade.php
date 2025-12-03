@@ -228,6 +228,13 @@
 
 <script>
     // Barras
+    function formatMiles(value) {
+        return value.toLocaleString("en-US", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+    }
+
     new ApexCharts(document.querySelector("#chart-barras"), {
         chart: { type: 'bar', height: 300 },
         series: [
@@ -237,7 +244,28 @@
         ],
         colors: ['#0d6efd', '#198754', '#dc3545'],
         plotOptions: { bar: { columnWidth: '45%' }},
-        dataLabels: { enabled: true },
+        dataLabels: {
+            enabled: true,
+            formatter: function (value) {
+                return formatMiles(value);
+            }
+        },
+
+        yaxis: {
+            labels: {
+                formatter: function (value) {
+                    return formatMiles(value);
+                }
+            }
+        },
+
+        tooltip: {
+            y: {
+                formatter: function (value) {
+                    return formatMiles(value);
+                }
+            }
+        },
         xaxis: { categories: ["{{ date('Y') }}"] },
     }).render();
 
@@ -248,7 +276,28 @@
         xaxis: { categories: @json($meses) },
         colors: ['#198754'],
         stroke: { curve: 'smooth' },
-        dataLabels: { enabled: true }
+        dataLabels: {
+            enabled: true,
+            formatter: function (value) {
+                return formatMiles(value);
+            }
+        },
+
+        yaxis: {
+            labels: {
+                formatter: function (value) {
+                    return formatMiles(value);
+                }
+            }
+        },
+
+        tooltip: {
+            y: {
+                formatter: function (value) {
+                    return formatMiles(value);
+                }
+            }
+        }
     }).render();
 </script>
 @endpush

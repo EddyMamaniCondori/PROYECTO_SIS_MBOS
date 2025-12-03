@@ -67,6 +67,8 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::get('/blancos/index/', [BlancoController::class, 'index'])
         ->name('blancos.index');
+    Route::post('/blancos/filtrar', [blancoController::class, 'index_filtro'])->name('blancos.filtro');
+    
     /**
      *_________________Bautisos
     * 
@@ -193,6 +195,8 @@ Route::middleware(['auth'])->group(function () {
     Route::POST('/remesas/iglesia/registrar/{id_remesa}', [RemesaController::class, 'registrar_remesa_iglesia'])
         ->name('remesasiglesia.registrar');
 
+
+    
 
 
     // Ruta para procesar el formulario (POST)
@@ -388,6 +392,10 @@ Route::middleware(['auth'])->group(function () {
         ->name('remesas.tabla.excel.direct');
     Route::get('/remesas/tabla-distrital/pdf', [RemesasDashboardController::class, 'exportDistritalPDF'])
         ->name('remesas.tabla.pdf');
+
+    Route::get('/blancos/filtro/{anio}', [RemesasDashboardController::class, 'index_distrital_filtro'])
+     ->name('blancos.filtro');
+
     //remsas filiales
     Route::get('/remesas/filiales-mensual', [RemesasDashboardController::class, 'tablaFilialesPivot'])
         ->name('remesas.filiales.pivot');

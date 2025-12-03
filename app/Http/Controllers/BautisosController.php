@@ -336,7 +336,40 @@ class BautisosController extends Controller
                 ]
             ];
         });
-        return view('bautisos.dashboard_general', compact('graficos', 'anio','desafios', 'graficos_tipos', 'graficos_final')); 
+
+            // ============================
+        // 🔵 2. BAUTISMOS – GENERAL MBOS
+        // ============================
+        $b_desafio = DB::table('desafios')->sum('desafio_bautizo');
+        $b_alcanzado = DB::table('desafios')->sum('bautizos_alcanzados');
+        $b_diferencia = $b_alcanzado - $b_desafio;
+
+
+        // ============================
+        // 🔵 3. BAUTISMOS – DISTRITOS (2025)
+        // ============================
+
+        $b_desafio_d = DB::table('desafios')
+            ->where('anio', $anio)
+            ->sum('desafio_bautizo');
+
+        $b_alcanzado_d = DB::table('desafios')
+            ->where('anio', $anio)
+            ->sum('bautizos_alcanzados');
+
+        $b_diferencia_d = $b_alcanzado_d - $b_desafio_d;
+        $porcentajeGeneral = $b_desafio > 0 
+        ? round(($b_alcanzado / $b_desafio) * 100, 1)
+        : 0;
+
+        return view('bautisos.dashboard_general', compact('graficos', 'anio','desafios', 'graficos_tipos', 'graficos_final',
+        'b_desafio',
+        'b_alcanzado',
+        'b_diferencia',
+        'b_desafio_d',
+        'b_alcanzado_d',
+        'b_diferencia_d',
+        'porcentajeGeneral')); 
     }
     //
     //_________________________________________________________DASBOAR PARA PASTOR DISTRITAL___________________________________________________________

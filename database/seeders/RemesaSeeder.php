@@ -13,46 +13,34 @@ class RemesaSeeder extends Seeder
      */
     public function run(): void
     {
-        $meses = [
-            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo',
-            'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-        ];
+        
+        // 1. Definimos las fechas para ESTA única remesa
+    // Ejemplo: Límite el 20 de Enero de 2025
+        $fechaLimite = Carbon::create(2022, 12, 20);
+        
+        // Ejemplo: Se entregó el 18 de Enero (2 días antes)
+        $fechaEntrega = Carbon::create(2022, 12, 18);
 
-        $remesas = [];
+        // 2. Calculamos la diferencia y el estado (tu misma lógica)
+        $diferencia = $fechaEntrega->diffInDays($fechaLimite, false);
 
-        foreach ($meses as $index => $mes) {
-            $numeroMes = $index + 1;
-
-            for ($i = 1; $i <= 2; $i++) {
-
-                // Fecha límite: entre el día 15 y 20
-                $fechaLimite = Carbon::create(2025, $numeroMes, 20);
-
-                // Fecha entrega: de 2 días antes a 2 días después del límite
-                $fechaEntrega = (clone $fechaLimite)->addDays(rand(-2, 2));
-
-                // Diferencia en días
-                $diferencia = $fechaEntrega->diffInDays($fechaLimite, false); // negativo si es después
-
-                // Estado según la diferencia
-                if ($diferencia >= 0) {
-                    $estado = "Sin atraso ({$diferencia} días antes)";
-                } else {
-                    $estado = "Con retraso (" . abs($diferencia) . " días)";
-                }
-
-                $remesas[] = [
-                    'cierre'         => (bool)rand(0, 1),
-                    'deposito'       => (bool)rand(0, 1),
-                    'documentacion'  => (bool)rand(0, 1),
-                    'fecha_entrega'  => $fechaEntrega->toDateString(),
-                    'fecha_limite'   => $fechaLimite->toDateString(),
-                    'estado'         => $estado,
-                    'observacion'    => "Remesa {$i} correspondiente al mes de {$mes}",
-                ];
-            }
+        if ($diferencia >= 0) {
+            $estado = "Sin atraso ({$diferencia} días antes)";
+        } else {
+            $estado = "Con retraso (" . abs($diferencia) . " días)";
         }
 
-        DB::table('remesas')->insert($remesas);
+        // 3. Insertamos EL registro único
+        DB::table('remesas')->insert([
+            'cierre'        => true,  // O false, según quieras probar
+            'deposito'      => true,
+            'documentacion' => true,
+            'fecha_entrega' => $fechaEntrega->toDateString(),
+            'fecha_limite'  => $fechaLimite->toDateString(),
+            'estado'        => $estado,
+            'observacion'   => "Remesa única de prueba Enero",
+            'created_at'    => now(), // Importante para mantener el registro de creación
+            'updated_at'    => now(),
+        ]);
     }
 }

@@ -60,8 +60,8 @@
                                             <th>Distrito</th>
                                             <th>Pastor</th>
                                             <th>año</th>
-                                            <th>Desafio de Bautizos</th>
-                                            <th>Bautizos Alcanzados</th>
+                                            <th>Desafio de Bautismos</th>
+                                            <th>Bautismos Alcanzados</th>
                                             <th>acciones</th>
                                         </tr>
                                     </thead>
@@ -129,8 +129,8 @@
                                             <th>Distrito</th>
                                             <th>Pastor</th>
                                             <th>año</th>
-                                            <th>Desafio de Bautizos</th>
-                                            <th>Bautizos Alcanzados</th>
+                                            <th>Desafio de Bautismos</th>
+                                            <th>BautismosAlcanzados</th>
                                             <th>acciones</th>
                                         </tr>
                                     </tfoot>

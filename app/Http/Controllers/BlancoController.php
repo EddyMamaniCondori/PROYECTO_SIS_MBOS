@@ -85,6 +85,36 @@ class BlancoController extends Controller
         return view('blancos.index', compact('blancos', 'anios', 'anioActual'));
     }
 
+    public function index_filtro(Request $request)  //PERMISO ver blanco y crear al mismo tiempo
+    {
+        // 4️⃣ Traer todos los años disponibles en distritos (o en blancos, si prefieres)
+        $anio = $request->input('periodoInicio');
+
+        $anios = DB::table('blanco_remesas')
+            ->select(DB::raw('DISTINCT anio'))
+            ->orderByDesc('anio')
+            ->get();
+
+        // 5️⃣ Traer los blancos con su distrito y pastor
+        $blancos = DB::table('blanco_remesas as b')
+            ->join('distritos as d', 'b.id_distrito', '=', 'd.id_distrito')
+            ->leftJoin('pastors as p', 'b.id_pastor', '=', 'p.id_pastor')
+            ->leftJoin('personas as per', 'p.id_pastor', '=', 'per.id_persona')
+            ->select(
+                'b.*',
+                'd.nombre as nombre_distrito',
+                'per.nombre as nombre_pastor',
+                'per.ape_paterno',
+                'per.ape_materno'
+            )
+            ->where('b.anio', $anio)
+            ->orderBy('d.nombre')
+            ->get();
+        $anioActual = $anio;
+        // 6️⃣ Devolver vista con los datos
+        return view('blancos.index', compact('blancos', 'anios', 'anioActual'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -120,7 +150,7 @@ class BlancoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-   public function update(Request $request, $id)  //PERMISO editar blanco
+    public function update(Request $request, $id)  //PERMISO editar blanco
     {
         $request->validate([
             'monto' => 'required|numeric|min:0',
@@ -128,10 +158,14 @@ class BlancoController extends Controller
 
         $blanco = BlancoRemesa::findOrFail($id);
         $blanco->update([
-            'monto' => $request->monto,
+            'monto' => $request->monto*12,
         ]);
+        $anio = $blanco->anio;
 
-        return redirect()->back()->with('success', 'Monto actualizado correctamente.');
+         // Redirigimos a la ruta del filtro enviando el año
+        return redirect()
+            ->route('blancos.index')
+            ->with('success', 'Blanco actualizado correctamente.');
     }
 
     /**

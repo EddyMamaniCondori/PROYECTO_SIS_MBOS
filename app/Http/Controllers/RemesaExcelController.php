@@ -82,6 +82,7 @@ class RemesaExcelController extends Controller
         foreach ($remesasExcel as $remesaExcel) { // recoremos los registros
             //DB::beginTransaction();
             //try {
+                $estado = false;
                 for ($i = 1; $i <= 12; $i++) {
                     $valor = $remesaExcel->{"valor_$i"} ?? null;
                     $nombreMes = strtolower(trim($remesaExcel->{"mes_$i"} ?? ''));
@@ -106,15 +107,14 @@ class RemesaExcelController extends Controller
                             $remesaIglesia = RemesaIglesia::find($remesa->id_remesa);
                             $remesaIglesia->monto = $valor;
                             $remesaIglesia->save();
+
+                            $estado = true;
                         }
                     }
                 }
-
-
                 //DB::commit();
+                if($estado){   $remesaExcel->delete();}
 
-
-                $remesaExcel->delete();
 
             //} catch (\Exception $e) {
                // DB::rollBack();

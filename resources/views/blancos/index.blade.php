@@ -12,31 +12,13 @@
 @section('content')
 
 
-@if (session('success'))
-    <script>
-        const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-        });
-        Toast.fire({
-        icon: "success",
-        title: "{{ session('success') }}"
-        });
-    </script>
-@endif
+<x-alerts/>
 
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Blancos De Remesas</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Blancos De Remesas {{$anioActual}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -54,7 +36,7 @@
               <div class="col-8">
                 <div class="row">
                   <div class="card mb-4">
-                    <form class="mt-3 mb-3" action="#" method="POST" id="filtroForm">
+                    <form class="mt-3 mb-3" action="{{ route('blancos.filtro') }}" method="POST" id="filtroForm">
                     @csrf  
                       <div class="row">
                         <!--SELECT PERSOMNALIZADO-->
@@ -63,7 +45,10 @@
                           <select id="periodoInicio" name="periodoInicio" class="form-select">
                                 <option value="">--Selecciona--</option>
                             @foreach ($anios as $anio)
-                                <option value="{{$anio->anio}}">{{$anio->anio}}</option>
+                                <option value="{{$anio->anio}}">
+                                {{ (isset($anioSeleccionado) && $anioSeleccionado == $anio->anio) ? 'selected' : '' }}
+                                {{ $anio->anio }}
+                                </option>
                             @endforeach
                           </select>
                         </div>
@@ -77,10 +62,10 @@
                 </div>
               </div>
               <div class="col-4">
-                <div class="card mb-4 p-2">
+                <!--<div class="card mb-4 p-2">
                   <button type="button" class="btn btn-primary w-100 mb-2"> <i class="bi bi-filetype-xlsx"></i> &nbsp;  Descargar EXCEL</button>
                   <button type="button" class="btn btn-success w-100"> <i class="bi bi-filetype-pdf"></i>  &nbsp; Descargar PDF</button>
-                </div>
+                </div>-->
               </div>
 
             </div>
@@ -97,7 +82,8 @@
                                             <th>Distrito</th>
                                             <th>Pastor</th>
                                             <th>año</th>
-                                            <th>Blanco</th>
+                                            <th>Blanco Mensual</th>
+                                            <th>Blanco Anual</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -114,14 +100,18 @@
                                                 {{$dato->anio}} 
                                             </td>
                                             <td>
-                                                {{$dato->monto}} 
+                                              {{ number_format($dato->monto / 12, 2) }}
+    
+                                            </td> 
+                                            <td>
+                                                {{number_format($dato->monto, 2)}} 
                                             </td>   
                                             <td>
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
                                                 
-                                                    <form action="#" method="GET">
+                                                    <!--<form action="#" method="GET">
                                                         <button type="submit" class="btn btn-primary"> <i class="bi bi-graph-up"></i> Ver Avance</button>
-                                                    </form>
+                                                    </form>-->
 
                                                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$dato->id_blanco}}"> <i class="bi bi-pencil-square"></i> Asignar</button>
                                              </td>
@@ -150,7 +140,7 @@
                                                         <!-- Campo editable -->
                                                         <div class="mb-3">
                                                             <label for="monto" class="form-label">
-                                                            <strong>Monto (Bs.) :</strong>
+                                                            <strong>Blanco Mensual (Bs.) :</strong>
                                                             </label>
                                                             <input 
                                                             type="number" 
@@ -182,7 +172,8 @@
                                             <th>Distrito</th>
                                             <th>Pastor</th>
                                             <th>año</th>
-                                            <th>Blanco</th>
+                                            <th>Blanco Mensual</th>
+                                            <th>Blanco Anual</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </tfoot>

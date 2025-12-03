@@ -227,11 +227,6 @@ class RolePermissionSeeder extends Seeder
             'crear-bautisos',
             'editar-bautisos',
             'eliminar-bautisos',
-            
-            
-            // 🔹 Blanco
-            'ver-blanco',
-            'editar-blanco',
 
             // 🔹 Desafío
             'ver-desafios',
@@ -248,7 +243,11 @@ class RolePermissionSeeder extends Seeder
              // 🔹 Desafío Anual
             'editar-desafios anual Est Inst',
             'eliminar-desafios anual Est Inst',
-
+            'ver estudiantes de distritos-desafios anual Est Inst',
+            'ver instructores de distritos-desafios anual Est Inst',
+            'ver detalle de iglesias de distritos-desafios anual Est Inst',
+            'editar-desafios anual Est Inst',
+            'eliminar-desafios anual Est Inst',
             // 🔹 Desafío Evento
             'ver-desafios eventos',
             'ver-eliminados-desafios eventos',
@@ -257,17 +256,16 @@ class RolePermissionSeeder extends Seeder
             'eliminar-desafios eventos',
             'reactivar-desafios eventos',
 
-             // 🔹 (sub tabla) Asignacion Desafío Evento
-            'ver-asignacion desafios eventos',
-            'ver desafio-asignacion desafios eventos',
-            'asignar evento a distrito-asignacion desafios eventos',
-            'actualizar desafios-asignacion desafios eventos',
-
-            // 🔹 Desafío Mensual //SATISFECHO
+            'ver-dashboards desafios eventos',
+            'ver por evento-dashboards desafios eventos',
             'ver-desafios mensuales',
             'crear-desafios mensuales',
             'editar fechas-desafios mensuales',
             'editar desafios-desafios mensuales',
+            'ver los blancos de 1 mes-desafios mensuales',
+            'editar desafios mes masivo-desafios mensuales',
+            'graficos x mes MBOS-desafios mensuales',
+            'graficos todos los meses MBOS-desafios mensuales',
 
             // 🔹 Distritos //SATISFECHO
             'ver-distritos',
@@ -281,13 +279,6 @@ class RolePermissionSeeder extends Seeder
             'cambiar asignaciones ACT - distritos',
             //(DISTRITOS) //Asignaciones de pastores, para el siguiente año
             'cambiar asignaciones SIG - distritos',
-
-            // 🔹 Estudiantes // SATISFECHO
-            'ver-estudiantes',
-            'ver avance-estudiantes',
-            'crear-estudiantes',
-            'editar-estudiantes',
-            'eliminar-estudiantes',
 
             // 🔹 Grupo /SATISFECHO (falta asiganciones)
             'ver-grupos',
@@ -304,18 +295,15 @@ class RolePermissionSeeder extends Seeder
             'eliminar-iglesias',
 
             // (IGLESIAS) asignaciones aparte //SATISFECHO
+            'ver x distritos-lideres locales',
+            'ver x iglesias-lideres locales',
+            'editar pastor iglesias-lideres locales',
             'asignaciones-iglesias',
 
-            // 🔹 Instructores //satisfecho
-            'ver-instructores',
-            'ver avance-instructores',
-            'crear-instructores',
-            'editar-instructores',
-            'eliminar-instructores',
-
+ 
             // 🔹 Panel //safisfecho
             'ver dashboard pastores-panel',
-
+            'ver avance pastores-panel',
             // 🔹 Pastores  //SATISFECHO
             'ver-pastores',
             'ver eliminados-pastores',
@@ -323,11 +311,6 @@ class RolePermissionSeeder extends Seeder
             'editar-pastores',
             'eliminar-pastores',
             'reactivar-pastores',
-
-            // 🔹 Pendientes //satisfecho
-            'ver anual-pendientes',
-            'ver distrital-pendientes',
-            'ver mensual-pendientes',
 
             // 🔹 Personal // SATISFECHOS
             'ver-personal',
@@ -337,43 +320,13 @@ class RolePermissionSeeder extends Seeder
             'eliminar-personal',
             'reactivar-personal',
 
-            // 🔹 Puntualidad// SATISFECHOS
-            'ver-puntualidad',
-
-            // 🔹 Remesas// SATISFECHOS
-            'ver meses-remesas',
-            'crear meses-remesas',
-            'ver remesas mes-remesas',
-
-            'ver remesas filiales-remesas',
-            'llenar remesas filiales-remesas',
-            'registra remesas filiales-remesas',
-
-            // 🔹 Remesa Excel// SATISFECHOS
-            'ver-remesas excel',
-            'importar-remesas excel',
-            'eliminar-remesas excel',
-            'guardar-remesas excel',
-
             // 🔹 Remesa Dashboard// FALTA EXPLORAR
-            'ver-remesas dashboard',
-
-            // 🔹 Visitas // SATISFECHOS
-            'ver anual-visitas',
-            'ver meses-visitas',
-            'crear-visitas',
-            'editar-visitas',
-            'eliminar-visitas',
             'dashboard-visitas',
         ]);
 
         // ROL: Editor (puede crear y editar, pero no eliminar)
         $pastor = Role::create(['name' => 'Pastor']);
         $pastor->givePermissionTo([
-            'ver distrital-pendientes',
-            'ver dashboar pastor-remesas dashboard',
-            'ver dashboar remesas filiales pastor-remesas dashboard',
-            'ver dashboar fondo local pastor-remesas dashboard',
             //el pastor puede ver sus bautisos 
             'ver pastor-bautisos distrito',
             'ver dashboard pastor-bautisos distrito',
@@ -393,6 +346,12 @@ class RolePermissionSeeder extends Seeder
             'crear-instructores',
             'editar-instructores',
             'eliminar-instructores',
+            // pendientes
+            'ver distrital-pendientes',
+            // dashboard de remesas filiales
+            'ver dashboar pastor-remesas dashboard',
+            'ver dashboar remesas filiales pastor-remesas dashboard',
+            'ver dashboar fondo local pastor-remesas dashboard',
             // 🔹 Panel //safisfecho
             'ver dashboard pastores-panel',
             'ver avance pastores-panel',
@@ -402,14 +361,55 @@ class RolePermissionSeeder extends Seeder
             'crear-visitas',
             'editar-visitas',
             'eliminar-visitas',
-            'dashboard-visitas',
-            // Permisos de Roles y Permisos
-            'ver-roles',
-            'crear-roles',
-            'editar-roles',
-            'eliminar-roles',]);
+            'dashboard-visitas',     ]);
 
+        
+        
+        
         // ========================================
+        
+        $teso = Role::create(['name' => 'Tesorero']);
+        $teso->givePermissionTo([
+            'ver-administrativo',
+            'ver-blanco',
+            'editar-blanco',
+            'ver-distritos',
+            'ver historial-distritos',
+            'ver-grupos',
+            'ver-iglesias',
+            'ver-pastores',
+            'ver anual-pendientes',
+            'ver distrital-pendientes',
+            'ver mensual-pendientes',
+            'ver-personal',
+            'ver eliminados-personal',
+            'crear-personal',
+            'editar-personal',
+            'eliminar-personal',
+            'reactivar-personal',
+            'ver-puntualidad',
+            'ver meses-remesas',
+            'crear meses-remesas',
+            'ver remesas mes-remesas',
+            'ver remesas filiales-remesas',
+            'llenar remesas filiales-remesas',
+            'registra remesas filiales-remesas',
+            'ver-remesas excel',
+            'importar-remesas excel',
+            'eliminar-remesas excel',
+            'guardar-remesas excel',
+            'ver-remesas dashboard',
+        ]);
+
+        
+        
+        
+        // ========================================
+        
+        
+        
+        
+        
         // CREAR PERSONA SUPER ADMINISTRADOR
         // ========================================
         $superAdminPersona = Persona::find(1);

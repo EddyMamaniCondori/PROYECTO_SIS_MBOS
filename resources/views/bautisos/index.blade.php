@@ -1,7 +1,7 @@
 @extends('template')
 
 
-@section('title', 'Bautisos')
+@section('title', 'Bautismos')
 
 @push('css')
     <!--data table-->
@@ -34,11 +34,11 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Bautisos</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Bautismos</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Bautisos - {{$año}}</li>
+                  <li class="breadcrumb-item active" aria-current="page">Bautismos - {{$año}}</li>
                 </ol>
               </div>
             </div>
@@ -58,7 +58,7 @@
                                     <thead>
                                         <tr>
                                             <th>Distrito</th>
-                                            <th>bautizos</th>
+                                            <th>bautismos</th>
                                             <th>profesion de fe</th>
                                             <th>rebautismos</th>
                                             <th>total</th>
@@ -101,7 +101,7 @@
                                     <tfoot>
                                         <tr>
                                             <th>Distrtio</th>
-                                            <th>bautizos</th>
+                                            <th>Bautismos</th>
                                             <th>profesion de fe</th>
                                             <th>rebautismos</th>
                                             <th>total</th>

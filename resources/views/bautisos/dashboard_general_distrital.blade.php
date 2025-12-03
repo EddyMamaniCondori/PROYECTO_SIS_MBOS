@@ -23,7 +23,7 @@
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Dashboard de Bautisos <br> <label class="text-primary"><strong>Distrito: </strong> {{$distrito->nombre}} {{$distrito->id_distrito}}</label>
+              <div class="col-sm-6"><h3 class="mb-0">Dashboard de Bautismos <br> <label class="text-primary"><strong>Distrito: </strong> {{$distrito->nombre}} {{$distrito->id_distrito}}</label>
               <br>Gestion: {{$anio}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">

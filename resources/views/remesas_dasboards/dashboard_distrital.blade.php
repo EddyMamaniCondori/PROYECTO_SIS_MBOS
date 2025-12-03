@@ -23,7 +23,7 @@
     <div class="container-fluid">
       <div class="row mb-2 align-items-center">
         <div class="col-sm-6">
-          <h1 class="m-0">Dashboard Distrital <small class="text-muted">Remesas {{ now()->year }}</small></h1>
+          <h1 class="m-0">Dashboard Distrital <small class="text-muted">Remesas {{ $anio }}</small></h1>
         </div>
         <div class="col-sm-6 text-end">
           <ol class="breadcrumb float-sm-right">
@@ -32,6 +32,40 @@
           </ol>
         </div>
       </div>
+                <div class="row ms-1">
+    <div class="card mb-4">
+        <form class="mt-3 mb-3" action="{{ route('blancos.filtro', ['anio' => '']) }}" method="GET" id="filtroForm">
+            <div class="row">
+
+                <div class="col-3">
+                    <label class="form-label fw-semibold">Periodo:</label>
+                    <select id="periodoInicio" name="anio" class="form-select" onchange="updateAction()">
+                        <option value="">--Selecciona--</option>
+
+                        @foreach ($anios as $anio)
+                            <option 
+                                value="{{ $anio->anio }}"
+                                {{ isset($anioSeleccionado) && $anioSeleccionado == $anio->anio ? 'selected' : '' }}
+                            >
+                                {{ $anio->anio }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-2">
+                    <button type="submit" class="btn btn-success mt-3">
+                        <i class="bi bi-funnel-fill"></i>&nbsp; Filtrar
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
     </div>
   </div>
 
@@ -275,7 +309,7 @@
           stroke: { curve: 'smooth', width: 3 },
           xaxis: { categories: meses },
           yaxis: {
-            labels: { formatter: val => Math.round(val).toLocaleString('es-BO') },
+            labels: { formatter: val => formatInt(val) },
             title: { text: 'Monto (Bs)' }
           },
           tooltip: { y: { formatter: val => formatInt(val) } },
@@ -407,4 +441,10 @@
 
     }); // end $()
   </script>
+  <script>
+function updateAction() {
+    let anio = document.getElementById('periodoInicio').value;
+    document.getElementById('filtroForm').action = "/blancos/filtro/" + anio;
+}
+</script>
 @endpush

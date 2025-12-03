@@ -35,13 +35,13 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Editar Bautiso</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Editar Bautismos/h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li> 
-                  <li class="breadcrumb-item" ><a href="{{ route('bautisos.index') }}" >Bautisos</a></li>
-                  <li class="breadcrumb-item" ><a href="{{ route('bautisos.show', $id_distrito) }}" >Bautiso Distrital</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Editar bautizo</li>
+                  <li class="breadcrumb-item" ><a href="{{ route('bautisos.index') }}" >Bautismos</a></li>
+                  <li class="breadcrumb-item" ><a href="{{ route('bautisos.show', $id_distrito) }}" >Bautismos Distrital</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Editar bautismos</li>
                 </ol>
 
               </div>
@@ -54,9 +54,9 @@
                             <div class="row g-3">
                                  <input type="hidden" name="id_distrito" id="id_distrito" value="{{$id_distrito}}">
                                    
-                                <h5 class="mb-0"><strong>Datos del Bautizo</strong></h5>
+                                <h5 class="mb-0"><strong>Datos del Bautismos</strong></h5>
                                 <div class="col-md-3">
-                                    <label for="fecha_bautizo" class="form-label">Fecha de Bautizo: <span class="text-danger">*</span> </label>
+                                    <label for="fecha_bautizo" class="form-label">Fecha de Bautismo: <span class="text-danger">*</span> </label>
                                     <input type="date" name="fecha_bautizo" class="form-control" value="{{ old('fecha_bautizo', $bautizo->fecha_bautizo) }}">
                                     @error('fecha_bautizo')
                                         <small class="text-danger">{{ $message }}</small>
