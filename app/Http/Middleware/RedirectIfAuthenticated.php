@@ -20,7 +20,7 @@ class RedirectIfAuthenticated
             }
 
             if ($user->hasRole('Administrativo')) {
-                return redirect()->route('panel.mbos');
+                return redirect()->route('panel');
             }
 
             if ($user->hasRole('Tesorero')) {

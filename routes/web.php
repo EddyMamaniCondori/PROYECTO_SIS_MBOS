@@ -57,7 +57,7 @@ Route::get('/', function () {
 
     return redirect()->route('panel');
 });
-
+ 
 
 Route::redirect('/', '/login');
 

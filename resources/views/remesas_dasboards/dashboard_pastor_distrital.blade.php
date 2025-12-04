@@ -183,47 +183,62 @@
       integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8=" crossorigin="anonymous" ></script>
       <!-- ChartJS -->
 
-  <script>
-      let resumen = @json($graficoResumen);
+    <script>
+        let resumen = @json($graficoResumen);
 
-      // Redondear a 2 decimales (por si llega con muchos)
-      resumen.valores = resumen.valores.map(v => parseFloat(v.toFixed(2)));
+        // Convertir valores a enteros y agregar separador de miles
+        resumen.valores = resumen.valores.map(v => 
+            Math.round(v) // quitar decimales
+        );
+        resumen.valores[2] = resumen.valores[2] * -1;
 
-      let optionsResumen = {
-          chart: {
-              type: 'bar',
-              height: 320
-          },
+        let optionsResumen = {
+            chart: {
+                type: 'bar',
+                height: 320
+            },
 
-          series: [
-              { name: 'Blanco', data: [resumen.valores[0]] },
-              { name: 'Alcanzado', data: [resumen.valores[1]] },
-              { name: 'Diferencia', data: [resumen.valores[2]] }
-          ],
+            series: [
+                { name: 'Blanco', data: [resumen.valores[0]] },
+                { name: 'Alcanzado', data: [resumen.valores[1]] },
+                { name: 'Diferencia', data: [resumen.valores[2]] }
+            ],
 
-          colors: ['#0d6efd', '#20c997', '#dc3545'],
+            colors: ['#0d6efd', '#20c997', '#dc3545'],
 
-          xaxis: {
-              categories: resumen.categorias
-          },
+            xaxis: {
+                categories: resumen.categorias
+            },
 
-          dataLabels: {
-              enabled: true,
-              formatter: val => val.toFixed(2)
-          },
+            dataLabels: {
+                enabled: true,
+                formatter: val => val.toLocaleString('es-BO')  
+                // Ejemplo: 15000 → "15.000"
+            },
 
-          legend: {
-              position: 'top'
-          }
-      };
+            yaxis: {
+                labels: {
+                    formatter: val => val.toLocaleString('es-BO')
+                }
+            },
 
-      let chartResumen = new ApexCharts(
-          document.querySelector("#grafica-resumen"),
-          optionsResumen
-      );
+            tooltip: {
+                y: {
+                    formatter: val => val.toLocaleString('es-BO')
+                }
+            },
 
-      chartResumen.render();
-  </script>
+            legend: { position: 'top' }
+        };
+
+        let chartResumen = new ApexCharts(
+            document.querySelector("#grafica-resumen"),
+            optionsResumen
+        );
+
+        chartResumen.render();
+    </script>
+
 
   
   <script>
