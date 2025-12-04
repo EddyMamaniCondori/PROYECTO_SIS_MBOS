@@ -420,7 +420,7 @@ class PanelController extends Controller
     // 🔵 2. BAUTISMOS – GENERAL MBOS
     // ============================
     $b_desafio = DB::table('desafios')->sum('desafio_bautizo');
-    $b_alcanzado = DB::table('desafios')->sum('bautizos_alcanzados');
+    $b_alcanzado = DB::table('bautisos')->count();
     $b_diferencia = $b_alcanzado - $b_desafio;
 
 
@@ -472,5 +472,66 @@ class PanelController extends Controller
     }
 
 
+    /**________________PANEL_________ MBOS */
+    public function panel_mbos() //permision 'ver dashboard pastores - panel',
+    {
+        $anio = 2025;
+        // 1. Total de bautismos alcanzados
+        $b_alcanzado = DB::table('bautisos')
+            ->whereYear('fecha_bautizo', $anio)
+            ->count();
 
+        // 2. Total de desafío del año
+        $b_desafio = DB::table('desafios')
+            ->where('anio', $anio)
+            ->sum('desafio_bautizo');
+
+        // 3. Diferencia
+        $b_diferencia = $b_alcanzado - $b_desafio;
+
+        // 4. Porcentaje de avance
+        if ($b_desafio > 0) {
+            $porcentajeGeneral = round(($b_alcanzado / $b_desafio) * 100, 2);
+        } else {
+            $porcentajeGeneral = 0;
+        }
+        // ________PARA REMESAS GESTION_____________
+        // 1. SUMA del monto alcanzado
+        $r_alcanzado = DB::table('generas as g')
+            ->join('remesas_iglesias as r', 'g.id_remesa', '=', 'r.id_remesa')
+            ->where('g.anio', $anio)
+            ->sum('r.monto');
+
+        // 2. SUMA del blanco (desafío)
+        $r_blanco = DB::table('blanco_remesas')
+            ->where('anio', $anio)
+            ->sum('monto');
+        //dd($r_blanco);
+        $mes_maximo = DB::table('generas')
+        ->where('anio', 2025)
+        ->max('mes');
+
+        $r_blanco = ($r_blanco / 12) * $mes_maximo;
+        // 3. DIFERENCIA
+        $r_diferencia = $r_alcanzado - $r_blanco;
+
+        // 4. PORCENTAJE
+        $r_porcentaje = $r_blanco > 0 
+            ? round(($r_alcanzado / $r_blanco) * 100, 2)
+            : 0;
+
+
+        return view('panel.panel', compact(
+            'anio',
+            'b_alcanzado',
+            'b_desafio',
+            'b_diferencia',
+            'porcentajeGeneral',
+            'anio',
+            'r_alcanzado',
+            'r_blanco',
+            'r_diferencia',
+            'r_porcentaje',
+        ));
+    }
 }

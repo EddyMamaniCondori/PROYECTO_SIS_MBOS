@@ -14,17 +14,40 @@
       integrity="sha256-4MX+61mt9NVvvuPjUWdUdyfZfxSB1/Rf9WtqRHgG5S0="
       crossorigin="anonymous"
     />
+    <style>
+       .parallax-banner {
+    height: 500px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+    </style>
 @endpush
 <x-alerts/>
         @section('content')
         <!--begin::App Content Header-->
+        <div class="row">
+            <div class="col-12 p-0">
+                <div class="parallax-banner"
+                    style="
+                        background-image: url('{{ asset('img/' . $distrito->nombre . '.png') }}');
+                    ">
+                </div>
+            </div>
+        </div>
+
+        <div class="row text-white text-center p-3" style="background-color: #001f3f;">
+            <div class="col-12">
+                <h2>MISIÓN BOLIVIANA OCCIDENTAL SUR</h2>
+            </div>
+        </div>
         <div class="app-content-header">
           <!--begin::Container-->
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
-              <div class="col-sm-9"><h3 class="mb-0">Distrito {{$distrito->nombre}} <br><span class="text-primary"> Pastor: {{$pastor->nombre}}&nbsp;{{$pastor->ape_paterno}}&nbsp;{{$pastor->ape_materno}}</span> </h3>
-              </div>
+            
               <div class="col-sm-3">
                 <a href="{{ route('desafios.index') }}">
                         <button type="button" class="btn btn-secondary"> Volver </button>
@@ -480,4 +503,12 @@
       });
     });
   </script>
+  <script>
+    window.addEventListener('scroll', function () {
+        const scrollTop = window.pageYOffset;
+        const banner = document.querySelector('.parallax-banner');
+        banner.style.backgroundPositionY = -(scrollTop * 0.2) + 'px';
+    });
+</script>
+
 @endpush

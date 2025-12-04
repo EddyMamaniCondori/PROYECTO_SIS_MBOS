@@ -32,11 +32,11 @@ class AuthenticatedSessionController extends Controller
 
         // Redirecciones por rol usando Spatie
         if ($user->hasRole('Super Administrador')) {
-            return redirect()->route('dashboard.tesorero');
+            return redirect()->route('panel');
         }
 
         if ($user->hasRole('Administrativo')) {
-            return redirect()->route('dashboard.tesorero');
+            return redirect()->route('panel.mbos');
         }
 
         if ($user->hasRole('Tesorero')) {
@@ -50,8 +50,6 @@ class AuthenticatedSessionController extends Controller
         if ($user->hasRole('Pastor')) {
             return redirect()->route('dashboard.pastor');
         }
-
-        // fallback si no tiene rol
         return redirect()->route('panel');
     }
 

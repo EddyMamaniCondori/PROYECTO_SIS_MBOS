@@ -14,8 +14,13 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+    <body class="font-sans antialiased"
+      style="
+        background: url('{{ asset('img/fondo.jpeg') }}') no-repeat center center fixed;
+        background-size: cover;
+      ">
+       <div class="min-h-screen flex flex-col sm:justify-center items-center pt-2 sm:pt-0">
+
             <div >
                 <img src="{{ asset('img/logoiasd.png') }}" class="w-24 drop-shadow-lg" alt="Logo">
                 <br>
@@ -23,7 +28,8 @@
             </div>
             <strong class="mb-4 text-2xl font-extrabold **font-serif**">
                 <center><h5>MISION BOLIVIANA OCCIDENTAL SUR</h5></center>
-</strong>
+            <div class="mt-20 md:mt-40"></div>
+    </strong>
             <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
                 {{ $slot }}
             </div>

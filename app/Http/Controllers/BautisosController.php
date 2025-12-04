@@ -341,7 +341,7 @@ class BautisosController extends Controller
         // 🔵 2. BAUTISMOS – GENERAL MBOS
         // ============================
         $b_desafio = DB::table('desafios')->sum('desafio_bautizo');
-        $b_alcanzado = DB::table('desafios')->sum('bautizos_alcanzados');
+        $b_alcanzado = DB::table('bautisos')->count();
         $b_diferencia = $b_alcanzado - $b_desafio;
 
 

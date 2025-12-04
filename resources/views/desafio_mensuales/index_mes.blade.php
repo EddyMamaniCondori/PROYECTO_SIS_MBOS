@@ -44,13 +44,7 @@
                 </ol>
               </div>
                 <div class="row">
-                    @if ($siguienteMes <= 12)
-                        <div class="col-md-6 mb-3">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal-mes">
-                            <i class="bi bi-pencil-square"></i> Habilitar {{$meses_array[$siguienteMes]}}
-                            </button>
-                        </div>   
-                    @endif
+                    
                     
                     
                     <!-- Modal -->

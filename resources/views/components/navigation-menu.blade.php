@@ -20,6 +20,13 @@
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
+                  <li class="nav-item ms-3">
+                        <a href="{{ route('panel')}}" class="nav-link ">
+                          <i class="bi bi-pie-chart-fill"></i>
+                          <p>Panel Principal</p>
+                        </a>
+                      </li>
+
                   @can('ver dashboard pastores-panel')
                       <li class="nav-item ms-3">
                         <a href="{{ route('dashboard.pastor')}}" class="nav-link ">
@@ -27,7 +34,6 @@
                           <p>Dashboard Pastores</p>
                         </a>
                       </li>
-                      
                   @endcan
                   @can('ver meses-remesas')
                       <li class="nav-item ms-3">

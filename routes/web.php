@@ -26,8 +26,37 @@ use App\Http\Controllers\DesafioEventoController;
 use App\Http\Controllers\PanelController;
 use App\Http\Controllers\roleController;
 use App\Http\Controllers\PerfilController;
+use Illuminate\Support\Facades\Auth;
+Route::get('/', function () {
 
+    if (!Auth::check()) {
+        return redirect()->route('login');
+    }
 
+    $user = Auth::user();
+
+    if ($user->hasRole('Super Administrador')) {
+        return redirect()->route('panel');
+    }
+
+    if ($user->hasRole('Administrativo')) {
+        return redirect()->route('panel.mbos');
+    }
+
+    if ($user->hasRole('Tesorero')) {
+        return redirect()->route('dashboard.tesorero');
+    }
+
+    if ($user->hasRole('Secretaria')) {
+        return redirect()->route('dashboard.secretario');
+    }
+
+    if ($user->hasRole('Pastor')) {
+        return redirect()->route('dashboard.pastor');
+    }
+
+    return redirect()->route('panel');
+});
 
 
 Route::redirect('/', '/login');
@@ -37,6 +66,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/perfil', [PerfilController::class, 'index'])
         ->name('perfil.index');
     // 1) Actualizar datos personales
+    Route::get('/panel/mbos', [PanelController::class, 'panel_mbos'])
+        ->name('panel');
+
     Route::put('/perfil/datos', [PerfilController::class, 'updateData'])->name('profile.updateData');
 
     // 2) Cambiar contraseña
