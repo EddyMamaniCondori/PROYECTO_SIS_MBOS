@@ -36,7 +36,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         if ($user->hasRole('Administrativo')) {
-            return redirect()->route('panel.mbos');
+            return redirect()->route('panel');
         }
 
         if ($user->hasRole('Tesorero')) {
