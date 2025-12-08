@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Carbon\Carbon;
-
+use App\Helpers\AuditoriaHelper;
 use App\Http\Requests\DistritoRequest;
 
 class DistritoController extends Controller
@@ -205,6 +205,8 @@ class DistritoController extends Controller
                             ]
                     );
             }
+            AuditoriaHelper::registrar('CREATE', 'Distritos', $distrito->id_distrito);
+            
             DB::commit();
 
             return redirect()->route('distritos.index')
@@ -266,7 +268,7 @@ class DistritoController extends Controller
             $distrito = Distrito::findOrFail($id);
             $distrito->nombre = $request->nombre; // Se guarda tal cual
             $distrito->save();
-
+            AuditoriaHelper::registrar('UPDATE', 'Distritos', $distrito->id_distrito);
             // 🔹 Redirigir con éxito
             return redirect()->route('distritos.index')
                             ->with('success', 'Distrito actualizado correctamente.');
@@ -318,6 +320,7 @@ class DistritoController extends Controller
                 $distrito->id_grupo = null;                // ldebe de vincularse al grupo
                 $distrito->fecha_asignacion = null;
                 $distrito->estado = false;
+                AuditoriaHelper::registrar('DELETE', 'Distritos', $distrito->id_distrito);
                 $distrito->save(); // lanza excepción en caso de fallo
                 
             DB::commit();
@@ -364,6 +367,7 @@ class DistritoController extends Controller
             $distrito -> estado = true;
             $distrito -> $anio;
             $distrito -> save();
+            AuditoriaHelper::registrar('REACTIVE', 'Distritos', $distrito->id_distrito);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();

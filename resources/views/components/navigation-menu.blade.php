@@ -404,7 +404,7 @@
                       </p>
                     </a>
                     <ul class="nav nav-treeview">
-                      @canany(['ver-desafios mensuales', 'ver los blancos de 1 mes-desafios mensuales','editar desafios mes masivo-desafios mensuales','graficos x mes MBOS-desafios mensuales'])
+                      @canany(['ver-desafios mensuales', 'ver los blancos de 1 mes-desafios mensuales','editar desafios mes masivo-desafios mensuales'])
                         <li class="nav-item ms-3">
                           <a href="{{route('desafios_mensuales.index')}}" class="nav-link">
                             <i class="bi bi-gear"></i>
@@ -687,6 +687,12 @@
                   <a href="{{ route('roles.index')}}" class="nav-link">
                     <i class="nav-icon bi bi-download"></i>
                     <p>Roles</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('auditorias.index')}}" class="nav-link">
+                    <i class="bi bi-fingerprint"></i>
+                    <p>Auditoria</p>
                   </a>
                 </li>
               @endcan

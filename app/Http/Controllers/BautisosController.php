@@ -11,7 +11,7 @@ use App\Models\DesafioEvento;
 use App\Models\AsignaDesafio;
 use App\Http\Requests\BautisoRequest;
 use App\Http\Requests\UpdateBautisoRequest;
-
+use App\Helpers\AuditoriaHelper;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -83,8 +83,12 @@ class BautisosController extends Controller
             $anioActual = now()->year;
             $id_distrito = $request->id_distrito;
             $bautiso = Bautiso::create($request->validated()); 
+
+            $desafio_bautismo = Desafio::find($id_distrito);
+            $desafio_bautismo->bautizos_alcanzados = $desafio_bautismo->bautizos_alcanzados + 1;
+            $desafio_bautismo->save();
+
             //se crea el bautizo a la 
-            
             if ($request->id_desafio_evento) {
                 $desafio = Desafio::where('anio', $anioActual)
                     ->where('id_distrito', $id_distrito)
@@ -109,6 +113,7 @@ class BautisosController extends Controller
                     ]);
                 }
             }
+            AuditoriaHelper::registrar('CREATE', 'Bautisos', $bautiso->id_bautiso);
             DB::commit();
             return redirect()->route('bautisos.show', ['bautiso' => $id_distrito])
                 ->with('success', 'Registro creado correctamente.');
@@ -165,6 +170,7 @@ class BautisosController extends Controller
             ->where('distrito_id', $id_distrito)
             ->orderBy('nombre') // opcional: para que salgan ordenadas alfabéticamente
             ->get();
+        
         return view('bautisos.edit', compact('bautizo','iglesias','id_distrito'));
     }
 
@@ -185,7 +191,7 @@ class BautisosController extends Controller
             return redirect()->route('bautisos.show', ['bautiso' => $id_distrito])
                 ->with('success', 'Registro Actualizado correctamente.');
 
-
+            AuditoriaHelper::registrar('UPDATE', 'Bautisos', $bautizo->id_bautiso);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
@@ -214,7 +220,7 @@ class BautisosController extends Controller
 
             //DD($id_distrito, $bautizo);
             $bautizo->delete();
-            
+            AuditoriaHelper::registrar('DELETE', 'Bautisos', $bautizo->id_bautiso);
             DB::commit();
             return redirect()->route('bautisos.show', ['bautiso' => $id_distrito])
                 ->with('success', 'Registro Eliminado correctamente.');

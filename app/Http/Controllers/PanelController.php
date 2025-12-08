@@ -477,9 +477,9 @@ class PanelController extends Controller
     {
         $anio = 2025;
         // 1. Total de bautismos alcanzados
-        $b_alcanzado = DB::table('bautisos')
-            ->whereYear('fecha_bautizo', $anio)
-            ->count();
+        $b_alcanzado = DB::table('desafios')
+            ->where('anio', $anio)
+            ->sum('bautizos_alcanzados');
 
         // 2. Total de desafío del año
         $b_desafio = DB::table('desafios')

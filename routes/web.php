@@ -27,6 +27,7 @@ use App\Http\Controllers\PanelController;
 use App\Http\Controllers\roleController;
 use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AuditoriaController;
 Route::get('/', function () {
 
     if (!Auth::check()) {
@@ -61,6 +62,9 @@ Route::get('/', function () {
 
 Route::redirect('/', '/login');
 
+
+
+
 // ===== TUS RUTAS ANTIGUAS (las reconstruimos juntos) =====
 Route::middleware(['auth'])->group(function () {
     Route::get('/perfil', [PerfilController::class, 'index'])
@@ -80,6 +84,12 @@ Route::middleware(['auth'])->group(function () {
      *_________________DASHBOARDS PRINCIPALES
     * 
     */
+Route::get('/estudiantes/filtrar', [EstudiantesController::class, 'filtrarPorAnio'])
+     ->name('estudiantes.filtrar');
+
+     
+    Route::get('/auditorias', [AuditoriaController::class, 'index'])
+     ->name('auditorias.index');
      //pastor
     Route::get('/dashboard/pastor/', [PanelController::class, 'dashboard_pastores'])
         ->name('dashboard.pastor');

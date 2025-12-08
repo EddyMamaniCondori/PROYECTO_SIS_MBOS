@@ -40,6 +40,11 @@ class EstudiantesController extends Controller
         // 1️⃣ Definir el año actual y el distrito
         $anioActual = now()->year;
         $persona = Auth::user(); 
+        $anios = EstudianteBiblico::selectRaw('EXTRACT(YEAR FROM fecha_registro) AS anio')
+            ->distinct()
+            ->orderBy('anio', 'DESC')
+            ->pluck('anio');
+        $persona = Auth::user(); 
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {
@@ -75,7 +80,48 @@ class EstudiantesController extends Controller
             ->get();
 
         // 3️⃣ Enviar datos a la vista
-        return view('estudiantes.index', compact('estudiantes', 'anio'));
+        return view('estudiantes.index', compact('estudiantes', 'anio', 'anios'));
+    }
+    public function filtrarPorAnio(Request $request)
+    {
+        // Si no envía año, usar año actual
+        $anio = $request->input('anio', now()->year);
+        
+        $persona = Auth::user(); 
+
+        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
+        if (!$distrito) {
+            return redirect()->route('panel')->with('error', 'No tienes un distrito asignado. Contacta al administrador.');
+        }
+
+        $id_distrito = $distrito->id_distrito;
+
+        // Obtener estudiantes filtrados por año y distrito
+        $estudiantes = EstudianteBiblico::leftJoin('iglesias as xi', 'estudiante_biblicos.id_iglesia', '=', 'xi.id_iglesia')
+            ->select('estudiante_biblicos.*', 'xi.nombre as nombre_iglesia')
+            ->whereYear('estudiante_biblicos.fecha_registro', $anio)
+            ->where('xi.estado', true)
+            ->where('xi.distrito_id', $id_distrito)
+            ->get();
+        $anios = EstudianteBiblico::selectRaw('EXTRACT(YEAR FROM fecha_registro) AS anio')
+            ->distinct()
+            ->orderBy('anio', 'DESC')
+            ->pluck('anio');
+        // si no hay años registrados
+        if ($anios->isEmpty()) {
+            $anioSeleccionado = null;
+            $estudiantes = collect([]);
+        } else {
+            $anioSeleccionado = $request->input('anio', $anios->first());
+
+            $estudiantes = EstudianteBiblico::leftJoin('iglesias as xi', 'estudiante_biblicos.id_iglesia', '=', 'xi.id_iglesia')
+                ->select('estudiante_biblicos.*', 'xi.nombre as nombre_iglesia')
+                ->whereYear('estudiante_biblicos.fecha_registro', $anioSeleccionado)
+                ->where('xi.estado', true)
+                ->where('xi.distrito_id', $id_distrito)
+                ->get();
+        }
+        return view('estudiantes.filtro', compact('estudiantes', 'anio', 'anios', 'anioSeleccionado'));
     }
 
     /**

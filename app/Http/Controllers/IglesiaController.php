@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Carbon\Carbon;
+use App\Helpers\AuditoriaHelper;
 use App\Http\Requests\IglesiaRequest;
 use App\Http\Requests\UpdateIglesiaRequest;
 use Illuminate\Support\Facades\Auth;
@@ -116,7 +117,7 @@ class IglesiaController extends Controller
                 $distrito->save();
             }
         }
-
+        AuditoriaHelper::registrar('CREATE', 'iglesias', $iglesia->id_iglesia);
         return redirect()->route('iglesias.index')
             ->with('success', 'Iglesia creada correctamente.');
     }
@@ -138,6 +139,8 @@ class IglesiaController extends Controller
         $iglesia = Iglesia::find($id);
 
         $distritos = Distrito::where('estado', true)->get();
+
+        
         return view('iglesias.edit', compact('iglesia', 'distritos'));
     }
 
@@ -187,7 +190,7 @@ class IglesiaController extends Controller
 
         // Actualizar la iglesia
         $iglesia->update($data);
-
+        AuditoriaHelper::registrar('UPDATE', 'iglesias', $iglesia->id_iglesia);
         return redirect()->route('iglesias.index')
                         ->with('success', 'Iglesia actualizada correctamente.');
     }
@@ -217,7 +220,7 @@ class IglesiaController extends Controller
                 }
                 $iglesia ->estado = false;
                 $iglesia ->save(); // lanza excepción en caso de fallo
-                
+                AuditoriaHelper::registrar('DELETE', 'iglesias', $iglesia->id_iglesia);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -265,6 +268,7 @@ class IglesiaController extends Controller
                     $distrito->save();
                 }
             }
+            AuditoriaHelper::registrar('REACTIVE', 'iglesias', $iglesia->id_iglesia);
             DB::commit();
             return redirect()
                 ->route('iglesias.index')

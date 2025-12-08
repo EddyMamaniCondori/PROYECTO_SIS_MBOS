@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Models\Persona; 
 use App\Models\Pastor;
-
+use App\Helpers\AuditoriaHelper;
 use App\Http\Requests\PastorRequest;
 use App\Http\Requests\UpdatePastorRequest;
 
@@ -104,7 +104,8 @@ class PastorController extends Controller
                 'nro_distritos'      => 0,
             ]);
             $pers->assignRole('Pastor');
-            DB::commit();
+            AuditoriaHelper::registrar('CREATE', 'Pastores', $pers->id_persona);
+            DB::commit();   
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['error' => 'Error al crear la pastor: ' . $e->getMessage()], 500);
@@ -133,7 +134,7 @@ class PastorController extends Controller
                 ->where('xp.id_persona', $pastore)
                 ->select('xp.*', 'xpp.*')
                 ->first();
-
+        
         return view('pastores.edit',['pastor'=>$pastor]);
     }
 
@@ -162,6 +163,7 @@ class PastorController extends Controller
                 'cargo'              => $request->cargo,
                 'fecha_contratacion' => $request->fecha_contratacion,
             ]);
+            AuditoriaHelper::registrar('UPDATE', 'Pastores', $pastor->id_pastor);
             return redirect()->route('pastores.index')->with('success', 'Pastor actualizado correctamente.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -177,6 +179,7 @@ class PastorController extends Controller
             $persona = Persona::find($id); 
             $persona -> estado = false;
             $persona -> save();
+            AuditoriaHelper::registrar('DELETE', 'Pastores', $id);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -192,6 +195,7 @@ class PastorController extends Controller
             $persona = Persona::find($id); 
             $persona -> estado = true;
             $persona -> save();
+            AuditoriaHelper::registrar('REACTIVE', 'Pastores', $id);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();

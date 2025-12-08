@@ -9,6 +9,7 @@ use App\Models\DesafioEvento;
 use App\Models\AsignaDesafio;
 use App\Models\Desafio;
 use App\Http\Requests\DesafioEventoRequest;
+use App\Helpers\AuditoriaHelper;
 class DesafioEventoController extends Controller
 {
     /**
@@ -96,6 +97,8 @@ class DesafioEventoController extends Controller
         try {
             DB::beginTransaction();
             $evento = DesafioEvento::create($request->validated());
+            AuditoriaHelper::registrar('CREATE', 'DesafioEventos', $evento->id_desafio_evento);
+            
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -135,6 +138,7 @@ class DesafioEventoController extends Controller
             
             $desafio = DesafioEvento::findOrFail($id);
             $desafio->update($request->validated());
+            AuditoriaHelper::registrar('UPDATE', 'DesafioEventos', $desafio->id_desafio_evento);
             
             DB::commit();
             return redirect()->route('desafio_eventos.index')->with('success', 'Evento actualizado correctamente.');
@@ -154,6 +158,7 @@ class DesafioEventoController extends Controller
             $desafio = DesafioEvento::findOrFail($id);
             $desafio->estado = false;
             $desafio->save();
+            AuditoriaHelper::registrar('DELETE', 'DesafioEventos', $desafio->id_desafio_evento);
             DB::commit();
             
             return redirect()->route('desafio_eventos.index')
@@ -268,8 +273,9 @@ class DesafioEventoController extends Controller
             $desafio = DesafioEvento::findOrFail($id);
             $desafio->estado = true;
             $desafio->save();
-            DB::commit();
+            AuditoriaHelper::registrar('REACTIVE', 'DesafioEventos', $desafio->id_desafio_evento);
             
+            DB::commit();
             return redirect()->route('desafio_eventos.index')
                 ->with('success', 'Evento reactivado correctamente');
         } catch (Exception $e) {

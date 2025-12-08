@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Carbon\Carbon;
-
+use App\Helpers\AuditoriaHelper;
 use App\Http\Requests\DistritoRequest;
 class BlancoController extends Controller
 {
@@ -162,6 +162,7 @@ class BlancoController extends Controller
         ]);
         $anio = $blanco->anio;
 
+        AuditoriaHelper::registrar('UPDATE', 'BlancoRemesa', $blanco->id_blanco);
          // Redirigimos a la ruta del filtro enviando el año
         return redirect()
             ->route('blancos.index')
