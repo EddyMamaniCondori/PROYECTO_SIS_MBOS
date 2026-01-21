@@ -50,18 +50,13 @@ class VisitasController extends Controller
     public function index() //PUEDES VER TODAS TUS VISITAS DE ESE // permission 'ver anual - visitas'
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
-
         $persona = Auth::user(); 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
 
         if (!$distrito) {
-            
             return redirect()->route('panel')->with('success', 'No tienes un distrito asignado.');
         }
         $id_distrito = $distrito->id_distrito;
-        
-
-
         $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
                 ->select(
                     'visitas.*',
