@@ -553,7 +553,7 @@ class BautisosController extends Controller
     }
     public function bautisos_distrital()//PERMISO 'ver pastor-bautisos distrito',
     {
-        $anioActual = now()->year; //muestro los estudiantes del año actual
+        $anioActual = now()->year;
         $persona = Auth::user(); 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         //$id_pastor = 3;
@@ -575,16 +575,18 @@ class BautisosController extends Controller
             ]);
         }
         $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
-
         $bautizos = DB::table('bautisos as xb')
         ->join('iglesias as xi', 'xb.id_iglesia', '=', 'xi.id_iglesia')
-        ->where('xi.distrito_id', $id_distrito) // puedes usar 1 o una variable
-        ->select('xi.nombre as iglesia',
+        ->where('xi.distrito_id', $id_distrito)
+        ->whereYear('xb.fecha_bautizo', $anioActual) 
+        ->select(
+            'xi.nombre as iglesia',
             'xi.tipo as tipo_iglesia',
-             'xb.*')
+            'xb.*'
+        )
         ->get();
+
         return view('bautisos.bautisos_x_distrito', compact('distrito', 'anio','bautizos')); 
-    
     }
 
 

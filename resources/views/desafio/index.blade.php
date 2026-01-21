@@ -34,7 +34,7 @@
             <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                Tabla de Desafios Mensuales
+                                Tabla de Desafios Distritales
                             </div>
                             <div class="card-body">
                                 <table id="example" class="display">
@@ -50,7 +50,7 @@
                                         @foreach ($desafios as $desafio)
                                         <tr>
                                             <td>
-                                                {{ $desafio->id_desafio }}  /{{ $desafio->id_distrito }}   {{ $desafio->nombre_distrito }}  
+                                                {{ $desafio->id_desafio }} / {{ $desafio->nombre_distrito }}  
                                             </td>
                                             <td>
                                                 {{ $desafio->nombre_p }} {{ $desafio->ape_paterno_p }}  {{ $desafio->ape_materno_p }}
