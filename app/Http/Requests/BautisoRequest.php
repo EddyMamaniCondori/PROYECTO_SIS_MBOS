@@ -22,7 +22,9 @@ class BautisoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tipo' => 'required|string|max:100',
+            'cant_bautizo' => 'required|integer|min:0',
+            'cant_profesion' => 'required|integer|min:0',
+            'cant_rebautismo' => 'required|integer|min:0',
             'fecha_bautizo' => [
                 'required',
                 'date',
@@ -41,11 +43,19 @@ class BautisoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            // Tipo
-            'tipo.required' => 'El tipo de bautizo es obligatorio.',
-            'tipo.string' => 'El tipo de bautizo debe ser un texto válido.',
-            'tipo.max' => 'El tipo de bautizo no puede exceder los 100 caracteres.',
-            
+            // Cantidades (Nuevos campos)
+            'cant_bautizo.required' => 'La cantidad de bautizos es obligatoria.',
+            'cant_bautizo.integer' => 'La cantidad de bautizos debe ser un número entero.',
+            'cant_bautizo.min' => 'La cantidad de bautizos no puede ser menor a 0.',
+
+            'cant_profesion.required' => 'La cantidad de profesión de fe es obligatoria.',
+            'cant_profesion.integer' => 'La cantidad de profesión de fe debe ser un número entero.',
+            'cant_profesion.min' => 'La cantidad de profesión de fe no puede ser menor a 0.',
+
+            'cant_rebautismo.required' => 'La cantidad de rebautismos es obligatoria.',
+            'cant_rebautismo.integer' => 'La cantidad de rebautismos debe ser un número entero.',
+            'cant_rebautismo.min' => 'La cantidad de rebautismos no puede ser menor a 0.',
+
             // Fecha de Bautizo
             'fecha_bautizo.required' => 'La fecha de bautizo es obligatoria.',
             'fecha_bautizo.date' => 'La fecha de bautizo debe ser una fecha válida.',

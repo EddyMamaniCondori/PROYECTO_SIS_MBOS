@@ -97,7 +97,7 @@ class DesafioEventoController extends Controller
         try {
             DB::beginTransaction();
             $evento = DesafioEvento::create($request->validated());
-            AuditoriaHelper::registrar('CREATE', 'DesafioEventos', $evento->id_desafio_evento);
+            //AuditoriaHelper::registrar('CREATE', 'DesafioEventos', $evento->id_desafio_evento);
             
             DB::commit();
         } catch (Exception $e) {

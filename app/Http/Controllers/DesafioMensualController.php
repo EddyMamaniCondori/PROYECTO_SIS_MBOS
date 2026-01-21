@@ -89,7 +89,7 @@ class DesafioMensualController extends Controller
                     $siguienteMes = 13; // O podrías manejarlo de otra forma
                 }
             }
-            
+            //dd($mensuales, $anio, $siguienteMes);
             return view('desafio_mensuales.index_mes', compact('mensuales', 'anio', 'siguienteMes'));
             
         } catch (\Exception $e) {

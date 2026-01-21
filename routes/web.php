@@ -84,7 +84,7 @@ Route::middleware(['auth'])->group(function () {
      *_________________DASHBOARDS PRINCIPALES
     * 
     */
-Route::get('/estudiantes/filtrar', [EstudiantesController::class, 'filtrarPorAnio'])
+    Route::get('/estudiantes/filtrar', [EstudiantesController::class, 'filtrarPorAnio'])
      ->name('estudiantes.filtrar');
 
      

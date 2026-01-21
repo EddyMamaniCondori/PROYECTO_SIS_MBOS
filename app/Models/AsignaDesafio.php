@@ -24,7 +24,7 @@ class AsignaDesafio extends Model
         return $this->belongsTo(Desafio::class, 'id_desafio', 'id_desafio');
     }
 
-    // 🔹 Relación con DesafioEvento
+    // 🔹 Relación con DesafioEvento (CAMPAÑAS)
     public function evento()
     {
         return $this->belongsTo(DesafioEvento::class, 'id_desafio_evento', 'id_desafio_evento');

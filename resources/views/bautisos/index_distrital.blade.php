@@ -15,25 +15,8 @@
 
 @section('content')
 
-@if (session('success'))
-    <script>
-        const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-        });
-        Toast.fire({
-        icon: "success",
-        title: "{{ session('success') }}"
-        });
-    </script>
-@endif
+<x-alerts/>
+
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
@@ -42,7 +25,7 @@
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item"><a href="{{ route('bautisos.index')}}"">Inicio</a></li>
+                  <li class="breadcrumb-item"><a href="{{ route('bautisos.index')}}">Inicio</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Bautismos Distrital</li>
                 </ol>
               </div>
@@ -58,20 +41,51 @@
                                 <h5 class="mb-0"><strong>Datos del Bautismos</strong></h5>
                                 <div class="col-md-2">
                                     <label for="fecha_bautizo" class="form-label">Fecha de Bautismo: <span class="text-danger">*</span> </label>
-                                    <input type="date" name="fecha_bautizo" class="form-control" value="{{ old('fecha_bautizo') }}">
+                                    <input type="date" name="fecha_bautizo" class="form-control" value="{{ old('fecha_bautizo', now()->format('Y-m-d')) }}">
                                     @error('fecha_bautizo')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>
+                                
                                 <!-- Bautizado -->
-                                <div class="col-md-2">
-                                    <label for="tipo" class="form-label">Tipo: <span class="text-danger">*</span> </label>
-                                    <select name="tipo" id="tipo" class="form-select">
-                                        <option value="bautizo" {{ old('tipo') == 'bautizo' ? 'selected' : '' }}>Bautizo</option>
-                                        <option value="profesion de fe" {{ old('tipo') == 'profesion de fe' ? 'selected' : '' }}>Profesión de fe</option>
-                                        <option value="rebautismo" {{ old('tipo') == 'rebautismo' ? 'selected' : '' }}>Rebautismo</option>
-                                    </select>
-                                    @error('tipo')
+                                <div class="col-md-1 ">
+                                    <label for="cant_bautizo" class="form-label">Bautismos: <span class="text-danger">*</span></label>
+                                    <input type="number" 
+                                        name="cant_bautizo" 
+                                        id="cant_bautizo" 
+                                        class="form-control" 
+                                        value="{{ old('cant_bautizo', 0) }}" 
+                                        min="0" 
+                                        required>
+                                    @error('cant_bautizo')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                                <!-- Profesion de fe -->
+                                <div class="col-md-1 ">
+                                    <label for="cant_profesion" class="form-label">Profesión de fe: <span class="text-danger">*</span></label>
+                                    <input type="number" 
+                                        name="cant_profesion" 
+                                        id="cant_profesion" 
+                                        class="form-control" 
+                                        value="{{ old('cant_profesion', 0) }}" 
+                                        min="0" 
+                                        required>
+                                    @error('cant_profesion')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                                <!-- rebautismos -->
+                                <div class="col-md-1 ">
+                                    <label for="cant_rebautismo" class="form-label">Rebautismo: <span class="text-danger">*</span></label>
+                                    <input type="number" 
+                                        name="cant_rebautismo" 
+                                        id="cant_rebautismo" 
+                                        class="form-control" 
+                                        value="{{ old('cant_rebautismo', 0) }}" 
+                                        min="0" 
+                                        required>
+                                    @error('cant_rebautismo')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
                                 </div>

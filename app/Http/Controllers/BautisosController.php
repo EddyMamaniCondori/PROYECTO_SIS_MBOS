@@ -44,7 +44,6 @@ class BautisosController extends Controller
     public function index() //PERMISO ver bautisos
     {   
         $año = now()->year;
-
         $distritos = DB::table('distritos as xd')
                     ->leftJoin('iglesias as xi', 'xi.distrito_id', '=', 'xd.id_distrito')
                     ->leftJoin('bautisos as xb', function($join) use ($año) {
@@ -77,43 +76,65 @@ class BautisosController extends Controller
      */
     public function store(BautisoRequest $request) //PERMISO Crear bautisos - paso 2
     {
-        //dd($request);
+        
         try {
             DB::beginTransaction();
             $anioActual = now()->year;
             $id_distrito = $request->id_distrito;
-            $bautiso = Bautiso::create($request->validated()); 
-
-            $desafio_bautismo = Desafio::find($id_distrito);
-            $desafio_bautismo->bautizos_alcanzados = $desafio_bautismo->bautizos_alcanzados + 1;
+            $total = $request->cant_bautizo +$request->cant_profesion+$request->cant_rebautismo;
+            //insertamos todos los bautismos_
+            $validated = $request->validated();
+            $dataToInsert = [];
+            $categorias = [
+                'cant_bautizo'      => 'bautizo',
+                'cant_profesion'    => 'profesion de fe',
+                'cant_rebautismo'   => 'rebautismo',
+            ];
+            foreach ($categorias as $campoCantidad => $nombreTipo) {
+                $cantidad = (int) $validated[$campoCantidad];
+                for ($i = 0; $i < $cantidad; $i++) {
+                    $dataToInsert[] = [
+                        'tipo'              => $nombreTipo,
+                        'fecha_bautizo'     => $validated['fecha_bautizo'],
+                        'id_iglesia'        => $validated['id_iglesia'],
+                        'created_at'        => now(),
+                        'updated_at'        => now(),
+                    ];
+                }
+            }
+            if (!empty($dataToInsert)) {
+                DB::transaction(function () use ($dataToInsert) {
+                    Bautiso::insert($dataToInsert);
+                });
+            }
+            $desafio_bautismo = Desafio::where('id_distrito', $id_distrito)
+                           ->where('anio', $anioActual)
+                           ->first();
+            if (!$desafio_bautismo) {
+                DB::rollBack();
+                return back()->with('error', "No se encontró un desafío para el distrito {$id_distrito} en el año {$anioActual}.");
+            }
+            $desafio_bautismo->bautizos_alcanzados = $desafio_bautismo->bautizos_alcanzados + $total;
             $desafio_bautismo->save();
 
-            //se crea el bautizo a la 
+            //se crea el bautizo en el desafio
             if ($request->id_desafio_evento) {
-                $desafio = Desafio::where('anio', $anioActual)
-                    ->where('id_distrito', $id_distrito)
-                    ->first();
-                if (!$desafio) {
-                    DB::rollBack();
-                    return back()->with('error', "No se encontró un desafío para el distrito {$id_distrito} en el año {$anioActual}.");
-                }
-                $asignacion = AsignaDesafio::where('id_desafio', $desafio->id_desafio)
+                $asignacion = AsignaDesafio::where('id_desafio', $desafio_bautismo->id_desafio)
                     ->where('id_desafio_evento', $request->id_desafio_evento)
                     ->first();
                 if ($asignacion) {
-                    // ✅ Si existe, incrementar 'alcanzado'
-                    $asignacion->increment('alcanzado');
+                    $asignacion->increment('alcanzado', $total);
                 } else {
                     // 🆕 Si no existe, crear nueva asignación con alcanzado = 1
                     AsignaDesafio::create([
-                        'id_desafio' => $desafio->id_desafio,
+                        'id_desafio' => $desafio_bautismo->id_desafio,
                         'id_desafio_evento' => $request->id_desafio_evento,
                         'desafio' => 0,
-                        'alcanzado' => 1,
+                        'alcanzado' => $total,
                     ]);
                 }
             }
-            AuditoriaHelper::registrar('CREATE', 'Bautisos', $bautiso->id_bautiso);
+            //AuditoriaHelper::registrar('CREATE', 'Bautisos', $bautiso->id_bautiso);
             DB::commit();
             return redirect()->route('bautisos.show', ['bautiso' => $id_distrito])
                 ->with('success', 'Registro creado correctamente.');

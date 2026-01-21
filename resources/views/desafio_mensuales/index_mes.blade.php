@@ -27,7 +27,8 @@
                         9 => 'Septiembre',
                         10 => 'Octubre',
                         11 => 'Noviembre',
-                        12 => 'Diciembre'
+                        12 => 'Diciembre',
+                        13 => 'Null'
                     ];
             
 @endphp
@@ -44,9 +45,18 @@
                 </ol>
               </div>
                 <div class="row">
-                    
-                    
-                    
+                    <div class="d-flex justify-content-end">
+                        @if($siguienteMes <= 12)
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal-mes"> 
+                                <i class="bi bi-calendar2-plus-fill"></i> Habilitar {{$meses_array[$siguienteMes]}}
+                            </button>
+                        @else
+                            {{-- Aquí el botón original de mes "desaparece" y puedes mostrar el de Nueva Gestión --}}
+                            <button type="button" class="btn btn-warning"> 
+                                <i class="bi bi-arrow-repeat"></i> Habilitar Gestión {{ $anio + 1 }}
+                            </button>
+                        @endif
+                    </div>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal-mes" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
@@ -62,7 +72,12 @@
                                 <input type="hidden" name="anio" value="{{$anio}}">
                                 <div class="col-md-6 mb-3">
                                     <label  class="form-label">Fecha Limite:</label>
-                                    <input type="date" id="fecha_limite" name="fecha_limite" class="form-control" required>
+                                    <input type="date" 
+                                        id="fecha_limite" 
+                                        name="fecha_limite" 
+                                        class="form-control" 
+                                        value="{{ $siguienteMes <= 12 ? \Carbon\Carbon::create($anio, $siguienteMes, 1)->endOfMonth()->format('Y-m-d') : '' }}" 
+                                        required>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -234,6 +249,7 @@
     $(document).ready(function() {
         $('#example').DataTable({
             scrollX: true,
+            pageLength: 12,
             language: {
                 search: "Buscar:",   // Cambia el texto de "Search"
                 lengthMenu: "Mostrar _MENU_ registros por página",
