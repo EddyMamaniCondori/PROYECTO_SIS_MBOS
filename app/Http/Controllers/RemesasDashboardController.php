@@ -106,9 +106,9 @@ class RemesasDashboardController extends Controller
         return view('remesas_dasboards.dashboard', compact('meses', 'series', 'series_mensual','series_baras', 'categorias'));
     }
 
-    public function index_distrital() // muestra el dashboard distrital  
+    public function index_distrital() // muestra el dashboard general del PANEL DE CONTROL  
     {
-        $anio = 2025;
+        $anio = 2026;
         $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
         $anios = DB::table('generas')
@@ -179,7 +179,7 @@ class RemesasDashboardController extends Controller
         return view('remesas_dasboards.dashboard_distrital', compact('meses', 'dataDistritos', 'anio', 'anios'));
     }
     /**POR EL MOMENTO SE CREO PORFAVOR DE AJUSTA PARA MAS ADELANTE */
-    public function index_distrital_filtro($anio) // muestra el dashboard distrital  
+    public function index_distrital_filtro($anio) // muestra el filtro de dashboard general de PANEL DE CONTROL  
     {
         $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 

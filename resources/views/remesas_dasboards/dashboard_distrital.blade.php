@@ -39,7 +39,7 @@
 
                 <div class="col-3">
                     <label class="form-label fw-semibold">Periodo:</label>
-                    <select id="periodoInicio" name="anio" class="form-select" onchange="updateAction()">
+                    <select id="periodoInicio" name="anio" class="form-select" onchange="updateAction()" required>
                         <option value="">--Selecciona--</option>
 
                         @foreach ($anios as $anio)

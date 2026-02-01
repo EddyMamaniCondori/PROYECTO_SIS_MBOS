@@ -34,11 +34,11 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Iglesias</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Remesas</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Iglesias</li>
+                  <li class="breadcrumb-item active" aria-current="page">Remesas</li>
                 </ol>
               </div>
                 @php
@@ -96,7 +96,7 @@
                                                 id="fecha_limite" 
                                                 class="form-control"
                                                 min="{{ $anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-01"
-                                                max="{{ $anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-{{ cal_days_in_month(CAL_GREGORIAN, $sig_mes_num, $anio) }}"
+                                               value="{{ $anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-{{ cal_days_in_month(CAL_GREGORIAN, $sig_mes_num, $anio) }}"
                                                 required
                                             >
                                         </div>
@@ -157,7 +157,9 @@
                                                             <i class="bi bi-clipboard2-plus-fill"></i> Completar
                                                         </button>
                                                     </form>
-
+                                                    <button type="button" class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#editModal-{{$mes->mes}}-{{$mes->anio}}">
+                                                        <i class="bi bi-calendar-event"></i> Editar Fecha
+                                                    </button>
 
                                                     
                                                     <div class="d-flex justify-content-end ">
@@ -172,30 +174,41 @@
 
                                         </tr>
 
-                                            <!-- Modal -->
-                                            <div class="modal fade" id="confirmModal-{{$mes->mes}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal fade" id="editModal-{{$mes->mes}}-{{$mes->anio}}" tabindex="-1" aria-labelledby="modalLabel-{{$mes->mes}}" aria-hidden="true">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de Confirmacion</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <strong style="color: red;">¿Seguro que quieres finalizar los registros de este mes ? </strong><br>
-                                                    <strong> Mes: </strong> {{$mes->mes}} 
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                    <form action="#" method="POST">
-                                                        @method('DELETE')
+                                                    <form action="{{ route('remesas.editar_fecha_mes') }}" method="POST">
                                                         @csrf
-                                                    <button type="submit" class="btn btn-danger">Confirmar</button>
+                                                        <div class="modal-header bg-warning">
+                                                            <h1 class="modal-title fs-5" id="modalLabel-{{$mes->mes}}">Actualizar Fecha Límite</h1>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <p>Vas a cambiar la fecha límite para todas las iglesias en <strong>{{ $mes->nombre_mes }} / {{ $mes->anio }}</strong>.</p>
+                                                            
+                                                            <input type="hidden" name="mes" value="{{ $mes->mes }}">
+                                                            <input type="hidden" name="anio" value="{{ $mes->anio }}">
+
+                                                            <div class="form-group">
+                                                                <label for="fecha_limite">Nueva Fecha Límite:</label>
+                                                                <input 
+                                                                    type="date" 
+                                                                    name="fecha_limite" 
+                                                                    class="form-control"
+                                                                    required
+                                                                    value="{{ $mes->fecha_limite }}"
+                                                                    min="{{ $mes->anio }}-{{ str_pad($mes->mes, 2, '0', STR_PAD_LEFT) }}-01"
+                                                                >
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                            <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+                                                        </div>
                                                     </form>
-                                                    
-                                                </div>
                                                 </div>
                                             </div>
-                                            </div>
+                                        </div>
                                         @endforeach
                                     </tbody>
                                     <tfoot>

@@ -104,7 +104,7 @@ class PastorController extends Controller
                 'nro_distritos'      => 0,
             ]);
             $pers->assignRole('Pastor');
-            AuditoriaHelper::registrar('CREATE', 'Pastores', $pers->id_persona);
+            //AuditoriaHelper::registrar('CREATE', 'Pastores', $pers->id_persona);
             DB::commit();   
         } catch (Exception $e) {
             DB::rollBack();
@@ -163,7 +163,7 @@ class PastorController extends Controller
                 'cargo'              => $request->cargo,
                 'fecha_contratacion' => $request->fecha_contratacion,
             ]);
-            AuditoriaHelper::registrar('UPDATE', 'Pastores', $pastor->id_pastor);
+            //AuditoriaHelper::registrar('UPDATE', 'Pastores', $pastor->id_pastor);
             return redirect()->route('pastores.index')->with('success', 'Pastor actualizado correctamente.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -179,7 +179,7 @@ class PastorController extends Controller
             $persona = Persona::find($id); 
             $persona -> estado = false;
             $persona -> save();
-            AuditoriaHelper::registrar('DELETE', 'Pastores', $id);
+            //AuditoriaHelper::registrar('DELETE', 'Pastores', $id);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -195,7 +195,7 @@ class PastorController extends Controller
             $persona = Persona::find($id); 
             $persona -> estado = true;
             $persona -> save();
-            AuditoriaHelper::registrar('REACTIVE', 'Pastores', $id);
+            //AuditoriaHelper::registrar('REACTIVE', 'Pastores', $id);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();

@@ -178,7 +178,7 @@ class DesafioController extends Controller
             $id_desafio = $desafio->id_desafio;
             
             DB::commit();
-            AuditoriaHelper::registrar('UPDATE', 'Desafio', $desafio->id_desafio);
+            //AuditoriaHelper::registrar('UPDATE', 'Desafio', $desafio->id_desafio);
             
             return redirect()->route('desafios.index_distrital', ['id' => $id_desafio])
                 ->with('success', 'Desafío Bautizos actualizado correctamente.');

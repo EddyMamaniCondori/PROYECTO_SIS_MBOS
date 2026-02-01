@@ -52,7 +52,7 @@ class PuntualidadController extends Controller
                 LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
                 JOIN puntualidades xp ON xp.id_iglesia = xi.id_iglesia
                 JOIN mes xm ON xm.id_puntualidad = xp.id_puntualidad
-                WHERE xp.anio = 2025
+                WHERE xp.anio = 2026
                 and xi.estado = true
                 GROUP BY 
                     xd.nombre,
@@ -113,7 +113,7 @@ class PuntualidadController extends Controller
             LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
             JOIN puntualidades xp ON xp.id_iglesia = xi.id_iglesia
             JOIN mes xm ON xm.id_puntualidad = xp.id_puntualidad
-            WHERE xp.anio = 2025
+            WHERE xp.anio = 2026
             AND xi.estado = true
             GROUP BY 
                 xd.nombre,

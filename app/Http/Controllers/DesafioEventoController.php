@@ -138,7 +138,7 @@ class DesafioEventoController extends Controller
             
             $desafio = DesafioEvento::findOrFail($id);
             $desafio->update($request->validated());
-            AuditoriaHelper::registrar('UPDATE', 'DesafioEventos', $desafio->id_desafio_evento);
+            //AuditoriaHelper::registrar('UPDATE', 'DesafioEventos', $desafio->id_desafio_evento);
             
             DB::commit();
             return redirect()->route('desafio_eventos.index')->with('success', 'Evento actualizado correctamente.');
@@ -158,7 +158,7 @@ class DesafioEventoController extends Controller
             $desafio = DesafioEvento::findOrFail($id);
             $desafio->estado = false;
             $desafio->save();
-            AuditoriaHelper::registrar('DELETE', 'DesafioEventos', $desafio->id_desafio_evento);
+            //AuditoriaHelper::registrar('DELETE', 'DesafioEventos', $desafio->id_desafio_evento);
             DB::commit();
             
             return redirect()->route('desafio_eventos.index')
@@ -273,7 +273,7 @@ class DesafioEventoController extends Controller
             $desafio = DesafioEvento::findOrFail($id);
             $desafio->estado = true;
             $desafio->save();
-            AuditoriaHelper::registrar('REACTIVE', 'DesafioEventos', $desafio->id_desafio_evento);
+            //AuditoriaHelper::registrar('REACTIVE', 'DesafioEventos', $desafio->id_desafio_evento);
             
             DB::commit();
             return redirect()->route('desafio_eventos.index')

@@ -69,13 +69,13 @@
               <div class="col-8">
                 <div class="row">
                   <div class="card mb-4">
-                    <form class="mt-3 mb-3" action="#" method="POST" id="filtroForm">
+                    <form class="mt-3 mb-3" id="filtroForm">
                     @csrf  
                       <div class="row">
                         <!--SELECT PERSOMNALIZADO-->
                         <div class="col-3">
                           <label class="form-label fw-semibold">Periodo inicial:</label>
-                          <select id="periodoInicio" name="periodoInicio" class="form-select">
+                          <select id="periodoInicio" name="periodoInicio" class="form-select" required>
                             <option value="">--Selecciona--</option>
                             <option value="1-2025">01 - 2025</option>
                             <option value="2-2025">02 - 2025</option>
@@ -94,7 +94,7 @@
                         <!--SELECT PERSOMNALIZADO-->
                         <div class="col-3">
                           <label class="form-label fw-semibold">Periodo final:</label>
-                          <select id="periodoFinal" name="periodoFinal" class="form-select">
+                          <select id="periodoFinal" name="periodoFinal" class="form-select" required>
                             <option value="">--Selecciona--</option>
                             <option value="1-2025">01 - 2025</option>
                             <option value="2-2025">02 - 2025</option>

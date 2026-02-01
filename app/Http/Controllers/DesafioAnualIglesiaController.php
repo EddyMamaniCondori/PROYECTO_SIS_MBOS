@@ -81,7 +81,7 @@ class DesafioAnualIglesiaController extends Controller
             $id_desafio = $desafio_anual_iglesia->id_desafio;
             
             DB::commit();
-            AuditoriaHelper::registrar('UPDATE', 'DesafioAnual', $desafio_anual_iglesia->id_desafio_iglesia);
+            //AuditoriaHelper::registrar('UPDATE', 'DesafioAnual', $desafio_anual_iglesia->id_desafio_iglesia);
             return redirect()->route('desafios.index_distrital', ['id' => $id_desafio])
                 ->with('success', 'Desafío Anual de Iglesia actualizado correctamente.');
 

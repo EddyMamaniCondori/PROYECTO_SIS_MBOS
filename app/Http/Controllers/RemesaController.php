@@ -134,13 +134,12 @@ class RemesaController extends Controller
         //try {
             // Solo iglesias activas (estado = true)
             $iglesias = DB::table('iglesias')->where('estado', true)->get();
-
+            
             foreach ($iglesias as $iglesia) {
-                /*ESTA PARTE ES PARA PUNTUALIDAD*/
+                /*ESTA PARTE CREA PUNTUALIDAD SI NO LA TIENE*/
                 $puntualidad = Puntualidad::where('id_iglesia', $iglesia->id_iglesia)
                     ->where('anio', $anio)
                     ->first();
-
                 if (!$puntualidad) {
                     // No existe, crear puntualidad
                     $puntualidad = Puntualidad::create([
@@ -148,9 +147,7 @@ class RemesaController extends Controller
                         'anio' => $anio,
                     ]);
                 }
-
                 /*ESTA PARTE ES PARA REMESAS*/
-
                 $id_remesa = DB::table('remesas')->insertGetId([
                     'fecha_limite' => $fecha_limite,
                     'created_at' => Carbon::now(),
@@ -209,6 +206,39 @@ class RemesaController extends Controller
             return redirect()->back()->with('error', 'Error al generar remesas: ' . $e->getMessage());
         }*/
     }
+
+    //edita la fecha limite de un mes
+    public function editarFechMes(Request $request) 
+    {
+        $mes = $request->mes;
+        $anio = $request->anio;
+        $nueva_fecha_limite = $request->fecha_limite;
+
+        DB::beginTransaction();
+        try {
+            // Realizamos la actualización masiva basada en tu lógica SQL
+            $actualizados = DB::table('remesas')
+                ->whereIn('id_remesa', function ($query) use ($mes, $anio) {
+                    $query->select('id_remesa')
+                        ->from('generas')
+                        ->where('mes', $mes)
+                        ->where('anio', $anio);
+                })
+                ->update([
+                    'fecha_limite' => $nueva_fecha_limite,
+                    'updated_at'   => Carbon::now(),
+                ]);
+
+            DB::commit();
+            return redirect()->route('remesas.index')
+                ->with('success', "Se actualizaron $actualizados registros para el periodo $mes/$anio.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->with('error', 'Error al actualizar la fecha límite: ' . $e->getMessage());
+        }
+    }
     /**
      * Store a newly created resource in storage.
      */
@@ -230,7 +260,7 @@ class RemesaController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        
     }
 
     /**
@@ -341,13 +371,11 @@ class RemesaController extends Controller
             // Crear un nuevo request con los datos que llenar_filial necesita
             $nuevoRequest = new Request([
                 'id_iglesia' => $request->id_iglesia,
-                'anio' => 2025,
+                'anio' => 2026,
                 'distrito' => $request->distrito,
             ]);
-
             // Instanciar el controlador
             $controller = new RemesaController();
-
             // Llamar al método normalmente
             return $controller->llenar_filial($nuevoRequest);
 
@@ -364,7 +392,6 @@ class RemesaController extends Controller
         $anio = $request->input('anio');
         try {
             $remesa = Remesa::find($id);
-
             if (!$remesa->id_remesa) {  // <-- Aquí estás usando $iglesia pero no está definido
                 return redirect()->back()->with('info', 'Esta remesa no existe.');
             }
@@ -401,7 +428,7 @@ class RemesaController extends Controller
                     $lugar = strtoupper($iglesia->lugar ?? ''); // Normalizar el texto por seguridad
                     $estrella = "0"; // Valor por defecto
 
-                    // 🔹 Calcular la estrella según el tipo de iglesia
+                    // Calcular la estrella según el tipo de iglesia
                     if ($lugar === 'EL ALTO') {
                         // Si entregó antes o el mismo día → 2
                         if ($diferencia >= 0) {

@@ -117,7 +117,7 @@ class IglesiaController extends Controller
                 $distrito->save();
             }
         }
-        AuditoriaHelper::registrar('CREATE', 'iglesias', $iglesia->id_iglesia);
+        //AuditoriaHelper::registrar('CREATE', 'iglesias', $iglesia->id_iglesia);
         return redirect()->route('iglesias.index')
             ->with('success', 'Iglesia creada correctamente.');
     }
@@ -190,7 +190,7 @@ class IglesiaController extends Controller
 
         // Actualizar la iglesia
         $iglesia->update($data);
-        AuditoriaHelper::registrar('UPDATE', 'iglesias', $iglesia->id_iglesia);
+        //AuditoriaHelper::registrar('UPDATE', 'iglesias', $iglesia->id_iglesia);
         return redirect()->route('iglesias.index')
                         ->with('success', 'Iglesia actualizada correctamente.');
     }
@@ -220,7 +220,7 @@ class IglesiaController extends Controller
                 }
                 $iglesia ->estado = false;
                 $iglesia ->save(); // lanza excepción en caso de fallo
-                AuditoriaHelper::registrar('DELETE', 'iglesias', $iglesia->id_iglesia);
+                //AuditoriaHelper::registrar('DELETE', 'iglesias', $iglesia->id_iglesia);
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
@@ -268,7 +268,7 @@ class IglesiaController extends Controller
                     $distrito->save();
                 }
             }
-            AuditoriaHelper::registrar('REACTIVE', 'iglesias', $iglesia->id_iglesia);
+            //AuditoriaHelper::registrar('REACTIVE', 'iglesias', $iglesia->id_iglesia);
             DB::commit();
             return redirect()
                 ->route('iglesias.index')

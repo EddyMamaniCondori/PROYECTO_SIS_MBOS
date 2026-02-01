@@ -191,7 +191,7 @@
                                                     
                                                     <hr>
                                                     <label for="fecha_entrega" class="form-label">Fecha de entrega:</label>
-                                                    <input type="date" name="fecha_entrega" id="fecha_entrega" class="form-control" required value="{{$dato->fecha_entrega}}">
+                                                    <input type="date" name="fecha_entrega" id="fecha_entrega" class="form-control" required value="{{ now()->format('Y-m-d') }}" >
                                                     
                                                     
                                                     <div class="form-check form-switch">

@@ -224,6 +224,11 @@ Route::middleware(['auth'])->group(function () {
     /**
      * 
      */
+    // Ruta para procesar la edición masiva de la fecha límite
+    Route::post('/remesas/editar-fecha-mes', [RemesaController::class, 'editarFechMes'])->name('remesas.editar_fecha_mes');
+
+
+    
     Route::get('/remesas/mes/{mes}/{anio}', [RemesaController::class, 'index_mes'])
         ->name('remesas.index_mes');
 

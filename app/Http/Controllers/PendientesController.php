@@ -44,7 +44,7 @@ class PendientesController extends Controller
             left join distritos xd on xi.distrito_id = xd.id_distrito
             left join personas xp on xd.id_pastor = xp.id_persona
             where xr.estado = 'PENDIENTE'
-            and anio = 2025
+            and anio = 2026
             order by nombre_distrito 
         ");  // Trae todos los registros de la tabla asociada a RemesaImport
         $datos_totales = DB::select("
@@ -54,7 +54,7 @@ class PendientesController extends Controller
             FROM generas xg
             JOIN remesas xr ON xg.id_remesa = xr.id_remesa 
             JOIN iglesias xi ON xg.id_iglesia = xi.id_iglesia
-            WHERE xg.anio = 2025
+            WHERE xg.anio = 2026
             AND xr.estado = 'PENDIENTE'
             GROUP BY xi.tipo
             ORDER BY xi.tipo;
