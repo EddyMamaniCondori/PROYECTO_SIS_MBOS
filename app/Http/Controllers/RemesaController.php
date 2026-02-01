@@ -103,6 +103,7 @@ class RemesaController extends Controller
             left JOIN personas xp ON xd.id_pastor = xp.id_persona
             WHERE xg.mes = :mes
             AND xg.anio = :anio
+            AND xi.estado = true
             order by nombre_distrito
         ", [
             'mes' => $mes,
