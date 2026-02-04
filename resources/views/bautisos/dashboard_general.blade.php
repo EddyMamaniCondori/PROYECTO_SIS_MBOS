@@ -526,8 +526,6 @@ document.addEventListener("DOMContentLoaded", function () {
     chart.render();
 });
 </script>
-
-
 <script>
     // Usamos un nombre de variable diferente para no chocar con tus otras gráficas
     window.graficoIglesias = null;
@@ -576,7 +574,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         dataLabels: {
                             enabled: true,
                             offsetX: 30,
-                            style: { fontSize: '14px', colors: ['#333'] }
+                            style: { fontSize: '3px', colors: ['#333'] }
                         }
                     };
 

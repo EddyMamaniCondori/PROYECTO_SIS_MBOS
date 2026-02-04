@@ -241,7 +241,6 @@ class BautisosController extends Controller
 
             //DD($id_distrito, $bautizo);
             $bautizo->delete();
-            AuditoriaHelper::registrar('DELETE', 'Bautisos', $bautizo->id_bautiso);
             DB::commit();
             return redirect()->route('bautisos.show', ['bautiso' => $id_distrito])
                 ->with('success', 'Registro Eliminado correctamente.');
@@ -417,7 +416,6 @@ class BautisosController extends Controller
         'porcentajeGeneral','nombresDistritos', 'datosAlcanzados', 'datosDesafio', 'porcentajes')); 
     }
 
-
     public function getIglesiasPorDistrito(Request $request, $id)
     {
         $anio = $request->input('anio', date('Y')); // Por defecto año actual
@@ -438,6 +436,7 @@ class BautisosController extends Controller
             ->get();
         return response()->json($iglesias);
     }
+
     //
     //_________________________________________________________DASBOAR PARA PASTOR DISTRITAL___________________________________________________________
     //
