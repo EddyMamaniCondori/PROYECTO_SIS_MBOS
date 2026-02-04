@@ -254,7 +254,7 @@ class BautisosController extends Controller
         }
     }
 
-    public function dashboard_general() //PERMISO 'dashboard mbos bautisos'
+    public function dashboard_general() //PARA VER EL DASHBOARD GENERAL DE BAUTISMOS //PERMISO 'dashboard mbos bautisos'
     {
         $anio= now()->year;
         
@@ -271,7 +271,7 @@ class BautisosController extends Controller
             )
             ->orderBy('xdd.nombre')
             ->get();
-
+        //consulta de sacar los bautisos por mes del año actual.
         $bautizosPorDistrito = DB::table('distritos as xd')
             ->leftJoin('iglesias as xi', 'xi.distrito_id', '=', 'xd.id_distrito')
             ->leftJoin('bautisos as xb', function($join) use ($anio) {
@@ -318,7 +318,7 @@ class BautisosController extends Controller
             ];
         });
 
-        // para el grafica de tipos
+        // para el grafica de tipos de del año actual
         $tipos = DB::table('distritos as xd')
             ->leftJoin('iglesias as xi', 'xi.distrito_id', '=', 'xd.id_distrito')
             ->leftJoin('bautisos as xb', function ($join) use ($anio) {
@@ -367,13 +367,17 @@ class BautisosController extends Controller
             // ============================
         // 🔵 2. BAUTISMOS – GENERAL MBOS
         // ============================
-        $b_desafio = DB::table('desafios')->sum('desafio_bautizo');
-        $b_alcanzado = DB::table('bautisos')->count();
+        $b_desafio = DB::table('desafios')
+            ->where('anio', $anio)
+            ->sum('desafio_bautizo');
+        $b_alcanzado = DB::table('bautisos')
+            ->whereYear('fecha_bautizo', $anio)
+            ->count();
         $b_diferencia = $b_alcanzado - $b_desafio;
 
 
         // ============================
-        // 🔵 3. BAUTISMOS – DISTRITOS (2025)
+        // 🔵 3. BAUTISMOS – DISTRITOS
         // ============================
 
         $b_desafio_d = DB::table('desafios')
@@ -551,7 +555,7 @@ class BautisosController extends Controller
         ];
         return view('bautisos.dashboard_general_distrital', compact('distrito', 'anio','grafico_desafio', 'grafico_meses', 'grafico_tipos','grafico_iglesias')); 
     }
-    public function bautisos_distrital()//PERMISO 'ver pastor-bautisos distrito',
+    public function bautisos_distrital()//EL PASTOR VE SU AVANCE DE BAUTISMOS DASHBOARD //PERMISO 'ver pastor-bautisos distrito',
     {
         $anioActual = now()->year;
         $persona = Auth::user(); 
