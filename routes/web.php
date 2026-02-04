@@ -293,6 +293,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('distritos/reactive/{id}', [DistritoController::class, 'reactive'])
         ->name('distritos.reactive');
 
+    Route::get('/distrito/{id}/iglesias', [BautisosController::class, 'getIglesiasPorDistrito']);
+
+
     /*ruta para signaciones */
     Route::get('/distritos/asignacion/mantener/{id_distrito}', [DistritoController::class, 'mantenerAsignacion'])->name('distritos.mantener');
     Route::get('/distritos/asignaciones/liberar/{id_distrito}', [DistritoController::class, 'liberarAsignacion'])->name('distritos.liberar');

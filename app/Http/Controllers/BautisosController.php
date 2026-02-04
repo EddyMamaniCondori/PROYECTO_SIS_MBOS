@@ -256,9 +256,12 @@ class BautisosController extends Controller
 
     public function dashboard_general() //PARA VER EL DASHBOARD GENERAL DE BAUTISMOS //PERMISO 'dashboard mbos bautisos'
     {
-        $anio= now()->year;
-        
-        // Consulta de los desafíos por distrito
+        $anio = now()->year;
+        $anio_sistema = DB::table('desafios')->max('anio');
+        if ($anio > $anio_sistema) {
+            $anio = $anio_sistema;
+        }
+        // Consulta de los desafíos y alcanzados por distrito
         $desafios = DB::table('desafios as xd')
             ->join('distritos as xdd', 'xd.id_distrito', '=', 'xdd.id_distrito')
             ->where('xd.anio', $anio)
@@ -271,6 +274,20 @@ class BautisosController extends Controller
             )
             ->orderBy('xdd.nombre')
             ->get();
+        
+        //dd($desafios);
+        // Preparamos los arrays para la gráfica
+        $nombresDistritos = $desafios->pluck('nombre_distrito');
+        $datosAlcanzados = $desafios->pluck('bautizos_alcanzados');
+        $datosDesafio = $desafios->pluck('desafio_bautizo');
+
+        // Calculamos los porcentajes
+        $porcentajes = $desafios->map(function ($item) {
+            if ($item->desafio_bautizo > 0) {
+                return round(($item->bautizos_alcanzados / $item->desafio_bautizo) * 100, 2);
+            }
+            return $item->bautizos_alcanzados > 0 ? 100 : 0; // Si no hay desafío pero hay bautizos, es 100%
+        });
         //consulta de sacar los bautisos por mes del año actual.
         $bautizosPorDistrito = DB::table('distritos as xd')
             ->leftJoin('iglesias as xi', 'xi.distrito_id', '=', 'xd.id_distrito')
@@ -377,17 +394,14 @@ class BautisosController extends Controller
 
 
         // ============================
-        // 🔵 3. BAUTISMOS – DISTRITOS
+        // 🔵 3. BAUTISMOS – MBOS
         // ============================
-
         $b_desafio_d = DB::table('desafios')
             ->where('anio', $anio)
             ->sum('desafio_bautizo');
-
         $b_alcanzado_d = DB::table('desafios')
             ->where('anio', $anio)
             ->sum('bautizos_alcanzados');
-
         $b_diferencia_d = $b_alcanzado_d - $b_desafio_d;
         $porcentajeGeneral = $b_desafio > 0 
         ? round(($b_alcanzado / $b_desafio) * 100, 1)
@@ -400,7 +414,29 @@ class BautisosController extends Controller
         'b_desafio_d',
         'b_alcanzado_d',
         'b_diferencia_d',
-        'porcentajeGeneral')); 
+        'porcentajeGeneral','nombresDistritos', 'datosAlcanzados', 'datosDesafio', 'porcentajes')); 
+    }
+
+
+    public function getIglesiasPorDistrito(Request $request, $id)
+    {
+        $anio = $request->input('anio', date('Y')); // Por defecto año actual
+        $iglesias = DB::table('distritos as xd')
+            ->join('iglesias as xi', 'xd.id_distrito', '=', 'xi.distrito_id')
+            // Cambiamos a leftJoin y añadimos el año dentro de la condición del JOIN
+            ->leftJoin('bautisos as xb', function($join) use ($anio) {
+                $join->on('xi.id_iglesia', '=', 'xb.id_iglesia')
+                    ->whereRaw("TO_CHAR(xb.fecha_bautizo, 'YYYY') = ?", [$anio]);
+            })
+            ->select(
+                'xi.nombre as nombre_iglesia',
+                DB::raw('COUNT(xb.id_iglesia) as total_bautizos') // Contamos la columna de bautizos
+            )
+            ->where('xd.id_distrito', $id)
+            ->groupBy('xi.id_iglesia', 'xi.nombre')
+            ->orderBy('total_bautizos', 'desc')
+            ->get();
+        return response()->json($iglesias);
     }
     //
     //_________________________________________________________DASBOAR PARA PASTOR DISTRITAL___________________________________________________________

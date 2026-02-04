@@ -1,7 +1,7 @@
 @extends('template')
 
 
-@section('title', 'Panel')
+@section('title', 'Batismos')
 
 @push('css')
 <!--data table-->
@@ -15,8 +15,7 @@
       crossorigin="anonymous"
     />
 @endpush
-
-
+<x-alerts/>
         @section('content')
         <!--begin::App Content Header-->
         <div class="app-content-header">
@@ -24,10 +23,10 @@
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Dashboard de Bautismos {{$anio}}</h3></div>
+              <div class="col-sm-6"><h2 class="mb-0"><strong style="color: #004085"> Panel de Bautismos MBOS {{$anio}} </strong> </h2></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item"><a href="#">Bautismos</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                 </ol>
               </div>
@@ -98,7 +97,7 @@
               <div class="col-md-6">
                   <div class="card border-success shadow-sm">
                       <div class="card-header bg-success text-white fw-bold">
-                          Bautismos por Distritos – {{ $anio }}
+                          Bautismos MBOS – {{ $anio }}
                       </div>
 
                       <div class="card-body">
@@ -109,14 +108,27 @@
               </div>
 
           </div>
-                </div>
-
-                <!--end::Container-->
+        </div>
+        <div class="row">
+          <div class="col p-4">
+            <div class="card shadow-sm">
+              <div class="card-header fw-bold">
+                Bautismos MBOS – {{ $anio }}
               </div>
+              <div class="card-body">
+                <div id="chartgeneral"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         <!--end::App Content Header-->
         <!--begin::App Content-->
-        <div class="app-content">
-
+        <div class="app-content" style="background-color: #DFEFF5">
+          <div class="row p-3">
+            <div class="col-sm-12 text-center"><h2 class="mb-0"><strong style="color: #004085"> Evaluacion por distritos - {{$anio}} </strong> </h2></div>
+          </div>
           <!--begin::Container-->
           <div class="container-fluid">
             <div class="row">
@@ -154,7 +166,8 @@
                                                     <button 
                                                         type="button" 
                                                         class="btn btn-info ver-grafica" 
-                                                        data-id="{{ $distrito->id_distrito}}">
+                                                        data-id="{{ $distrito->id_distrito}}"
+                                                        data-anio="{{ $anio }}">
                                                         <i class="bi bi-bar-chart-line"></i> Ver gráfica
                                                     </button>
                                                 </div>
@@ -200,6 +213,16 @@
                   <div class="card-body">
                         <h5 id="tituloGrafica" class="card-title text-center"></h5>
                         <div id="revenue-chart" style="min-height: 320px;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col p-3">
+                <div class="card mt-4">
+                  <div class="card-body">
+                        <h4 id="titulo-distrito">Iglesias del Distrito</h4>
+                        <div id="chart-iglesias"></div>
                   </div>
                 </div>
               </div>
@@ -291,6 +314,99 @@
         window.graficoApex.render();
       });
     });
+</script>
+
+<script>
+  var nombres_lista = @json($nombresDistritos);
+  var p_lista = @json($porcentajes);
+    var optionsgeneral = {
+        series: [
+            {
+                name: 'Desafío',
+                data: @json($datosDesafio)
+            },
+            {
+              name: 'Alcanzados',
+                data: @json($datosAlcanzados)
+            }
+        ],
+        chart: {
+            type: 'bar',
+            height: 450,
+            stacked: false, // Mantener en false para poder superponer
+        },
+        plotOptions: {
+            bar: {
+                horizontal: false,
+                columnWidth: '70%',
+                barOverlap: true,
+                borderRadius: 0,
+            }
+        },
+        grid: {
+            padding: {
+                left: 0,
+                right: 0,
+            }
+        },
+
+        // Usamos esto para que la segunda barra (Alcanzados) sea más delgada
+        // y se note que está "dentro" de la otra
+        stroke: {
+            show: true,
+            width: [0,10], // Crea un margen visual
+            colors: ['transparent']
+        },
+        colors: ['#226FD6', '#28a745'], 
+        fill: {
+            opacity: [1, 1] // Desafío transparente, Alcanzado sólido
+        },
+        dataLabels: {
+            enabled: false
+        },
+        xaxis: {
+            categories: @json($nombresDistritos),
+            labels: {
+                rotate: -45,
+                style: { fontSize: '10px' }
+            }
+        },
+        tooltip: {
+            shared: true,
+            intersect: false,
+            custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                // FORZAMOS EL NOMBRE: Lo sacamos de nuestra lista propia de JS
+                var nombreDistrito = nombres_lista[dataPointIndex]; 
+                
+                var desafio = series[0][dataPointIndex];
+                var alcanzado = series[1][dataPointIndex];
+                var avance = p_lista[dataPointIndex];
+
+                return (
+                    '<div style="padding: 10px; background: #fff; border: 1px solid #ccc; font-family: sans-serif; color: #333;">' +
+                        '<div style="font-weight: bold; border-bottom: 1px solid #eee; margin-bottom: 5px; color: #000;">' + 
+                            nombreDistrito + 
+                        '</div>' +
+                        '<div>🎯 Desafío: <b>' + desafio + '</b></div>' +
+                        '<div>🌊 Alcanzado: <b>' + alcanzado + '</b></div>' +
+                        '<div style="margin-top: 5px; border-top: 1px dashed #226FD6; padding-top: 5px; color: #226FD6;">' +
+                            '📊 <b>Porcentaje: ' + avance + '%</b>' +
+                        '</div>' +
+                    '</div>'
+                );
+            }
+        },
+        title: {
+            text: 'Comparativa: Desafío vs Alcanzado por Distrito'
+        },
+        legend: {
+            position: 'top'
+        }
+    };
+
+    var chartgeneral = new ApexCharts(document.querySelector("#chartgeneral"), optionsgeneral);
+    chartgeneral.render();
+    chartgeneral.hideSeries('Desafío');
 </script>
 
 <script>
@@ -410,5 +526,76 @@ document.addEventListener("DOMContentLoaded", function () {
     chart.render();
 });
 </script>
+
+
+<script>
+    // Usamos un nombre de variable diferente para no chocar con tus otras gráficas
+    window.graficoIglesias = null;
+
+    document.querySelectorAll('.ver-grafica').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const idDistrito = this.dataset.id;
+            const anio = this.dataset.anio;
+            // Obtenemos el nombre del distrito desde la primera celda de la fila
+            const nombreDistrito = this.closest('tr').querySelector('td:first-child').innerText.trim();
+
+            // 1. Actualizar el título de la tarjeta
+            document.getElementById('titulo-distrito').innerText = 'Iglesias del Distrito: ' + nombreDistrito;
+
+            // 2. Consultar las iglesias por AJAX (Fetch)
+            fetch(`/distrito/${idDistrito}/iglesias?anio=${anio}`)
+                .then(response => response.json())
+                .then(data => {
+                    const nombres = data.map(i => i.nombre_iglesia);
+                    const valores = data.map(i => i.total_bautizos);
+
+                    // Calculamos la altura según cuántas iglesias hay (45px por fila)
+                    const alturaCalculada = (nombres.length * 45) + 100;
+
+                    const chartOptions = {
+                        series: [{
+                            name: 'Bautizos',
+                            data: valores
+                        }],
+                        chart: {
+                            type: 'bar',
+                            height: alturaCalculada < 400 ? 400 : alturaCalculada,
+                            toolbar: { show: true }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: true, // Barras horizontales
+                                borderRadius: 4,
+                                dataLabels: { position: 'right' }
+                            }
+                        },
+                        colors: ['#52A86D'], // Verde éxito
+                        xaxis: {
+                            categories: nombres
+                        },
+                        dataLabels: {
+                            enabled: true,
+                            offsetX: 30,
+                            style: { fontSize: '14px', colors: ['#333'] }
+                        }
+                    };
+
+                    // 3. Destruir instancia previa si existe para evitar duplicados
+                    if (window.graficoIglesias) {
+                        window.graficoIglesias.destroy();
+                    }
+
+                    // 4. Renderizar la nueva gráfica
+                    window.graficoIglesias = new ApexCharts(
+                        document.querySelector("#chart-iglesias"),
+                        chartOptions
+                    );
+                    window.graficoIglesias.render();
+                })
+                .catch(err => console.error('Error al cargar iglesias:', err));
+        });
+    });
+</script>
+
 
 @endpush
