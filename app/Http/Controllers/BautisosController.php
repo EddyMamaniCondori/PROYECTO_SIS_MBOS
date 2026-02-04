@@ -212,7 +212,7 @@ class BautisosController extends Controller
             return redirect()->route('bautisos.show', ['bautiso' => $id_distrito])
                 ->with('success', 'Registro Actualizado correctamente.');
 
-            AuditoriaHelper::registrar('UPDATE', 'Bautisos', $bautizo->id_bautiso);
+            //AuditoriaHelper::registrar('UPDATE', 'Bautisos', $bautizo->id_bautiso);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
@@ -224,7 +224,13 @@ class BautisosController extends Controller
      */
     public function destroy(string $id) //FUNCIONA //PERMISO eliminar bautisos
     {
+        $anio = now()->year;
+        $anio_sistema = DB::table('desafios')->max('anio');
+        if ($anio > $anio_sistema) {
+            $anio = $anio_sistema;
+        }
         try {
+       
             DB::beginTransaction();
             // Buscar estudiante, si no existe lanzar excepción o manejar error
             $bautizo = Bautiso::find($id);
@@ -236,10 +242,13 @@ class BautisosController extends Controller
             ->select('distrito_id')
             ->where('id_iglesia', $bautizo->id_iglesia)
             ->first();
-
             $id_distrito = $registro->distrito_id;
-
-            //DD($id_distrito, $bautizo);
+            
+            $desafio = Desafio::where('id_distrito', $id_distrito)
+                ->where('anio', $anio) // Ordena por anio de mayor a menor
+                ->first();
+            $desafio->decrement('bautizos_alcanzados');
+            $desafio->save();
             $bautizo->delete();
             DB::commit();
             return redirect()->route('bautisos.show', ['bautiso' => $id_distrito])
