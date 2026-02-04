@@ -143,27 +143,37 @@ class PastorController extends Controller
      */
     public function update(UpdatePastorRequest $request, $id) //verificado //permission editar  - pastores
     {
+        DB::beginTransaction();
         try {
             $pastor = Pastor::findOrFail($id);
             $persona = Persona::findOrFail($pastor->id_pastor); 
-            $persona->update([
-                'nombre'       => $request->nombre,
-                'ape_paterno'  => $request->ape_paterno,
-                'ape_materno'  => $request->ape_materno,
-                'fecha_nac'    => $request->fecha_nac,
-                'ci'           => $request->ci,
-                'celular'      => $request->celular,
-                'ciudad'       => $request->ciudad,
-                'zona'         => $request->zona,
-                'calle'        => $request->calle,
-                'nro'          => $request->nro,
-            ]);
+
+            $datosPersona = [
+                'nombre'      => $request->nombre,
+                'ape_paterno' => $request->ape_paterno,
+                'ape_materno' => $request->ape_materno,
+                'fecha_nac'   => $request->fecha_nac,
+                'ci'          => $request->ci,
+                'celular'     => $request->celular,
+                'ciudad'      => $request->ciudad,
+                'zona'        => $request->zona,
+                'calle'       => $request->calle,
+                'nro'         => $request->nro,
+                'email'       => $request->email,
+            ];
+            if ($request->filled('password')) {
+                $datosPersona['password'] = Hash::make($request->password);
+            }
+
+            // 3. Actualizar Persona
+            $persona->update($datosPersona);
+
             $pastor->update([
                 'fecha_ordenacion'   => $request->fecha_ordenacion,
                 'cargo'              => $request->cargo,
                 'fecha_contratacion' => $request->fecha_contratacion,
             ]);
-            //AuditoriaHelper::registrar('UPDATE', 'Pastores', $pastor->id_pastor);
+            DB::commit();
             return redirect()->route('pastores.index')->with('success', 'Pastor actualizado correctamente.');
         } catch (\Exception $e) {
             DB::rollBack();

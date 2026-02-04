@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-
 class UpdatePastorRequest extends FormRequest
 {
     /**
@@ -41,6 +40,14 @@ class UpdatePastorRequest extends FormRequest
             'fecha_ordenacion'   => 'nullable|date|before_or_equal:today',
             'cargo'              => 'nullable|string|max:80',
             'fecha_contratacion' => 'nullable|date|before_or_equal:today',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('personas', 'email')->ignore($this->route('pastore'), 'id_persona'),
+            ],
+            'password' => $this->filled('password') || $this->filled('password_confirmation')
+            ? 'required_with:password_confirmation|string|min:8|confirmed'
+            : 'nullable',
         ];
     }
     public function messages()
@@ -89,6 +96,9 @@ class UpdatePastorRequest extends FormRequest
 
             'nro_distritos.integer' => 'El número de distritos debe ser un número.',
             'nro_distritos.min'     => 'El número de distritos no puede ser negativo.',
+            'password.required_with' => 'Debe ingresar una contraseña si desea confirmar una.',
+            'password.min'           => 'La contraseña debe tener al menos :min caracteres.',
+            'password.confirmed'     => 'La confirmación de la contraseña no coincide.',
         ];
     }
 }

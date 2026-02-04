@@ -146,7 +146,7 @@ class PersonalController extends Controller
             $persona = Persona::findOrFail($personal->id_personal);
             
             // Actualizar datos de la persona
-            $persona->update([
+            $dataPersona = [
                 'nombre'       => $request->nombre,
                 'ape_paterno'  => $request->ape_paterno,
                 'ape_materno'  => $request->ape_materno,
@@ -158,9 +158,14 @@ class PersonalController extends Controller
                 'zona'         => $request->zona,
                 'calle'        => $request->calle,
                 'nro'          => $request->nro,
-            ]);
+            ];
             //dd($request->password);
-            $persona->password = Hash::make($request->password);
+            if ($request->filled('password')) {
+                $dataPersona['password'] = Hash::make($request->password);
+            }
+            // 3. Actualizar la persona con el array completo
+            $persona->update($dataPersona);
+
             // Actualizar datos específicos del personal
             $personal->update([
                 'fecha_ingreso'       => $request->fecha_ingreso
@@ -168,7 +173,7 @@ class PersonalController extends Controller
 
             //$persona->syncRoles([$request->rol]);
             //manejo de roles 
-            // 🔹 Manejo profesional de roles
+            //Manejo de roles
             $rolActual = $persona->getRoleNames()->first(); // Obtiene el nombre del rol actual (si tiene)
             $nuevoRol = $request->rol; // Puede venir vacío o con un nuevo rol
             // Si tenía rol y el nuevo es vacío → remover rol

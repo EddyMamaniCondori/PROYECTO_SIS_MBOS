@@ -25,7 +25,7 @@
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item"><a href="{{ route('bautisos.index')}}">Inicio</a></li>
+                  <li class="breadcrumb-item"><a href="{{ route('bautisos.index')}}">Bautismos</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Bautismos Distrital</li>
                 </ol>
               </div>

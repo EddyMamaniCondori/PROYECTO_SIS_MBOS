@@ -34,7 +34,7 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Bautismos</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Bautismos - {{$año}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
@@ -85,9 +85,9 @@
                                             </td>
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                                <form action="" method="get">
+                                                <!--<form action="" method="get">
                                                     <button type="submit" class="btn btn-warning"><i class="bi bi-graph-up"></i>Avance</button>
-                                                </form>
+                                                </form>-->
 
                                                 <form action="{{ route('bautisos.show', $bautiso->id_distrito) }}" method="GET">
                                                     <button type="submit" class="btn btn-success">

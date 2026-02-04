@@ -1,7 +1,7 @@
 @extends('template')
 
 
-@section('title', 'Crear')
+@section('title', 'Editar')
 
 @push('css')
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -84,6 +84,14 @@
                                 <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
+                        <!--edad-->
+                        <div class="col-md-4">
+                            <label for="email" class="form-label">Correo electrónico:</label> <span class="text-danger">*</span>
+                            <input type="text" name="email" id="email" class="form-control" value="{{@old('email',  $pastor->email)}}"> <!--name= debe tener mismo valor de la base de datos-->
+                            @error('email')
+                                <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
                     
                         <h5 class="mb-0"><strong>Datos de direccion</strong></h5>
                         <hr>
@@ -140,6 +148,33 @@
                                 <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
+
+                        <h5 class="mb-0"><strong>Cambio de Contraseña</strong></h5><hr>
+                        <p class="text-primary">en caso de que no se quiera realizar el cambio de contraseña debe los espacios en blanco</p>
+                        
+                        <div class="col-md-6 position-relative">
+                            <label for="password" class="form-label">Nueva Contraseña:</label>
+                            <div class="input-group">
+                                <input type="password" name="password" id="password" class="form-control" autocomplete="new-password">
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password">
+                                    <i class="bi bi-eye-slash" id="icon-password"></i>
+                                </button>
+                            </div>
+                            @error('password')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6 position-relative">
+                            <label for="password_confirmation" class="form-label">Confirmar Contraseña:</label>
+                            <div class="input-group">
+                                <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" autocomplete="new-password">
+                                <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password_confirmation">
+                                    <i class="bi bi-eye-slash" id="icon-password_confirmation"></i>
+                                </button>
+                            </div>
+                        </div>
+                
                         <div>
                             <a href="{{route('pastores.index')}}"><button type="button" class="btn btn-danger"> Cancelar </button></a>
                             <button type="submit" class="btn btn-primary"> Actualizar </button>
@@ -158,6 +193,24 @@
 @push('js')
 
 
-
+<script>
+document.querySelectorAll('.toggle-password').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        const input = document.getElementById(targetId);
+        const icon = document.getElementById(`icon-${targetId}`);
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        }
+    });
+});
+</script>
 
 @endpush
