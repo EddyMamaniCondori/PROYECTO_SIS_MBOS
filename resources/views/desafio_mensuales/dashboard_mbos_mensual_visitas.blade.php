@@ -37,7 +37,7 @@
 <div class="container-fluid mt-4">
     <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-6"><h3 class="mb-0">Desafios Mensuales <strong>del {{$anio}}</strong></h3>
+                <div class="col-sm-6"><h3 class="mb-0">Visitas Mensuales Distritales <strong> del {{$anio}}</strong></h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">

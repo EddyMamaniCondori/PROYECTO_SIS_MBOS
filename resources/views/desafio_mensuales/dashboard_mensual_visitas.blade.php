@@ -80,10 +80,11 @@
                     ];
             
 @endphp
+
 <div class="container-fluid mt-4">
     <div class="container-fluid">
             <div class="row">
-                <div class="col-sm-6"><h3 class="mb-0">Asignacion de Blanco de Visitas <strong>{{$meses_array[$mes]}} del {{$anio}}</strong></h3>
+                <div class="col-sm-6"><h3 class="mb-0"><strong> Avance Distrital en Visitas {{$meses_array[$mes]}} del {{$anio}}</strong></h3>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-end">
@@ -175,11 +176,22 @@
                             @foreach ($resultados as $r)
                             <tr>
                                 <td>{{ $r->nombre_distrito }}</td>
-                                <td>{{ $r->nombre_p }} {{ $r->ape_paterno }} {{ $r->ape_materno }}</td>
+                                <td>{{ $r->id_pastor }} {{ $r->nombre_p }} {{ $r->ape_paterno }} {{ $r->ape_materno }}</td>
                                 <td>{{ $r->desafio_visitas }}</td>
                                 <td>{{ $r->visitas_alcanzadas }}</td>
 
                                 <td>
+                                    
+                                    @if($r->id_pastor)
+                                        <a href="{{ route('visitas.pastor_distrital', ['mes' => $mes, 'anio' => $anio, 'id_pastor' => $r->id_pastor]) }}" 
+                                        class="btn btn-primary btn-sm">
+                                            <i class="bi bi-eye"></i> Ver Visitas
+                                        </a>
+                                    @else
+                                        <button class="btn btn-secondary btn-sm" disabled title="No hay pastor asignado">
+                                            <i class="bi bi-eye-slash"></i> Sin Pastor
+                                        </button>
+                                    @endif
                                     <button 
                                         class="btn btn-info text-white ver-grafica"
                                         data-id="{{ $r->id_distrito }}">

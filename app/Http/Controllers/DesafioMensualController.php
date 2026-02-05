@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pastor; 
+use App\Models\Visita; 
+use App\Models\Persona; 
 use App\Models\Iglesia;
 use App\Models\Desafio; 
 use App\Models\Distrito; 
@@ -340,13 +342,14 @@ class DesafioMensualController extends Controller
                 'xdd.nombre as nombre_distrito',
                 'mensuales.desafio_visitas',
                 'mensuales.visitas_alcanzadas',
+                'xp.id_persona as id_pastor',
                 'xp.nombre as nombre_p',
                 'xp.ape_paterno',
                 'xp.ape_materno'
             )
             ->get();
 
-
+        //dd($resultados);
         // ---- CÁLCULOS PARA LAS TARJETAS ----
         $totalDistritos = $resultados->count();
         $completaron = $resultados->filter(fn ($r) => 
@@ -370,7 +373,7 @@ class DesafioMensualController extends Controller
             ];
         });
 
-
+        ///dd($mes, $anio);
         return view(
             'desafio_mensuales.dashboard_mensual_visitas',
             compact(
@@ -384,11 +387,35 @@ class DesafioMensualController extends Controller
             )
         );
     }
+    //para ver las visitas de un pastor distrital
+    public function ver_visitas_del_pastor($mes, $anio, $id_pastor) 
+    {
+        // Usamos findOrFail para seguridad
+        $pastor = Persona::findOrFail($id_pastor);
+        
+        // Obtenemos el distrito
+        $distrito = Distrito::where('id_pastor', $id_pastor)->first();
+
+        // Consulta de visitas corregida
+        $visitas = Visita::join('iglesias as xi', 'visitas.id_iglesia', '=', 'xi.id_iglesia')
+            ->join('distritos as xd', 'xi.distrito_id', '=', 'xd.id_distrito')
+            ->select('xi.nombre as nombre_iglesia','xd.id_distrito', 'xd.id_pastor', 'xi.id_iglesia', 'visitas.*')
+            ->where('xd.id_pastor', $id_pastor)
+            // CAMBIO AQUÍ: Usamos fecha_visita en lugar de id_visita
+            ->whereYear('visitas.fecha_visita', $anio) 
+            ->whereMonth('visitas.fecha_visita', $mes)
+            ->get();
+
+
+        
+        return view('visitas.index_visitas_mensuales_mbos', compact(
+            'visitas', 'mes', 'anio', 'pastor', 'distrito'
+        ));
+    }
     //para grafico de todos los meses del año las visitas por mes
     public function resumenMensualGeneral() //permission 'graficos todos los meses MBOS-desafios mensuales',
     {
         $anio = now()->year;
-
         // Obtener todos los desafíos del año con su distrito y pastor
         $desafios = \DB::table('desafios')
             ->join('distritos', 'distritos.id_distrito', '=', 'desafios.id_distrito')

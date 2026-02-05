@@ -386,7 +386,7 @@
                       <li class="nav-item ms-3">
                         <a href="{{ route('bautizos.dashboard')}}" class="nav-link">
                           <i class="bi bi-graph-up-arrow"></i>
-                          <p>Seguimiento </p>
+                          <p>Seguimiento MBOS </p>
                         </a>
                       </li>
                       @endcan
@@ -416,7 +416,7 @@
                         <li class="nav-item ms-3">
                           <a href="{{route('mensuales.dashboard_meses')}}" class="nav-link">
                             <i class="fa-solid fa-chart-simple"></i>
-                            <p>Seguimiento Distrital</p>
+                            <p>Seguimiento MBOS</p>
                           </a>
                         </li>
                       @endcan

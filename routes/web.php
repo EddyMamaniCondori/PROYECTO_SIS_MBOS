@@ -326,6 +326,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/visitas/{id_mensual}/{id_visita}/edit', [VisitasController::class, 'edit'])
         ->name('visitas.edit');
 
+    Route::get('/visitas/pastor_distrital/{mes}/{anio}/{id_pastor}', [DesafioMensualController::class, 'ver_visitas_del_pastor'])
+        ->name('visitas.pastor_distrital');
     /*ruta para signaciones */
 
     
