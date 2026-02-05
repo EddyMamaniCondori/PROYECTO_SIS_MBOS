@@ -243,6 +243,103 @@ class RemesaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    public function actualizar_iglesias($mes, $anio, $fecha_limite)
+    {
+        //dd($mes, $anio, $fecha_limite);
+        // 1. Obtener IDs de iglesias que YA tienen remesa en este mes/año
+        $iglesiasConRegistro = DB::table('generas')
+            ->where('mes', $mes)
+            ->where('anio', $anio)
+            ->pluck('id_iglesia');
+
+        // 2. Obtener solo las iglesias activas que NO están en esa lista
+        $iglesiasFaltantes = DB::table('iglesias')
+            ->where('estado', true)
+            ->whereNotIn('id_iglesia', $iglesiasConRegistro)
+            ->get();
+
+        if ($iglesiasFaltantes->isEmpty()) {
+            return redirect()->back()->with('info', 'Todas las iglesias ya están al día.');
+        }
+
+        // Usamos una transacción para asegurar la integridad de los datos
+        DB::beginTransaction();
+        //dd($iglesiasFaltantes);
+        try {
+
+            foreach ($iglesiasFaltantes as $iglesia) {
+                // --- LÓGICA DE CREACIÓN (Igual a tu método crear) ---
+                
+                 /*ESTA PARTE CREA PUNTUALIDAD SI NO LA TIENE*/
+                $puntualidad = Puntualidad::where('id_iglesia', $iglesia->id_iglesia)
+                    ->where('anio', $anio)
+                    ->first();
+                if (!$puntualidad) {
+                    // No existe, crear puntualidad
+                    $puntualidad = Puntualidad::create([
+                        'id_iglesia' => $iglesia->id_iglesia,
+                        'anio' => $anio,
+                    ]);
+                }
+                /*ESTA PARTE ES PARA REMESAS*/
+                $id_remesa = DB::table('remesas')->insertGetId([
+                    'fecha_limite' => $fecha_limite,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ], 'id_remesa');
+
+                DB::table('generas')->insert([
+                    'id_iglesia' => $iglesia->id_iglesia,
+                    'id_remesa' => $id_remesa,
+                    'mes' => $mes,
+                    'anio' => $anio,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ]);
+
+                if (strtolower($iglesia->tipo) == 'filial') {
+                    DB::table('remesas_filiales')->insert([
+                        'id_remesa' => $id_remesa,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]);
+                } else {
+                    DB::table('remesas_iglesias')->insert([
+                        'id_remesa' => $id_remesa,
+                        'monto' => 0,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now(),
+                    ]);
+                }
+
+                // se crea el mes para esa puntualidad
+                $mesRegistro = Mes::create([
+                    'id_puntualidad' => $puntualidad->id_puntualidad,
+                    'mes' => $mes,
+                    'tipo' => '0',
+                ]);
+
+                // se crea la justificacion
+                DB::table('justificas')->insert([
+                        'id_puntualidad' => $puntualidad->id_puntualidad,
+                        'mes' => $mesRegistro->mes,
+                        'id_remesa' => $id_remesa,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                        // agrega otros campos si existen
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Se actualizaron ' . $iglesiasFaltantes->count() . ' iglesias nuevas.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
+        }
+    }
+
     public function store(Request $request)
     {
         //

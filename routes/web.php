@@ -232,6 +232,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/remesas/mes/{mes}/{anio}', [RemesaController::class, 'index_mes'])
         ->name('remesas.index_mes');
 
+    Route::get('/remesas/actualizar/{mes}/{anio}/{fecha_limite}', [RemesaController::class, 'actualizar_iglesias'])
+        ->name('remesas.actualizar');
+
     Route::POST('/remesas/filial/', [RemesaController::class, 'llenar_filial'])
         ->name('remesas.filial');
 

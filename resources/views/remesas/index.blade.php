@@ -68,7 +68,7 @@
                     // Obtener el nombre del siguiente mes
                     $sig_mes_nombre = $meses_array[$sig_mes_num];
                 @endphp
-
+<x-alerts />
             
               <div class="row">
                     <!-- Button trigger modal -->
@@ -150,7 +150,7 @@
                                                 
                                                 <div class="btn-group  justify-content-center" role="group" >
                                                     
-                                                    <!-- Ver -->
+                                                    
                                                     <!-- Ver -->
                                                     <form action="{{ route('remesas.index_mes', ['mes' => $mes->mes, 'anio' => $mes->anio]) }}" method="GET" class="d-inline">
                                                         <button type="submit" class="btn btn-primary" title="Ver detalles">
@@ -160,14 +160,19 @@
                                                     <button type="button" class="btn btn-warning fw-bold" data-bs-toggle="modal" data-bs-target="#editModal-{{$mes->mes}}-{{$mes->anio}}">
                                                         <i class="bi bi-calendar-event"></i> Editar Fecha
                                                     </button>
-
-                                                    
                                                     <div class="d-flex justify-content-end ">
                                                         <a href="{{ route('pdf.remesas.mensual', ['anio' => $mes->anio, 'mes' => $mes->mes]) }} " target="_blank"
                                                         class="btn btn-success fw-bold shadow-sm">
                                                             <i class="bi bi-file-earmark-bar-graph"></i>  Informe PDF
                                                         </a>
                                                     </div>
+
+                                                    <!-- Actualiozar -->
+                                                    <form action="{{ route('remesas.actualizar', ['mes' => $mes->mes, 'anio' => $mes->anio, 'fecha_limite' => $mes->fecha_limite]) }}" method="GET" class="d-inline">
+                                                        <button type="submit" class="btn btn-primary" title="Actualiza las remesas del mes">
+                                                           <i class="bi bi-arrow-clockwise"></i> Actualizar
+                                                        </button>
+                                                    </form>
 
                                                 </div>
                                             </td>
