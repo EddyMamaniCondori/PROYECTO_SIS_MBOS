@@ -114,170 +114,170 @@
                                                  @php
                                                     $valor = $iglesia->puntualidad_enero;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>
                                             <td>
                                                  @php
                                                     $valor = $iglesia->puntualidad_febrero;
                                                 @endphp
                                                 
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>
                                             <td>
                                                 @php
                                                     $valor = $iglesia->puntualidad_marzo;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>
                                             <td>
                                                 @php
                                                    $valor = $iglesia->puntualidad_abril;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>  
                                             <td>
                                                 @php
                                                     $valor =$iglesia->puntualidad_mayo;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>  
                                             <td>
                                                 @php
                                                     $valor = $iglesia->puntualidad_junio;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>  
                                             <td>
                                                 @php
                                                     $valor = $iglesia->puntualidad_julio;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>  
                                             <td>
                                                 @php
                                                     $valor = $iglesia->puntualidad_agosto;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>  
                                             <td>
                                                 @php
                                                     $valor = $iglesia->puntualidad_septiembre;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>  
                                             <td>
                                                 @php
                                                     $valor = $iglesia->puntualidad_octubre;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>  
                                             <td>
                                                 @php
                                                     $valor = $iglesia->puntualidad_noviembre;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>  
                                             <td>
                                                 @php
                                                     $valor = $iglesia->puntualidad_diciembre;
                                                 @endphp
-    @if ($valor === '0')
-        <i class="bi bi-star" style="color: gold;"></i>
-    @elseif ($valor === '1')
-        <i class="bi bi-star-half" style="color: gold;"></i>
-    @elseif ($valor === '2')
-        <i class="bi bi-star-fill" style="color: gold;"></i>
-    @else
-        -
-    @endif
+                                                @if ($valor === '0')
+                                                    <i class="bi bi-star" style="color: gold;"></i>
+                                                @elseif ($valor === '1')
+                                                    <i class="bi bi-star-half" style="color: gold;"></i>
+                                                @elseif ($valor === '2')
+                                                    <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                @else
+                                                    -
+                                                @endif
                                             </td>     
                                         </tr>
                                         @endforeach

@@ -50,7 +50,7 @@
                                         @foreach ($desafios as $desafio)
                                         <tr>
                                             <td>
-                                                {{ $desafio->id_desafio }} / {{ $desafio->nombre_distrito }}  
+                                                {{ $desafio->nombre_distrito }}  
                                             </td>
                                             <td>
                                                 {{ $desafio->nombre_p }} {{ $desafio->ape_paterno_p }}  {{ $desafio->ape_materno_p }}
@@ -64,10 +64,11 @@
                                                         class="btn btn-primary">
                                                         <i class="bi bi-graph-up"></i> Ver Avance
                                                     </a>
-
-                                                    <a href="{{ route('desafios.index_distrital', $desafio->id_desafio) }}" class="btn btn-success">
-                                                        <i class="bi bi-pencil-square"></i> Ver deafios
-                                                    </a>
+                                                    @cannot('ver-presidente-mbos')
+                                                        <a href="{{ route('desafios.index_distrital', $desafio->id_desafio) }}" class="btn btn-success">
+                                                            <i class="bi bi-pencil-square"></i> Ver deafios
+                                                        </a>
+                                                    @endcannot
                                                 </div>
                                             </td>
                                         </tr>

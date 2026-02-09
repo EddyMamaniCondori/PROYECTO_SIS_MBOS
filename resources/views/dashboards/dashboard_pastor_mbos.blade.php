@@ -210,7 +210,7 @@
               <h4>Detalle de instructores y estudiantes biblicos por Iglesia</h4>
               <hr>
             </div>
-            <div class="row">
+            <div class="row pb-3">
               <!--INICIA TABLA-->
               <div class="col-lg-7">
                 <div class="card mt-4">
@@ -292,6 +292,272 @@
                 </div>
               </div>
               <!--termina grafica-->
+            </div>
+
+            <div class="row pt-4" style="background-color: #DFEFF5">
+              <div class="row">
+                <h3 class="text-center"><strong style="color:#001f3f">Informe de Tesorería</strong></h3>
+                <div class="container-fluid">
+                <!--begin::TABLA-->
+                <div class="card mb-4">
+                  <div class="card-header">
+                    <i class="fas fa-table me-1"></i>Tabla de Iglesias
+                  </div>
+                                <div class="card-body">
+                                    <table id="example-2" class="display">
+                                        <thead>
+                                            <tr>    
+                                                <th>Distrito</th>
+                                                <th>Cod </th>
+                                                <th>Nombre </th>
+                                                <th>Tipo</th>
+                                                <th>Lugar</th>
+                                                <th>anio</th>
+                                                <th>Ene</th>
+                                                <th>Feb</th>
+                                                <th>Mar</th>
+                                                <th>Abr</th>
+                                                <th>May</th>
+                                                <th>Jun</th>
+                                                <th>Jul</th>
+                                                <th>Ago</th>
+                                                <th>Sep</th>
+                                                <th>Oct</th>
+                                                <th>Nov</th>
+                                                <th>Dic</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($puntualidad as $iglesia)
+                                            <tr>
+                                                <td>
+                                                    {{$iglesia->nombre_distrito}}
+                                                </td>
+                                                <td>
+                                                    {{$iglesia->codigo}}
+                                                </td>
+                                                <td>
+                                                {{$iglesia->nombre}} 
+                                                </td>
+                                                <td>
+                                                    {{$iglesia->tipo}}
+                                                </td>
+                                                <td>
+                                                    {{$iglesia->lugar}}
+                                                </td>
+                                                <td>
+                                                    {{$iglesia->anio}}
+                                                </td>
+                                                <td> 
+
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_enero;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_febrero;
+                                                    @endphp
+                                                    
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_marzo;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @php
+                                                      $valor = $iglesia->puntualidad_abril;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>  
+                                                <td>
+                                                    @php
+                                                        $valor =$iglesia->puntualidad_mayo;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>  
+                                                <td>
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_junio;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>  
+                                                <td>
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_julio;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>  
+                                                <td>
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_agosto;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>  
+                                                <td>
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_septiembre;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>  
+                                                <td>
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_octubre;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>  
+                                                <td>
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_noviembre;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>  
+                                                <td>
+                                                    @php
+                                                        $valor = $iglesia->puntualidad_diciembre;
+                                                    @endphp
+                                                    @if ($valor === '0')
+                                                        <i class="bi bi-star" style="color: gold;"></i>
+                                                    @elseif ($valor === '1')
+                                                        <i class="bi bi-star-half" style="color: gold;"></i>
+                                                    @elseif ($valor === '2')
+                                                        <i class="bi bi-star-fill" style="color: gold;"></i>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>     
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Distrito</th>
+                                                <th>Cod </th>
+                                                <th>Nombre </th>
+                                                <th>Tipo</th>
+                                                <th>Lugar</th>
+                                                <th>anio</th>
+                                                <th>Ene</th>
+                                                <th>Feb</th>
+                                                <th>Mar</th>
+                                                <th>Abr</th>
+                                                <th>May</th>
+                                                <th>Jun</th>
+                                                <th>Jul</th>
+                                                <th>Ago</th>
+                                                <th>Sep</th>
+                                                <th>Oct</th>
+                                                <th>Nov</th>
+                                                <th>Dic</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+
+                                </div>
+                            </div>
+                <div class="card-body">
+                </div>
+              </div>
+              <div class="row">
+                <div class="card m-4">
+                      <div class="card-body">
+                          <h5 class="card-title text-center">Remesas Mensuales</h5>
+                          <div class="mt-4" id="remesas-chart"></div>
+                      </div>
+                  </div>
+              </div>
             </div>
             
           <!--end::Container-->
@@ -448,6 +714,26 @@
               }
           });
       });
+
+      $(document).ready(function() {
+          $('#example-2').DataTable({
+              scrollX: true,
+              language: {
+                  search: "Buscar:",   // Cambia el texto de "Search"
+                  lengthMenu: "Mostrar _MENU_ registros por página",
+                  info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                  infoEmpty: "No hay registros disponibles",
+                  infoFiltered: "(filtrado de _MAX_ registros totales)",
+                  zeroRecords: "No se encontraron resultados",
+                  paginate: {
+                      first: "Primero",
+                      last: "Último",
+                      next: "Siguiente",
+                      previous: "Anterior"
+                  },
+              }
+          });
+      });
   </script>
   <script>
     const datosGraficos = @json($graficos_ins_est);
@@ -511,4 +797,73 @@
     });
 </script>
 
+<script>
+    (function() { // Usamos una función autoejecutable para aislar las variables
+        // 1. Cargamos los datos con nombres únicos para evitar conflictos
+        const etiquetasMeses = @json($mesesNombres);
+        const valAlcanzados = @json($datosRemesas).map(Number);
+        const valMeta = @json($datosBlanco).map(Number);
+
+        // 2. Lógica de colores dinámicos
+        const listaColores = valAlcanzados.map((valor, index) => {
+            return valor >= valMeta[index] ? '#28a745' : '#dc3545'; 
+        });
+
+        const optionsremesas = {
+            series: [
+                {
+                    name: 'Monto Alcanzado',
+                    data: valAlcanzados
+                },
+                {
+                    name: 'Meta (Blanco)',
+                    data: valMeta
+                }
+            ],
+            chart: {
+                type: 'bar', // CAMBIADO de 'area' a 'bar' para que funcione el horizontal
+                height: 500,
+                toolbar: { show: true }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false, 
+                    dataLabels: { position: 'top' },
+                }
+            },
+            // Simplificamos la asignación de colores para evitar errores de renderizado
+            colors: ['#28a745', '#6c757d'], 
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return "Bs. " + val.toLocaleString();
+                },
+                style: { fontSize: '11px' }
+            },
+            xaxis: {
+                categories: etiquetasMeses,
+                title: { text: 'Monto en Bolivianos (Bs.)' }
+            },
+            yaxis: {
+                title: { text: 'Meses' }
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'left'
+            },
+            tooltip: {
+                shared: true,
+                intersect: false,
+                y: {
+                    formatter: function (val) {
+                        return "Bs. " + val.toLocaleString();
+                    }
+                }
+            }
+        };
+
+        const chartremesas = new ApexCharts(document.querySelector("#remesas-chart"), optionsremesas);
+        chartremesas.render();
+    })(); // Cerramos el ámbito
+</script>
 @endpush

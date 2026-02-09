@@ -24,13 +24,13 @@ class PuntualidadController extends Controller
         $this->middleware('permission:ver-puntualidad', ['only' => ['index']]);
     }
 
-     public function index() //permissions 'ver puntualidad',
+    public function index() //permissions 'ver puntualidad',
     {
         // Traemos todas las iglesias junto con su distrito
         $iglesias = DB::select("
-                    SELECT 
+                    SELECT
                     xd.nombre as nombre_distrito,
-                    xi.codigo, 
+                    xi.codigo,
                     xi.nombre,
                     xi.tipo,
                     xi.lugar,
@@ -54,9 +54,9 @@ class PuntualidadController extends Controller
                 JOIN mes xm ON xm.id_puntualidad = xp.id_puntualidad
                 WHERE xp.anio = 2026
                 and xi.estado = true
-                GROUP BY 
+                GROUP BY
                     xd.nombre,
-                    xi.codigo, 
+                    xi.codigo,
                     xi.nombre,
                     xi.tipo,
                     xi.lugar,

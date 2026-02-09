@@ -144,7 +144,6 @@ class PanelController extends Controller
     //MBOS - puede ver el avance en graficos de los pastores
     public function ver_avance_pastores($id, $anio) //permision 'ver avanve pastores - panel',
     {
-
         $distrito = Distrito::findOrFail($id);
         $pastor = Persona::findOrFail($distrito->id_pastor);
         if (!$distrito) {
@@ -288,7 +287,78 @@ class PanelController extends Controller
                 ]
             ];
         });
-        return view('dashboards.dashboard_pastor_mbos', compact('pastor','graficos_ins_est','desafios_ins_est','resumenIglesias', 'graficos_final', 'distrito','meses', 'desafios', 'alcanzados', 'grafico_estudiantes', 'grafico_instructores' ));
+        //esta parte es para ver la puntualidad de remesas de los distritos.
+        $puntualidad = DB::select("
+                    SELECT
+					xd.id_distrito,
+                    xd.nombre as nombre_distrito,
+                    xi.codigo,
+                    xi.nombre,
+                    xi.tipo,
+                    xi.lugar,
+                    xp.anio,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 1) AS puntualidad_enero,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 2) AS puntualidad_febrero,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 3) AS puntualidad_marzo,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 4) AS puntualidad_abril,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 5) AS puntualidad_mayo,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 6) AS puntualidad_junio,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 7) AS puntualidad_julio,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 8) AS puntualidad_agosto,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 9) AS puntualidad_septiembre,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 10) AS puntualidad_octubre,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 11) AS puntualidad_noviembre,
+                    MAX(xm.tipo) FILTER (WHERE xm.mes = 12) AS puntualidad_diciembre
+                FROM iglesias xi 
+                LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
+                JOIN puntualidades xp ON xp.id_iglesia = xi.id_iglesia
+                JOIN mes xm ON xm.id_puntualidad = xp.id_puntualidad
+                WHERE xp.anio = 2026
+                and xi.estado = true
+                and xd.id_distrito = :distrito
+				GROUP BY
+					xd.id_distrito,
+                    xd.nombre,
+                    xi.codigo,
+                    xi.nombre,
+                    xi.tipo,
+                    xi.lugar,
+                    xp.anio;", ['distrito' => $id_distrito]);
+
+        //para saber el estado del diezmo en cada mes
+
+        $resultados_remesas = DB::table(DB::raw('generate_series(1, 12) as m(mes)'))
+            ->leftJoin('generas as xg', function($join) {
+                $join->on('m.mes', '=', 'xg.mes')
+                    ->where('xg.anio', '=', 2026);
+            })
+            ->leftJoin('iglesias as xi', function($join) use ($id_distrito) {
+                $join->on('xg.id_iglesia', '=', 'xi.id_iglesia')
+                    ->where('xi.distrito_id', '=', $id_distrito);
+            })
+            ->leftJoin('remesas_iglesias as xri', 'xg.id_remesa', '=', 'xri.id_remesa')
+            ->select('m.mes', DB::raw('COALESCE(SUM(xri.monto), 0) as total_monto'))
+            ->groupBy('m.mes')
+            ->orderBy('m.mes')
+            ->get();
+
+        $montoOriginal = DB::table('blanco_remesas')
+            ->where('anio', 2026)
+            ->where('id_distrito', 36)
+            ->value('monto') ?? 0; // Si no existe el registro, usamos 0
+
+        // Dividimos (en PHP 0 / 12 no da error)
+        $blanco_mensual = $montoOriginal / 12;
+
+        $datosRemesas = $resultados_remesas->pluck('total_monto')->toArray();
+        // 2. Crear un array de 12 posiciones con el valor del blanco mensual
+        $datosBlanco = array_fill(0, 12, round($blanco_mensual, 2));
+        // 3. Nombres de los meses para el eje de la gráfica
+        $mesesNombres = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        //dd($datosRemesas,$datosBlanco,$mesesNombres, $blanco_mensual);
+        return view('dashboards.dashboard_pastor_mbos', compact('pastor','graficos_ins_est','desafios_ins_est','resumenIglesias', 'graficos_final', 'distrito','meses',
+         'desafios', 'alcanzados', 'grafico_estudiantes', 'grafico_instructores', 'puntualidad',
+         'datosRemesas','datosBlanco','mesesNombres', 'blanco_mensual'));
     }
 
 

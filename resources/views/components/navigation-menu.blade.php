@@ -54,7 +54,9 @@
                 </ul>
               </li>
               <!--SECCION sEXREATRIA-->
+              @can('ver-personal')
               <li class="nav-header"> SECRETARIA </li>
+              @endcan
               <!-- desplegable-->
               @canany(['ver-pastores', 'ver-personal', 'ver-administrativo'])
               <li class="nav-item">
@@ -342,160 +344,193 @@
                 </li> 
               @endcan
               
-              <!--SECCCION DESAFIOS-->
-              @canany(['ver-desafios','ver-desafios mensuales','ver-desafios eventos'])
-                <li class="nav-header"> DESAFIOS </li>
-                <!--desplehgable-->
+              <!--SECCCION DESAFIOS SOLO PARA EL PASTOR RUBEN CHURA PRESIDENTE DE LA MISION-->
+              @can('ver-presidente-mbos')
+                <li class="nav-header">DESAFIOS</li>
                 <li class="nav-item">
-                  <a href="#" class="nav-link">
-                    <i class="bi bi-house-fill"></i>
-                    <p>
-                      Desafios Anual
-                      <i class="nav-arrow bi bi-chevron-right"></i>
-                    </p>
+                  <a href="{{ route('desafios.index')  }}" class="nav-link">
+                    <i class="bi bi-person-vcard-fill"></i>
+                    <p>Seguimiento Pastoral</p>
                   </a>
-                  <ul class="nav nav-treeview">
-                    <li class="nav-item ms-3">
-                      <a href="{{ route('desafios.index')  }}" class="nav-link">
-                        <i class="bi bi-houses"></i>
-                        <p>Administra Desafios</p>
-                      </a>
-                    </li>
-                  </ul>
                 </li>
-                <!--termina desplehgable-->
-                @canany(['ver-desafios bautisos mbos anuales', 'dashboard-mbos bautisos'])
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="fa-solid fa-dove"></i>
-                      <p>
-                        Bautismos
-                        <i class="nav-arrow bi bi-chevron-right"></i>
-                      </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                      @can('ver-desafios bautisos mbos anuales')
-                      <li class="nav-item ms-3">
-                        <a href="{{ route('desafios.bautizos')  }}" class="nav-link">
-                          <i class="fa-solid fa-dove"></i>
-                          <p>Administrar Blancos</p>
-                        </a>
-                      </li>
-                      @endcan
-                      @can('dashboard-mbos bautisos')
-                      <li class="nav-item ms-3">
-                        <a href="{{ route('bautizos.dashboard')}}" class="nav-link">
-                          <i class="bi bi-graph-up-arrow"></i>
-                          <p>Seguimiento MBOS </p>
-                        </a>
-                      </li>
-                      @endcan
-                    </ul>
-                  </li>
-                @endcanany
-                <!--desplehgable-->
-                @canany(['ver-desafios mensuales','ver los blancos de 1 mes-desafios mensuales','editar desafios mes masivo-desafios mensuales'])
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="fa-solid fa-route"></i>
-                      <p>
-                        Visitas Mensuales
-                        <i class="nav-arrow bi bi-chevron-right"></i>
-                      </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                      @canany(['ver-desafios mensuales', 'ver los blancos de 1 mes-desafios mensuales','editar desafios mes masivo-desafios mensuales'])
-                        <li class="nav-item ms-3">
-                          <a href="{{route('desafios_mensuales.index')}}" class="nav-link">
-                            <i class="bi bi-gear"></i>
-                            <p>Administrar Visitas</p>
-                          </a>
-                        </li>
-                      @endcanany
-                      @can('graficos todos los meses MBOS-desafios mensuales')
-                        <li class="nav-item ms-3">
-                          <a href="{{route('mensuales.dashboard_meses')}}" class="nav-link">
-                            <i class="fa-solid fa-chart-simple"></i>
-                            <p>Seguimiento MBOS</p>
-                          </a>
-                        </li>
-                      @endcan
-                    </ul>
-                  </li>
-                @endcanany
-                <!--termina desplehgable-->
-                
-                
-                
 
-                @can('ver mbos-desafios anual Est Inst')
+                <li class="nav-item">
+                  <a href="{{ route('bautizos.dashboard')}}" class="nav-link">
+                    <i class="fa-solid fa-dove"></i>
+                    <p>Bautismos</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{route('desafios_mensuales.index')}}" class="nav-link">
+                    <i class="fa-solid fa-route"></i>
+                    <p>Visitas</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('instructores.mbos.distrital.ver')  }}" class="nav-link">
+                    <i class="fa-solid fa-people-pulling"></i>
+                    <p>Est/Inst</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="{{ route('desafio_eventos.dashboard_asignaciones')  }}" class="nav-link">
+                    <i class="fa-solid fa-people-roof"></i>
+                    <p>Campañas</p>
+                  </a>
+                </li> 
+              @endcan
+              <!--SECCCION DESAFIOS-->
+              <!--SECCCION DESAFIOS-->
+              @cannot('ver-presidente-mbos')
+                @canany(['ver-desafios','ver-desafios mensuales','ver-desafios eventos'])
+                  <li class="nav-header"> DESAFIOS </li>
+                  <!--desplehgable-->
                   <li class="nav-item">
                     <a href="#" class="nav-link">
-                      <i class="fa-solid fa-people-pulling"></i>
+                      <i class="bi bi-house-fill"></i>
                       <p>
-                        EE/II
+                        Desafios Anual
                         <i class="nav-arrow bi bi-chevron-right"></i>
                       </p>
                     </a>
                     <ul class="nav nav-treeview">
-                      @can('ver mbos-desafios anual Est Inst')
+                      <li class="nav-item ms-3">
+                        <a href="{{ route('desafios.index')  }}" class="nav-link">
+                          <i class="bi bi-houses"></i>
+                          <p>Administra Desafios</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <!--termina desplehgable-->
+                  @canany(['ver-desafios bautisos mbos anuales', 'dashboard-mbos bautisos'])
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                        <i class="fa-solid fa-dove"></i>
+                        <p>
+                          Bautismos
+                          <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                      </a>
+                      <ul class="nav nav-treeview">
+                        @can('ver-desafios bautisos mbos anuales')
                         <li class="nav-item ms-3">
-                          <a href="{{ route('instructores.mbos.distrital')  }}" class="nav-link">
-                            <i class="bi bi-gear"></i>
-                            <p>Administrar Desafios</p>
+                          <a href="{{ route('desafios.bautizos')  }}" class="nav-link">
+                            <i class="fa-solid fa-dove"></i>
+                            <p>Administrar Blancos</p>
                           </a>
                         </li>
-                      @endcan
-                      @can('ver mbos-desafios anual Est Inst') 
+                        @endcan
+                        @can('dashboard-mbos bautisos')
                         <li class="nav-item ms-3">
-                          <a href="{{ route('instructores.mbos.distrital.ver')  }}" class="nav-link">
+                          <a href="{{ route('bautizos.dashboard')}}" class="nav-link">
                             <i class="bi bi-graph-up-arrow"></i>
-                            <p>Seguimiento MBOS</p>
+                            <p>Seguimiento MBOS </p>
                           </a>
                         </li>
-                      @endcan 
-                    </ul>
-                  </li>  
-                @endcan
-
-                @canany(['ver-desafios eventos','ver-asignacion desafios eventos','ver-dashboards desafios eventos'])
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="fa-solid fa-people-roof"></i> 
-                      <p>
-                        Campañas
-                        <i class="nav-arrow bi bi-chevron-right"></i>
-                      </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                      @can('ver-desafios eventos')
-                        <li class="nav-item ms-3">
-                          <a href="{{ route('desafio_eventos.index')  }}" class="nav-link">
-                            <i class="fa-solid fa-people-roof"></i>
-                            <p>Administrar Campañas</p>
-                          </a>
-                        </li>
-                      @endcan
-                      @can('ver-asignacion desafios eventos')
-                        <li class="nav-item ms-3">
-                          <a href="{{ route('desafio_eventos.indexasignaciones')  }}" class="nav-link">
-                            <i class="bi bi-diagram-3"></i>
-                            <p>Asignar Desafios</p>
-                          </a>
-                        </li>
-                      @endcan
-                      @can('ver-dashboards desafios eventos')
+                        @endcan
+                      </ul>
+                    </li>
+                  @endcanany
+                  <!--desplehgable-->
+                  @canany(['ver-desafios mensuales','ver los blancos de 1 mes-desafios mensuales','editar desafios mes masivo-desafios mensuales'])
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                        <i class="fa-solid fa-route"></i>
+                        <p>
+                          Visitas Mensuales
+                          <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                      </a>
+                      <ul class="nav nav-treeview">
+                        @canany(['ver-desafios mensuales', 'ver los blancos de 1 mes-desafios mensuales','editar desafios mes masivo-desafios mensuales'])
                           <li class="nav-item ms-3">
-                          <a href="{{ route('desafio_eventos.dashboard_asignaciones')  }}" class="nav-link">
-                            <i class="bi bi-graph-up-arrow"></i>       
-                            <p>Seguimiento MBOS</p>
-                          </a>
-                        </li> 
-                      @endcan
-                    </ul>
-                  </li>  
+                            <a href="{{route('desafios_mensuales.index')}}" class="nav-link">
+                              <i class="bi bi-gear"></i>
+                              <p>Administrar Visitas</p>
+                            </a>
+                          </li>
+                        @endcanany
+                        @can('graficos todos los meses MBOS-desafios mensuales')
+                          <li class="nav-item ms-3">
+                            <a href="{{route('mensuales.dashboard_meses')}}" class="nav-link">
+                              <i class="fa-solid fa-chart-simple"></i>
+                              <p>Seguimiento MBOS</p>
+                            </a>
+                          </li>
+                        @endcan
+                      </ul>
+                    </li>
+                  @endcanany
+                  <!--termina desplehgable-->
+                  @can('ver mbos-desafios anual Est Inst')
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                        <i class="fa-solid fa-people-pulling"></i>
+                        <p>
+                          EE/II
+                          <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                      </a>
+                      <ul class="nav nav-treeview">
+                        @can('ver mbos-desafios anual Est Inst')
+                          <li class="nav-item ms-3">
+                            <a href="{{ route('instructores.mbos.distrital')  }}" class="nav-link">
+                              <i class="bi bi-gear"></i>
+                              <p>Administrar Desafios</p>
+                            </a>
+                          </li>
+                        @endcan
+                        @can('ver mbos-desafios anual Est Inst') 
+                          <li class="nav-item ms-3">
+                            <a href="{{ route('instructores.mbos.distrital.ver')  }}" class="nav-link">
+                              <i class="bi bi-graph-up-arrow"></i>
+                              <p>Seguimiento MBOS</p>
+                            </a>
+                          </li>
+                        @endcan 
+                      </ul>
+                    </li>  
+                  @endcan
+                  @canany(['ver-desafios eventos','ver-asignacion desafios eventos','ver-dashboards desafios eventos'])
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                        <i class="fa-solid fa-people-roof"></i> 
+                        <p>
+                          Campañas
+                          <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                      </a>
+                      <ul class="nav nav-treeview">
+                        @can('ver-desafios eventos')
+                          <li class="nav-item ms-3">
+                            <a href="{{ route('desafio_eventos.index')  }}" class="nav-link">
+                              <i class="fa-solid fa-people-roof"></i>
+                              <p>Administrar Campañas</p>
+                            </a>
+                          </li>
+                        @endcan
+                        @can('ver-asignacion desafios eventos')
+                          <li class="nav-item ms-3">
+                            <a href="{{ route('desafio_eventos.indexasignaciones')  }}" class="nav-link">
+                              <i class="bi bi-diagram-3"></i>
+                              <p>Asignar Desafios</p>
+                            </a>
+                          </li>
+                        @endcan
+                        @can('ver-dashboards desafios eventos')
+                            <li class="nav-item ms-3">
+                            <a href="{{ route('desafio_eventos.dashboard_asignaciones')  }}" class="nav-link">
+                              <i class="bi bi-graph-up-arrow"></i>       
+                              <p>Seguimiento MBOS</p>
+                            </a>
+                          </li> 
+                        @endcan
+                      </ul>
+                    </li>  
+                  @endcanany
                 @endcanany
-              @endcanany
+              @endcannot
               
 
               <!--SECCCION FINANCIERO-->
