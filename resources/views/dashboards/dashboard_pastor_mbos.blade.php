@@ -597,7 +597,7 @@
     colors: ['#0d6efd', '#20c997', '#dc3545'], // azul, verde, rojo
     xaxis: { categories: graficos_todo.categorias },
     dataLabels: { enabled: true },
-    title: { text: 'Desafíos y Bautizos Alcanzados', align: 'center' },
+    title: { text: 'Desafíos y Bautismos Alcanzados', align: 'center' },
     legend: { show: false },
     plotOptions: {
       bar: { columnWidth: '50%', endingShape: 'rounded', distributed: true }
@@ -879,49 +879,54 @@
 
 <script>
     (function() {
-        // Datos limpios desde el backend
-        const etiquetas = @json($labelsBautizos);
-        const seriesData = @json($valoresBautizos);
+        // Datos del backend
+        const etiquetas = @json($labelsBautizos); // ['Bautizos', 'Profesión de Fe', 'Rebautismo']
+        const valores = @json($valoresBautizos).map(Number); // [10, 5, 2]
 
         const optionsBautizos = {
-            series: seriesData,
+            // CAMBIO CLAVE: Estructura de objeto para barras
+            series: [{
+                name: 'Total Registrado',
+                data: valores
+            }],
             chart: {
-                type: 'donut',
+                type: 'bar',
                 height: 350,
+                toolbar: { show: false }
             },
-            labels: etiquetas,
-            colors: ['#0d6efd', '#20c997', '#ffc107'], // Colores: Azul, Verde, Amarillo
             plotOptions: {
-                pie: {
-                    donut: {
-                        labels: {
-                            show: true,
-                            total: {
-                                show: true,
-                                label: 'Total',
-                                formatter: function (w) {
-                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                                }
-                            }
-                        }
-                    }
+                bar: {
+                    borderRadius: 4,
+                    horizontal: false, // Ponlo en false si las quieres verticales
+                    distributed: true, // Esto hace que cada barra tenga un color distinto
+                    dataLabels: {
+                        position: 'top',
+                    },
                 }
             },
+            colors: ['#0d6efd', '#20c997', '#ffc107'], // Azul, Verde, Amarillo
             dataLabels: {
                 enabled: true,
-                formatter: function (val, opts) {
-                    // Muestra el número absoluto en lugar del porcentaje
-                    return opts.w.globals.series[opts.seriesIndex];
+                formatter: function (val) {
+                    return val;
+                },
+                offsetX: -6,
+                style: {
+                    fontSize: '12px',
+                    colors: ['#fff']
                 }
             },
+            // CAMBIO CLAVE: Las etiquetas de barras van en el eje X (o Y si es horizontal)
+            xaxis: {
+                categories: etiquetas,
+            },
             legend: {
-                position: 'bottom'
+                show: false // Ocultamos la leyenda porque las barras ya tienen sus nombres abajo
             },
             tooltip: {
-                enabled: true,
                 y: {
-                    formatter: function(val) {
-                        return val + " personas";
+                    title: {
+                        formatter: () => 'Cantidad: '
                     }
                 }
             }
