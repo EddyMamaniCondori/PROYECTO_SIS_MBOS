@@ -45,7 +45,7 @@ class UpdatePersonalRequest extends FormRequest
                                     Rule::unique('personas', 'email')->ignore($this->route('personale'), 'id_persona'),
                                 ],
             'password' => $this->filled('password') || $this->filled('password_confirmation')
-            ? 'required_with:password_confirmation|string|min:8|confirmed'
+            ? 'required_with:password_confirmation|string|min:7|confirmed'
             : 'nullable',
         ];
     }

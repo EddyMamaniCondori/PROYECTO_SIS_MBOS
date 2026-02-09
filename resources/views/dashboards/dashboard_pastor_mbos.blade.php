@@ -166,25 +166,35 @@
           <div class="container-fluid">
             <div class="row">
               <!--INICIA TABLA-->
-              <div class="col-lg-3">
+              <div class="col-lg-6">
                 <div class="card mt-4">
                     <div class="card-body">
-                      <div class="card-header"><h3 class="card-title">Bautisos Anuales</h3></div>
+                      <div class="card-header"><h3 class="card-title">Bautismos Anuales</h3></div>
                       <h5 id="tituloGrafica_3" class="card-title text-center"></h5>
                       <div id="grafica-desafio" style="min-height: 350px;"></div>
                     </div>
                   </div>
               </div>
               <!--finaliza TABLA-->
-              <!--INICIA grafica-->
-              <div class="col-lg-9 ">
+              <div class="col-lg-6">
+                <div class="card mt-4">
+                    <div class="card-body">
+                      <div class="card-header"><h3 class="card-title">Tipos de Bautismos</h3></div>
+                      <div id="chart-bautizos-resumen" style="min-height: 350px;"></div>
+                    </div>
+                  </div>
+              </div>
+              
+            </div>
+            <div class="row">
+                <div class="col-lg-12 ">
                   <div class="card mt-4">
                     <div class="card-body">
                       <div class="card-header"><h3 class="card-title">Visitas Mensuales</h3></div>
                       <div class="card-body"><div id="revenue-chart" style="min-height: 350px;"></div></div>
                     </div>
                   </div>
-              </div>
+                </div>
             </div>
             
             <div class="row">
@@ -865,5 +875,60 @@
         const chartremesas = new ApexCharts(document.querySelector("#remesas-chart"), optionsremesas);
         chartremesas.render();
     })(); // Cerramos el ámbito
+</script>
+
+<script>
+    (function() {
+        // Datos limpios desde el backend
+        const etiquetas = @json($labelsBautizos);
+        const seriesData = @json($valoresBautizos);
+
+        const optionsBautizos = {
+            series: seriesData,
+            chart: {
+                type: 'donut',
+                height: 350,
+            },
+            labels: etiquetas,
+            colors: ['#0d6efd', '#20c997', '#ffc107'], // Colores: Azul, Verde, Amarillo
+            plotOptions: {
+                pie: {
+                    donut: {
+                        labels: {
+                            show: true,
+                            total: {
+                                show: true,
+                                label: 'Total',
+                                formatter: function (w) {
+                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val, opts) {
+                    // Muestra el número absoluto en lugar del porcentaje
+                    return opts.w.globals.series[opts.seriesIndex];
+                }
+            },
+            legend: {
+                position: 'bottom'
+            },
+            tooltip: {
+                enabled: true,
+                y: {
+                    formatter: function(val) {
+                        return val + " personas";
+                    }
+                }
+            }
+        };
+
+        const chartBautizos = new ApexCharts(document.querySelector("#chart-bautizos-resumen"), optionsBautizos);
+        chartBautizos.render();
+    })();
 </script>
 @endpush

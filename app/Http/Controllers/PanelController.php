@@ -162,8 +162,31 @@ class PanelController extends Controller
         )
         ->where('distrito_id', $id_distrito)
         ->first();
-
-        /**DATOS DE BAUTISOS DEL DISTRITO **/
+        //datos de bautismos por tipos
+        $tipos = DB::table('distritos as xd')
+            ->leftJoin('iglesias as xi', 'xi.distrito_id', '=', 'xd.id_distrito')
+            ->leftJoin('bautisos as xb', function ($join) use ($anio) {
+                $join->on('xb.id_iglesia', '=', 'xi.id_iglesia')
+                    ->whereRaw('EXTRACT(YEAR FROM xb.fecha_bautizo) = ?', [$anio]);
+            })
+            ->where('xd.estado', true)
+            ->where('xd.id_distrito', $id_distrito) // <-- Filtro por distrito específico
+            ->select(
+                'xd.id_distrito',
+                'xd.nombre as nombre_distrito',
+                DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'bautizo' THEN 1 ELSE 0 END), 0) as nro_bautizo"),
+                DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'profesion de fe' THEN 1 ELSE 0 END), 0) as nro_profesion_fe"),
+                DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'rebautismo' THEN 1 ELSE 0 END), 0) as nro_rebautismo")
+            )
+            ->groupBy('xd.id_distrito', 'xd.nombre')
+            ->first(); // Usamos first() para obtener un solo objeto con los totales
+        $labelsBautizos = ['Bautizos', 'Profesión de Fe', 'Rebautismo'];
+        $valoresBautizos = [
+            (int) $tipos->nro_bautizo,
+            (int) $tipos->nro_profesion_fe,
+            (int) $tipos->nro_rebautismo
+        ];
+            /**DATOS DE BAUTISOS DEL DISTRITO **/
         $bautiso = DB::table('desafios as xd')
             ->join('distritos as xdd', 'xd.id_distrito', '=', 'xdd.id_distrito')
             ->where('xdd.id_distrito', $id_distrito)
@@ -358,7 +381,8 @@ class PanelController extends Controller
         //dd($datosRemesas,$datosBlanco,$mesesNombres, $blanco_mensual);
         return view('dashboards.dashboard_pastor_mbos', compact('pastor','graficos_ins_est','desafios_ins_est','resumenIglesias', 'graficos_final', 'distrito','meses',
          'desafios', 'alcanzados', 'grafico_estudiantes', 'grafico_instructores', 'puntualidad',
-         'datosRemesas','datosBlanco','mesesNombres', 'blanco_mensual'));
+         'datosRemesas','datosBlanco','mesesNombres', 'blanco_mensual',
+        'labelsBautizos','valoresBautizos'));
     }
 
 
@@ -545,7 +569,7 @@ class PanelController extends Controller
     /**________________PANEL_________ MBOS */
     public function panel_mbos() //permision 'ver dashboard pastores - panel',
     {
-        $anio = 2025;
+        $anio = 2026;
         // 1. Total de bautismos alcanzados
         $b_alcanzado = DB::table('desafios')
             ->where('anio', $anio)
@@ -578,7 +602,7 @@ class PanelController extends Controller
             ->sum('monto');
         //dd($r_blanco);
         $mes_maximo = DB::table('generas')
-        ->where('anio', 2025)
+        ->where('anio', $anio)
         ->max('mes');
 
         $r_blanco = ($r_blanco / 12) * $mes_maximo;
