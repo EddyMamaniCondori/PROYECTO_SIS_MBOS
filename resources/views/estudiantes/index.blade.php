@@ -26,34 +26,6 @@
               <div class="row">
                 <a href="{{route('estudiantes.create')}}"><button type="button" class="btn btn-primary"> <i class="fa-solid fa-plus"></i> &nbsp Nuevo registro</button> </a><br>
               </div>
-              <div class="row">
-                <form action="{{ route('estudiantes.filtrar') }}" method="GET" class="mb-4">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label for="anio">Seleccione gestión:</label>
-                            @if ($anios->count() > 0)
-                                <select name="anio" id="anio" class="form-control">
-                                    @foreach ($anios as $an)
-                                        <option value="{{ $an }}" {{ (($anioSeleccionado ?? null) == $an) ? 'selected' : '' }}>
-
-                                            {{ $an }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            @else
-                                {{-- opcional: mostrar nada o un mensaje --}}
-                                <p class="text-muted">No existen gestiones registradas.</p>
-                            @endif
-
-
-                        </div>
-
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button class="btn btn-primary w-100">Filtrar</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
             </div>
           </div>
         </div>

@@ -180,7 +180,7 @@ class PanelController extends Controller
             )
             ->groupBy('xd.id_distrito', 'xd.nombre')
             ->first(); // Usamos first() para obtener un solo objeto con los totales
-        $labelsBautizos = ['Bautizos', 'Profesión de Fe', 'Rebautismo'];
+        $labelsBautizos = ['Bautismos', 'Profesión de Fe', 'Rebautismo'];
         $valoresBautizos = [
             (int) $tipos->nro_bautizo,
             (int) $tipos->nro_profesion_fe,

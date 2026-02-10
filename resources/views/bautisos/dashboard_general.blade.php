@@ -281,11 +281,11 @@
         const categorias = Object.keys(data.meses);
         const valores = Object.values(data.meses);
 
-        document.getElementById('tituloGrafica').innerText = 'Bautizos Mensuales - Distrito ID: ' + idDistrito;
+        document.getElementById('tituloGrafica').innerText = 'Bautismos Mensuales - Distrito ID: ' + idDistrito;
 
         const chartOptions = {
           series: [{
-            name: 'Bautizos',
+            name: 'Bautismos',
             data: valores
           }],
           chart: {
@@ -300,7 +300,7 @@
           dataLabels: { enabled: true },
           xaxis: { categories: categorias },
           legend: { position: 'top' },
-          title: { text: 'Bautizos por mes', align: 'center' }
+          title: { text: 'Bautismos por mes', align: 'center' }
         };
 
         if (window.graficoApex) {
@@ -428,7 +428,7 @@
         colors: ['#0d6efd', '#20c997', '#ffc107'],
         xaxis: { categories: g.categorias },
         dataLabels: { enabled: true },
-        title: { text: 'Tipos de Bautizos - ' + g.nombre, align: 'center' },
+        title: { text: 'Tipos de Bautismos - ' + g.nombre, align: 'center' },
         legend: { show: false },
         plotOptions: {
           bar: { columnWidth: '50%', endingShape: 'rounded', distributed: true }
@@ -463,7 +463,7 @@
         colors: ['#0d6efd', '#20c997', '#dc3545'], // azul, verde, rojo
         xaxis: { categories: g.categorias },
         dataLabels: { enabled: true },
-        title: { text: 'Desafíos y Bautizos Alcanzados', align: 'center' },
+        title: { text: 'Desafíos y Bautismos Alcanzados', align: 'center' },
         legend: { show: false },
         plotOptions: {
           bar: { columnWidth: '50%', endingShape: 'rounded', distributed: true }

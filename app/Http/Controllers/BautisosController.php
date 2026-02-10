@@ -366,7 +366,7 @@ class BautisosController extends Controller
             return [
                 'id_distrito' => $d->id_distrito,
                 'nombre' => $d->nombre_distrito,
-                'categorias' => ['Bautizos', 'Profesión de Fe', 'Rebautismos'],
+                'categorias' => ['Bautismos', 'Profesión de Fe', 'Rebautismos'],
                 'valores' => [
                     (int) $d->nro_bautizo,
                     (int) $d->nro_profesion_fe,
