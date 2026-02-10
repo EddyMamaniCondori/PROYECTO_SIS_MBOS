@@ -512,57 +512,61 @@ class PanelController extends Controller
 
         // ============================
     // 🔵 2. BAUTISMOS – GENERAL MBOS
-    // ============================
-    $b_desafio = DB::table('desafios')->sum('desafio_bautizo');
-    $b_alcanzado = DB::table('bautisos')->count();
-    $b_diferencia = $b_alcanzado - $b_desafio;
+        // ============================
+        $b_desafio = DB::table('desafios')
+                    ->where('anio', 2026)
+                    ->sum('desafio_bautizo');
+        $b_alcanzado = DB::table('bautisos')
+                    ->whereYear('fecha_bautizo', 2026)
+                    ->count();
+        $b_diferencia = $b_alcanzado - $b_desafio;
 
 
-    // ============================
-    // 🔵 3. BAUTISMOS – DISTRITOS (2025)
-    // ============================
-    $anio = 2025;
+        // ============================
+        // 🔵 3. BAUTISMOS – DISTRITOS (2025)
+        // ============================
+        $anio = 2026;
 
-    $b_desafio_d = DB::table('desafios')
-        ->where('anio', $anio)
-        ->sum('desafio_bautizo');
+        $b_desafio_d = DB::table('desafios')
+            ->where('anio', $anio)
+            ->sum('desafio_bautizo');
 
-    $b_alcanzado_d = DB::table('desafios')
-        ->where('anio', $anio)
-        ->sum('bautizos_alcanzados');
+        $b_alcanzado_d = DB::table('desafios')
+            ->where('anio', $anio)
+            ->sum('bautizos_alcanzados');
 
-    $b_diferencia_d = $b_alcanzado_d - $b_desafio_d;
+        $b_diferencia_d = $b_alcanzado_d - $b_desafio_d;
 
 
-    // ============================
-    // 🔵 4. Datos para Gráfica — Iglesias por Distrito
-    // ============================
-    $iglesiasPorDistrito = DB::table('iglesias as i')
-        ->join('distritos as d', 'd.id_distrito', '=', 'i.distrito_id')
-        ->select('d.nombre as distrito', DB::raw('COUNT(*) as total'))
-        ->where('i.estado', true)
-        ->groupBy('d.nombre')
-        ->orderBy('total', 'DESC')
-        ->get();
-    $porcentajeGeneral = $b_desafio > 0 
-    ? round(($b_alcanzado / $b_desafio) * 100, 1)
-    : 0;
+        // ============================
+        // 🔵 4. Datos para Gráfica — Iglesias por Distrito
+        // ============================
+        $iglesiasPorDistrito = DB::table('iglesias as i')
+            ->join('distritos as d', 'd.id_distrito', '=', 'i.distrito_id')
+            ->select('d.nombre as distrito', DB::raw('COUNT(*) as total'))
+            ->where('i.estado', true)
+            ->groupBy('d.nombre')
+            ->orderBy('total', 'DESC')
+            ->get();
+        $porcentajeGeneral = $b_desafio > 0 
+        ? round(($b_alcanzado / $b_desafio) * 100, 1)
+        : 0;
 
-    return view('panel.secretario', compact(
-        'totalIglesias',
-        'iglesiasTipoIglesia',
-        'iglesiasTipoGrupo',
-        'iglesiasTipoFilial',
-        'b_desafio',
-        'b_alcanzado',
-        'b_diferencia',
-        'b_desafio_d',
-        'b_alcanzado_d',
-        'b_diferencia_d',
-        'anio',
-        'iglesiasPorDistrito',
-        'porcentajeGeneral'
-    ));
+        return view('panel.secretario', compact(
+            'totalIglesias',
+            'iglesiasTipoIglesia',
+            'iglesiasTipoGrupo',
+            'iglesiasTipoFilial',
+            'b_desafio',
+            'b_alcanzado',
+            'b_diferencia',
+            'b_desafio_d',
+            'b_alcanzado_d',
+            'b_diferencia_d',
+            'anio',
+            'iglesiasPorDistrito',
+            'porcentajeGeneral'
+        ));
     }
 
 
