@@ -353,7 +353,7 @@ class PanelController extends Controller
         $resultados_remesas = DB::table(DB::raw('generate_series(1, 12) as m(mes)'))
             ->leftJoin('generas as xg', function($join) {
                 $join->on('m.mes', '=', 'xg.mes')
-                    ->where('xg.anio', '=', 2026);
+                    ->where('xg.anio', '=', $anio);
             })
             ->leftJoin('iglesias as xi', function($join) use ($id_distrito) {
                 $join->on('xg.id_iglesia', '=', 'xi.id_iglesia')
@@ -366,7 +366,7 @@ class PanelController extends Controller
             ->get();
 
         $montoOriginal = DB::table('blanco_remesas')
-            ->where('anio', 2026)
+            ->where('anio', $anio)
             ->where('id_distrito', 36)
             ->value('monto') ?? 0; // Si no existe el registro, usamos 0
 
@@ -487,6 +487,7 @@ class PanelController extends Controller
 
     public function dashboardSecretario()
     {
+        $anio = date('Y');
         // ==============================
         // 🔵 1. KPIs BASE - IGLESIAS
         // ==============================
@@ -514,10 +515,10 @@ class PanelController extends Controller
     // 🔵 2. BAUTISMOS – GENERAL MBOS
         // ============================
         $b_desafio = DB::table('desafios')
-                    ->where('anio', 2026)
+                    ->where('anio', $anio)
                     ->sum('desafio_bautizo');
         $b_alcanzado = DB::table('bautisos')
-                    ->whereYear('fecha_bautizo', 2026)
+                    ->whereYear('fecha_bautizo', $anio)
                     ->count();
         $b_diferencia = $b_alcanzado - $b_desafio;
 
@@ -525,7 +526,6 @@ class PanelController extends Controller
         // ============================
         // 🔵 3. BAUTISMOS – DISTRITOS (2025)
         // ============================
-        $anio = 2026;
 
         $b_desafio_d = DB::table('desafios')
             ->where('anio', $anio)
@@ -573,7 +573,7 @@ class PanelController extends Controller
     /**________________PANEL_________ MBOS */
     public function panel_mbos() //permision 'ver dashboard pastores - panel',
     {
-        $anio = 2026;
+        $anio = date('Y');
         // 1. Total de bautismos alcanzados
         $b_alcanzado = DB::table('desafios')
             ->where('anio', $anio)
