@@ -114,8 +114,6 @@ class RemesaExcelController extends Controller
                 }
                 //DB::commit();
                 if($estado){   $remesaExcel->delete();}
-
-
             //} catch (\Exception $e) {
                // DB::rollBack();
                 //continue;
