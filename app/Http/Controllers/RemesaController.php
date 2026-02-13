@@ -134,20 +134,45 @@ class RemesaController extends Controller
     {
         $anio = $request->anio;
         $mes = $request->mes;
-
-
         if ($request->entregado == 1) {
             $estado_texto = 'ENTREGADO';
         } else {
             $estado_texto = 'PENDIENTE';
         }
-
         // 1. Capturamos los datos del request
         $filtro_tipo = $request->input('tipo');     // Array: ['grupo', 'filial']
         $filtro_personal = $request->input('id_personal'); // ID directo: "43"
         //dd($filtro_personal, $filtro_tipo);
         // 2. Iniciamos la estructura de la consulta
-        $query = DB::table('generas as xg')
+        if($request->id_personal = "-1"){
+            $query = DB::table('generas as xg')
+            ->select([
+                'xd.nombre as nombre_distrito',
+                'xi.codigo',
+                'xi.id_iglesia',
+                'xp.nombre as nombre_pas',
+                'xp.ape_paterno',
+                'xp.ape_materno',
+                'xi.nombre as nombre_igle',
+                'xi.tipo as tipo_igle',
+                'xi.lugar as lugar_igle',
+                'xr.*',
+                'xperso.nombre as nombre_per',
+                'xperso.ape_paterno as ape_paterno_per'
+            ])
+            ->leftJoin('iglesias as xi', 'xg.id_iglesia', '=', 'xi.id_iglesia')
+            ->leftJoin('distritos as xd', 'xi.distrito_id', '=', 'xd.id_distrito')
+            ->leftJoin('remesas as xr', 'xg.id_remesa', '=', 'xr.id_remesa')
+            ->leftJoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
+            ->leftJoin('personas as xperso', 'xr.id_personal', '=', 'xperso.id_persona')
+            
+            ->where('xg.mes', $mes)
+            ->where('xg.anio', $anio)
+            ->where('xi.estado', true)
+            ->wherelike('xr.estado', $estado_texto);
+                
+        }else{
+            $query = DB::table('generas as xg')
             ->select([
                 'xd.nombre as nombre_distrito',
                 'xi.codigo',
@@ -173,7 +198,7 @@ class RemesaController extends Controller
             ->where('xi.estado', true)
             ->where('xr.id_personal', $filtro_personal)
             ->wherelike('xr.estado', $estado_texto);
-
+        }
         // 3. Aplicamos el filtro de TIPO (si el usuario seleccionó alguno)
         if (!empty($filtro_tipo)) {
           $query->whereIn('xi.tipo', $filtro_tipo);
@@ -736,7 +761,7 @@ class RemesaController extends Controller
             JOIN remesas xr ON xr.id_remesa = xg.id_remesa
             WHERE xg.anio = ?
             AND xg.mes = ?
-            ORDER BY xi.nombre ASC
+            ORDER BY d.nombre ASC
         ", [$anio, $mes]);
 
         // Hora y fecha

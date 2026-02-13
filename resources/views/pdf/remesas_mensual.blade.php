@@ -84,6 +84,14 @@
             padding: 5px;
             border: 1px solid #888;
         }
+
+
+
+
+
+    .rojo-suave {
+        background-color: #f8d7da !important;
+    }
     </style>
 </head>
 
@@ -124,27 +132,31 @@
 
     <tbody>
         @foreach ($result as $r)
+        @php
+            // Si es pendiente, asignamos la clase, si no, vacío.
+            $claseFila = ($r->estado === 'PENDIENTE') ? 'rojo-suave' : '';
+        @endphp
         <tr>
-            <td>{{ $r->codigo }}</td>
-            <td>{{ $r->nombre }}</td>
-            <td>{{ $r->distrito }}</td>
+            <td class="{{ $claseFila }}">{{ $r->codigo }}</td>
+            <td class="{{ $claseFila }}">{{ $r->nombre }}</td>
+            <td class="{{ $claseFila }}"> {{ $r->distrito }}</td>
 
            <!-- Cierre -->
-            <td style="text-align:center;">
+            <td style="text-align:center;" class="{{ $claseFila }}">
                 {!! $r->cierre
                     ? '<span style="color:green;">&#10003;</span>'   {{-- ✓ --}}
                     : '<span style="color:red;">&#10007;</span>' !!} {{-- ✗ --}}
             </td>
 
             <!-- Depósito -->
-            <td style="text-align:center;">
+            <td class="{{ $claseFila }}" style="text-align:center;" >
                 {!! $r->deposito
                     ? '<span style="color:green;">&#10003;</span>'
                     : '<span style="color:red;">&#10007;</span>' !!}
             </td>
 
             <!-- Documentación -->
-            <td style="text-align:center;">
+            <td class="{{ $claseFila }}" style="text-align:center;" >
                 {!! $r->documentacion
                     ? '<span style="color:green;">&#10003;</span>'
                     : '<span style="color:red;">&#10007;</span>' !!}
@@ -154,17 +166,17 @@
 
 
             <!-- Fecha de Entrega -->
-            <td style="text-align:center;">
+            <td class="{{ $claseFila }}" style="text-align:center;" >
                 @if ($r->fecha_entrega)
                     {{ \Carbon\Carbon::parse($r->fecha_entrega)->format('d/m/Y') }}
                 @else
                     <span style="color:#777;">SIN ENTREGAR</span>
                 @endif
             </td>
-            <td>{{ $r->estado_dias }}</td>
+            <td class="{{ $claseFila }}">{{ $r->estado_dias }}</td>
 
             <!-- Estado -->
-<td style="text-align:center; font-weight:bold;">
+<td class="{{ $claseFila }}" style="text-align:center; font-weight:bold;">
     @if ($r->estado === 'ENTREGADO')
         <span style="color:green;">&#10003; ENTREGADO</span>
     @elseif ($r->estado === 'PENDIENTE')

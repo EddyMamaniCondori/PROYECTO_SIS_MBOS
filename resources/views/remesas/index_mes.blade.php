@@ -59,6 +59,7 @@
                             @foreach($personal as $per)
                                 <option value="{{$per->id_persona}}">{{$per->nombre}} &nbsp; {{$per->ape_paterno}}</option>
                             @endforeach
+                            <option value="-1">Todos</option>
                           </select>
                         </div>
                         <!--SELECT PERSOMNALIZADO-->

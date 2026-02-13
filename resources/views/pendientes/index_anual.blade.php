@@ -60,24 +60,24 @@
                             
                           </select>
                         </div>-->
-
                         <!--SELECT PERSOMNALIZADO-->
                         <div class="col-2">
                           <label class="form-label fw-semibold">Periodo inicial:</label>
                           <select id="periodoInicio" name="periodoInicio" class="form-select" required>
                             <option value="">--Selecciona--</option>
-                            <option value="1-2025">01 - 2025</option>
-                            <option value="2-2025">02 - 2025</option>
-                            <option value="3-2025">03 - 2025</option>
-                            <option value="4-2025">04 - 2025</option>
-                            <option value="5-2025">05 - 2025</option>
-                            <option value="6-2025">06 - 2025</option>
-                            <option value="7-2025">07 - 2025</option>
-                            <option value="8-2025">08 - 2025</option>
-                            <option value="9-2025">09 - 2025</option>
-                            <option value="10-2025">10 - 2025</option>
-                            <option value="11-2025">11 - 2025</option>
-                            <option value="12-2025">12 - 2025</option>
+                            <option value="1-2025">01 - 2026</option>
+                            <option value="2-2025">02 - 2026</option>
+                            <option value="3-2025">03 - 2026</option>
+                            <option value="4-2025">04 - 2026
+                            </option>
+                            <option value="5-2025">05 - 2026</option>
+                            <option value="6-2025">06 - 2026</option>
+                            <option value="7-2025">07 - 2026</option>
+                            <option value="8-2025">08 - 2026</option>
+                            <option value="9-2025">09 - 2026</option>
+                            <option value="10-2025">10 - 2026</option>
+                            <option value="11-2025">11 - 2026</option>
+                            <option value="12-2025">12 - 2026</option>
                           </select>
                         </div>
                         <!--SELECT PERSOMNALIZADO-->
@@ -85,18 +85,18 @@
                           <label class="form-label fw-semibold">Periodo final:</label>
                           <select id="periodoFinal" name="periodoFinal" class="form-select" required>
                             <option value="">--Selecciona--</option>
-                            <option value="1-2025">01 - 2025</option>
-                            <option value="2-2025">02 - 2025</option>
-                            <option value="3-2025">03 - 2025</option>
-                            <option value="4-2025">04 - 2025</option>
-                            <option value="5-2025">05 - 2025</option>
-                            <option value="6-2025">06 - 2025</option>
-                            <option value="7-2025">07 - 2025</option>
-                            <option value="8-2025">08 - 2025</option>
-                            <option value="9-2025">09 - 2025</option>
-                            <option value="10-2025">10 - 2025</option>
-                            <option value="11-2025">11 - 2025</option>
-                            <option value="12-2025">12 - 2025</option>
+                            <option value="1-2025">01 - 2026</option>
+                            <option value="2-2025">02 - 2026</option>
+                            <option value="3-2025">03 - 2026</option>
+                            <option value="4-2025">04 - 2026</option>
+                            <option value="5-2025">05 - 2026</option>
+                            <option value="6-2025">06 - 2026</option>
+                            <option value="7-2025">07 - 2026</option>
+                            <option value="8-2025">08 - 2026</option>
+                            <option value="9-2025">09 - 2026</option>
+                            <option value="10-2025">10 - 2026</option>
+                            <option value="11-2025">11 - 2026</option>
+                            <option value="12-2025">12 - 2026</option>
                           </select>
                         </div>
 
