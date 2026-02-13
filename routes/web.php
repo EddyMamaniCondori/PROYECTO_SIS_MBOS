@@ -462,6 +462,8 @@ Route::middleware(['auth'])->group(function () {
     [RemesasDashboardController::class, 'exportFilialesPDF'])
     ->name('remesas.filiales.pdf');
 
+       Route::post('/remesas/mes/filtrar', [RemesaController::class, 'filtro_mes'])->name('remesas.mes.filtro');
+
 
     Route::resource('pastores', PastorController::class);
     Route::resource('personales', PersonalController::class);

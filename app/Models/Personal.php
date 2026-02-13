@@ -21,6 +21,10 @@ class Personal extends Model
     {
         return $this->belongsTo(Persona::class, 'id_personal', 'id_persona');
     }
+    public function remesas(): HasMany
+    {
+        return $this->hasMany(Remesa::class, 'id_personal', 'id_personal');
+    }
 }
 
     

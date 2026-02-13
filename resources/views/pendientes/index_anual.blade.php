@@ -26,32 +26,12 @@
         12 => 'Diciembre',
     ];
 @endphp
-
-@if (session('success'))
-    <script>
-        const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-        });
-        Toast.fire({
-        icon: "success",
-        title: "{{ session('success') }}"
-        });
-    </script>
-@endif
-
+<x-alerts/>
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Remesas Pendientes Mensuales de la gestion 2025 </h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Remesas Pendientes Mensuales de la gestion 2026 </h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>

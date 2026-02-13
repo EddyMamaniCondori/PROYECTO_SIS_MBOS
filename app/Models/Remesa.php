@@ -23,6 +23,7 @@ class Remesa extends Model
         'estado_dias',
         'estado',
         'observacion',
+        'id_personal',
     ];
 
 
@@ -45,6 +46,12 @@ class Remesa extends Model
     public function remesaFilial()
     {
         return $this->hasOne(RemesaFilial::class, 'id_remesa', 'id_remesa');
+    }
+
+    public function personal()
+    {
+        // belongsTo(Modelo, clave_foranea_en_esta_tabla, clave_primaria_en_la_otra_tabla)
+        return $this->belongsTo(Personal::class, 'id_personal', 'id_personal');
     }
 
 

@@ -95,12 +95,15 @@ class RemesaController extends Controller
                 xi.nombre AS nombre_igle,
                 xi.tipo AS tipo_igle,
                 xi.lugar AS lugar_igle,
-                xr.*
+                xr.*,
+				xperso.nombre as nombre_per,
+				xperso.ape_paterno as ape_paterno_per
             FROM generas xg
             left JOIN iglesias xi ON xg.id_iglesia = xi.id_iglesia
             left JOIN distritos xd ON xi.distrito_id = xd.id_distrito
             left JOIN remesas xr ON xg.id_remesa = xr.id_remesa
             left JOIN personas xp ON xd.id_pastor = xp.id_persona
+            left JOIN personas xperso on xr.id_personal = xperso.id_persona
             WHERE xg.mes = :mes
             AND xg.anio = :anio
             AND xi.estado = true
@@ -109,14 +112,83 @@ class RemesaController extends Controller
             'mes' => $mes,
             'anio' => $anio
         ]);
+
+        $personal = DB::select("select xp.id_persona, xp.nombre, xp.ape_paterno, xr.name
+                            from personas xp
+                            join personales xpp on xp.id_persona = xpp.id_personal
+                            join model_has_roles xm on xp.id_persona = xm.model_id 
+                            join roles xr on xm.role_id = xr.id
+                            where xr.name like 'Tesorero'
+                    ");
+
+
         return view('remesas.index_mes', [
             'datos' => $resultados,
             'mes' => $mes,
-            'anio' => $anio
+            'anio' => $anio,
+            'personal' =>$personal,
         ]);
     }
 
+    public function filtro_mes(Request $request)
+    {
+        $anio = $request->anio;
+        $mes = $request->mes;
+        // 1. Capturamos los datos del request
+        $filtro_tipo = $request->input('tipo');     // Array: ['grupo', 'filial']
+        $filtro_personal = $request->input('id_personal'); // ID directo: "43"
+        //dd($filtro_personal, $filtro_tipo);
+        // 2. Iniciamos la estructura de la consulta
+        $query = DB::table('generas as xg')
+            ->select([
+                'xd.nombre as nombre_distrito',
+                'xi.codigo',
+                'xi.id_iglesia',
+                'xp.nombre as nombre_pas',
+                'xp.ape_paterno',
+                'xp.ape_materno',
+                'xi.nombre as nombre_igle',
+                'xi.tipo as tipo_igle',
+                'xi.lugar as lugar_igle',
+                'xr.*',
+                'xperso.nombre as nombre_per',
+                'xperso.ape_paterno as ape_paterno_per'
+            ])
+            ->leftJoin('iglesias as xi', 'xg.id_iglesia', '=', 'xi.id_iglesia')
+            ->leftJoin('distritos as xd', 'xi.distrito_id', '=', 'xd.id_distrito')
+            ->leftJoin('remesas as xr', 'xg.id_remesa', '=', 'xr.id_remesa')
+            ->leftJoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
+            ->leftJoin('personas as xperso', 'xr.id_personal', '=', 'xperso.id_persona')
+            
+            ->where('xg.mes', $mes)
+            ->where('xg.anio', $anio)
+            ->where('xi.estado', true)
+            ->where('xr.id_personal', $filtro_personal);
 
+        // 3. Aplicamos el filtro de TIPO (si el usuario seleccionó alguno)
+        if (!empty($filtro_tipo)) {
+          $query->whereIn('xi.tipo', $filtro_tipo);
+        }
+        // 5. Ordenamos y obtenemos los resultados
+        $resultados = $query->orderBy('nombre_distrito')->get();
+
+        // Consulta para llenar el select de personal en la vista
+        $personal = DB::select("
+            SELECT xp.id_persona, xp.nombre, xp.ape_paterno, xr.name
+            FROM personas xp
+            JOIN personales xpp ON xp.id_persona = xpp.id_personal
+            JOIN model_has_roles xm ON xp.id_persona = xm.model_id 
+            JOIN roles xr ON xm.role_id = xr.id
+            WHERE xr.name LIKE 'Tesorero'
+        ");
+
+        return view('remesas.index_mes', [
+            'datos'    => $resultados,
+            'mes'      => $mes,
+            'anio'     => $anio,
+            'personal' => $personal,
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -339,6 +411,10 @@ class RemesaController extends Controller
             return redirect()->back()->with('error', 'Error al actualizar: ' . $e->getMessage());
         }
     }
+
+
+    
+
 
     public function store(Request $request)
     {

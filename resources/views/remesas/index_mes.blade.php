@@ -42,6 +42,68 @@
             </div>
           </div>
         </div>
+
+        <!--div BUSCADOR-->
+            <div class="row p-4">
+              <div class="col-12">
+                <div class="row">
+                  <div class="card mb-4">
+                    <form class="mt-3 mb-3" action="{{ route('remesas.mes.filtro') }}" method="POST" id="filtroForm">
+                    @csrf  
+                      <div class="row">
+                        <!--SELECT PERSOMNALIZADO-->
+                        <div class="col-3">
+                          <label class="form-label fw-semibold">Seleccione el personal:</label>
+                          <select id="id_personal" name="id_personal" class="form-select" required>
+                            <option value="">--Selecciona--</option>
+                            @foreach($personal as $per)
+                                <option value="{{$per->id_persona}}">{{$per->nombre}} &nbsp; {{$per->ape_paterno}}</option>
+                            @endforeach
+                          </select>
+                        </div>
+                        <!--SELECT PERSOMNALIZADO-->
+                        <div class="col-4">
+                          <label class="form-label fw-semibold">Tipo:</label>
+                          <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                              --Escoge el tipo--
+                            </button>
+                            <ul class="dropdown-menu p-2" style="width:100%;">
+                              <li>
+                                <label class="form-check d-flex align-items-center">
+                                  <input class="form-check-input me-2" type="checkbox" name="tipo[]" value="Iglesia">
+                                  <i class="bi bi-house-check-fill text-success me-2"></i> Iglesias
+                                </label>
+                              </li>
+                              <li>
+                                <label class="form-check d-flex align-items-center">
+                                  <input class="form-check-input me-2" type="checkbox" name="tipo[]" value="Grupo">
+                                  <i class="bi bi-house-fill text-primary me-2"></i> Grupos
+                                </label>
+                              </li>
+                              <li>
+                                <label class="form-check d-flex align-items-center">
+                                  <input class="form-check-input me-2" type="checkbox" name="tipo[]" value="Filial">
+                                  <i class="bi bi-house-gear-fill text-warning me-2"></i> Filiales
+                                </label>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <!--SELECT PERSOMNALIZADO-->
+                        <input type="hidden" name="anio"  id="anio" value="{{$anio}}">
+                        <input type="hidden" name="mes"  id="mes" value="{{$mes}}">
+                        <div class="col-2">
+                          <button type="submit" class="btn btn-success mt-3"><i class="bi bi-funnel-fill"></i> &nbsp; Filtrar</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
         <!--contenido-->
         <div class="app-content">
           <div class="container-fluid">
@@ -57,9 +119,10 @@
                                         <tr>
                                             <th>Distrito</th>
                                             <th>Pastor</th>
-                                            <th>codigo</th>
+                                            <th>Cod</th>
                                             <th>Iglesia</th>
                                             <th>tipo</th>
+                                            <th>Encargado</th>
                                             <th>lugar</th>
                                             <th>CIE</th>
                                             <th>DEP</th>
@@ -87,11 +150,16 @@
                                                 {{$dato->nombre_igle}}
                                             </td>
                                             <td>
-                                                {{$dato->lugar_igle}}
-                                            </td>
-                                            <td>
                                                 {{$dato->tipo_igle}}
                                             </td>
+                                            <td>
+                                                {{$dato->nombre_per}} &nbsp; {{$dato->ape_paterno_per}}
+                                            </td>
+                                            <td>
+                                                {{$dato->lugar_igle}}
+                                            </td>
+                                            
+                                            
                                             <td>
                                                 @if ($dato->cierre)
                                                     <i class="bi bi-check-square-fill" style="color: #28a745;"></i>
@@ -177,9 +245,10 @@
                                         <tr>
                                             <th>Distrito</th>
                                             <th>Pastor</th>
-                                            <th>codigo</th>
+                                            <th>Cod</th>
                                             <th>Iglesia</th>
                                             <th>tipo</th>
+                                            <th>Encargado</th>
                                             <th>lugar</th>
                                             <th>CIE</th>
                                             <th>DEP</th>
@@ -335,4 +404,12 @@ $(document).ready(function(){
 </script>
 
 
+<script>
+  // Evita que el menú se cierre al hacer clic dentro del dropdown
+  document.querySelectorAll('.dropdown-menu').forEach(menu => {
+    menu.addEventListener('click', e => {
+      e.stopPropagation();
+    });
+  });
+</script>
 @endpush
