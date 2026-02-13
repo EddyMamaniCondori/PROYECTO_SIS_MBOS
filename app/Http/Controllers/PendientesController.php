@@ -78,7 +78,18 @@ class PendientesController extends Controller
             }
         }
         $total = $c_filiales+$c_grupo+$c_iglesias;
-        return view('pendientes.index_anual', compact('datos', 'c_iglesias', 'c_grupo', 'c_filiales', 'total')); // Pasa esos datos a la vista*/
+
+         $personal = DB::select("
+            SELECT xp.id_persona, xp.nombre, xp.ape_paterno, xr.name
+            FROM personas xp
+            JOIN personales xpp ON xp.id_persona = xpp.id_personal
+            JOIN model_has_roles xm ON xp.id_persona = xm.model_id 
+            JOIN roles xr ON xm.role_id = xr.id
+            WHERE xr.name LIKE 'Tesorero'
+        ");
+
+
+        return view('pendientes.index_anual', compact('datos', 'c_iglesias', 'c_grupo', 'c_filiales', 'total', 'personal')); // Pasa esos datos a la vista*/
         //return view('pendientes.pruebas');
     }
 

@@ -134,6 +134,14 @@ class RemesaController extends Controller
     {
         $anio = $request->anio;
         $mes = $request->mes;
+
+
+        if ($request->entregado == 1) {
+            $estado_texto = 'ENTREGADO';
+        } else {
+            $estado_texto = 'PENDIENTE';
+        }
+
         // 1. Capturamos los datos del request
         $filtro_tipo = $request->input('tipo');     // Array: ['grupo', 'filial']
         $filtro_personal = $request->input('id_personal'); // ID directo: "43"
@@ -163,7 +171,8 @@ class RemesaController extends Controller
             ->where('xg.mes', $mes)
             ->where('xg.anio', $anio)
             ->where('xi.estado', true)
-            ->where('xr.id_personal', $filtro_personal);
+            ->where('xr.id_personal', $filtro_personal)
+            ->wherelike('xr.estado', $estado_texto);
 
         // 3. Aplicamos el filtro de TIPO (si el usuario seleccionó alguno)
         if (!empty($filtro_tipo)) {

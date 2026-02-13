@@ -46,14 +46,23 @@
           <div class="container-fluid">
             <!--div BUSCADOR-->
             <div class="row">
-              <div class="col-8">
+              <div class="col-12">
                 <div class="row">
                   <div class="card mb-4">
                     <form class="mt-3 mb-3" action="{{ route('remesas.pendiente.anual.filtro') }}" method="POST" id="filtroForm">
                     @csrf  
                       <div class="row">
-                        <!--SELECT PERSOMNALIZADO-->
+                        <!--SELECT PERSOMNALIZADO
                         <div class="col-3">
+                          <label class="form-label fw-semibold">Seleccione el personal:</label>
+                          <select id="id_personal" name="id_personal" class="form-select" required>
+                            <option value="">--Selecciona--</option>
+                            
+                          </select>
+                        </div>-->
+
+                        <!--SELECT PERSOMNALIZADO-->
+                        <div class="col-2">
                           <label class="form-label fw-semibold">Periodo inicial:</label>
                           <select id="periodoInicio" name="periodoInicio" class="form-select" required>
                             <option value="">--Selecciona--</option>
@@ -72,7 +81,7 @@
                           </select>
                         </div>
                         <!--SELECT PERSOMNALIZADO-->
-                        <div class="col-3">
+                        <div class="col-2">
                           <label class="form-label fw-semibold">Periodo final:</label>
                           <select id="periodoFinal" name="periodoFinal" class="form-select" required>
                             <option value="">--Selecciona--</option>
@@ -92,7 +101,7 @@
                         </div>
 
                         <!--SELECT PERSOMNALIZADO-->
-                        <div class="col-4">
+                        <div class="col-3">
                           <label class="form-label fw-semibold">Tipo:</label>
                           <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
@@ -129,12 +138,12 @@
                   </div>
                 </div>
               </div>
-              <div class="col-4">
+              <!--<div class="col-4">
                 <div class="card mb-4 p-2">
                   <button type="button" class="btn btn-primary w-100 mb-2"> <i class="bi bi-filetype-xlsx"></i> &nbsp;  Descargar EXCEL</button>
                   <button type="button" class="btn btn-success w-100"> <i class="bi bi-filetype-pdf"></i>  &nbsp; Descargar PDF</button>
                 </div>
-              </div>
+              </div>-->
 
             </div>
 
@@ -178,7 +187,6 @@
                   <path clip-rule="evenodd"
                       fill-rule="evenodd" d="m14 9.293-6-6-6 6V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5zm-6-.811c1.664-1.673 5.825 1.254 0 5.018-5.825-3.764-1.664-6.691 0-5.018"/>
                 </svg>
-
                   <a
                     href="#"
                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"

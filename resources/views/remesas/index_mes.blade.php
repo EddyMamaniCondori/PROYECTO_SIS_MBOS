@@ -91,6 +91,14 @@
                           </div>
                         </div>
                         <!--SELECT PERSOMNALIZADO-->
+                        <div class="col-3">
+                            <label class="form-label fw-semibold">Estado de entrega:</label>
+                            <select name="entregado" id="entregado" class="form-select">
+                                <option value="1">Entregado</option>
+                                <option value="0">Pendiente</option>
+                            </select>
+                        </div>
+                        <!--SELECT PERSOMNALIZADO-->
                         <input type="hidden" name="anio"  id="anio" value="{{$anio}}">
                         <input type="hidden" name="mes"  id="mes" value="{{$mes}}">
                         <div class="col-2">
