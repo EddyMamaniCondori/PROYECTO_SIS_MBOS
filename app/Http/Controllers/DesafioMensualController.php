@@ -9,8 +9,10 @@ use App\Models\Persona;
 use App\Models\Iglesia;
 use App\Models\Desafio; 
 use App\Models\Distrito; 
+use App\Models\VisitaCapellan; 
 use App\Models\Mensual; 
 use App\Models\AnualIglesia; 
+use App\Models\UnidadEducativa; 
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\DesafioMensualRequest;
 use Exception;
@@ -387,6 +389,69 @@ class DesafioMensualController extends Controller
             )
         );
     }
+
+
+
+    public function dashboard_mes_x_distrito_cape($mes, $anio) //Permision 'graficos x mes MBOS-desafios mensuales',
+    {
+        // Obtener los resultados
+        $resultados = Mensual::query()
+            ->join('desafios as xd', 'mensuales.id_desafio', '=', 'xd.id_desafio')
+            ->join('unidad_educativas as xue', 'xd.id_ue', '=', 'xue.id_ue')
+            ->leftJoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
+            ->where('mensuales.anio', $anio)
+            ->where('mensuales.mes', $mes)
+            ->select(
+                'xue.id_ue',
+                'xue.nombre as nombre_distrito',
+                'mensuales.desafio_visitas',
+                'mensuales.visitas_alcanzadas',
+                'xp.id_persona as id_pastor',
+                'xp.nombre as nombre_p',
+                'xp.ape_paterno',
+                'xp.ape_materno'
+            )
+            ->get();
+
+        //dd($resultados);
+        // ---- CÁLCULOS PARA LAS TARJETAS ----
+        $totalDistritos = $resultados->count();
+        $completaron = $resultados->filter(fn ($r) => 
+                (int)$r->visitas_alcanzadas >= (int)$r->desafio_visitas
+            )->count();
+        
+        $faltan = $totalDistritos - $completaron;
+        //dd($completaron, $totalDistritos, $faltan);
+
+
+        // ---- DATOS PARA LA GRÁFICA DINÁMICA ----
+        $graficos = $resultados->map(function ($d) {
+
+            $diferencia = $d->desafio_visitas - $d->visitas_alcanzadas;
+
+            return [
+                'id_ue' => $d->id_ue,
+                'desafio'     => $d->desafio_visitas,
+                'alcanzado'   => $d->visitas_alcanzadas,
+                'diferencia'  => $diferencia,
+            ];
+        });
+
+        ///dd($mes, $anio);
+        return view(
+            'desafio_mensuales.dashboard_mensual_visitas_cape',
+            compact(
+                'resultados',
+                'mes',
+                'anio',
+                'totalDistritos',
+                'completaron',
+                'faltan',
+                'graficos'
+            )
+        );
+    }
+
     //para ver las visitas de un pastor distrital
     public function ver_visitas_del_pastor($mes, $anio, $id_pastor) 
     {
@@ -412,6 +477,29 @@ class DesafioMensualController extends Controller
             'visitas', 'mes', 'anio', 'pastor', 'distrito'
         ));
     }
+
+
+    public function ver_visitas_del_cape($mes, $anio, $id_pastor) 
+    {
+        // Usamos findOrFail para seguridad
+        $pastor = Persona::findOrFail($id_pastor);
+
+        $ue = DB::table('capellan')
+                ->select('id_ue')
+                ->where('id_pastor', $id_pastor)
+                ->first();
+        $id_ue = $ue->id_ue;
+        $unidad = UnidadEducativa::findOrFail($id_ue);
+        $visitas = VisitaCapellan::whereYear('fecha_visita', $anio)
+            ->whereMonth('fecha_visita', $mes)
+            ->where('id_pastor', $id_pastor)
+            ->get();
+        return view('visitas_capellanes.index_visitas_cape_mensuales_mbos', compact(
+            'visitas', 'mes', 'anio', 'pastor','unidad'
+        ));
+    }
+
+
     //para grafico de todos los meses del año las visitas por mes
     public function resumenMensualGeneral() //permission 'graficos todos los meses MBOS-desafios mensuales',
     {

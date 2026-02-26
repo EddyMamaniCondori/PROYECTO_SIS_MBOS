@@ -140,7 +140,12 @@
                                                     @can('graficos x mes MBOS-desafios mensuales')
                                                     <a href="{{ route('mensuales.dashboard', ['mes' => $mensual->mes, 'anio' => $mensual->anio]) }}"
                                                     class="btn btn-success" title="Ver gráficas y resumen">
-                                                        <i class="bi bi-bar-chart"></i> Ver Avance
+                                                        <i class="bi bi-bar-chart"></i> Ver Avance Pastores
+                                                    </a>
+
+                                                    <a href="{{ route('mensuales.dashboard.cape', ['mes' => $mensual->mes, 'anio' => $mensual->anio]) }}"
+                                                    class="btn btn-warning" title="Ver gráficas y resumen">
+                                                        <i class="bi bi-bar-chart"></i> Ver Avance Capellanes
                                                     </a>
                                                     @endcan
 

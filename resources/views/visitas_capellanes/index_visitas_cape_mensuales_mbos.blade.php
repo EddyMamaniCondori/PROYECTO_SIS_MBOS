@@ -1,7 +1,7 @@
 @extends('template')
 
 
-@section('title', 'Bautisos')
+@section('title', 'Visitas Capellan')
 
 @push('css')
     <!--data table-->
@@ -11,18 +11,61 @@
 
 @section('content')
 
-<x-alerts/>
+@if (session('success'))
+    <script>
+        const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+        });
+        Toast.fire({
+        icon: "success",
+        title: "{{ session('success') }}"
+        });
+    </script>
+@endif
+@php
+            $meses_array = [
+                        1 => 'Enero',
+                        2 => 'Febrero',
+                        3 => 'Marzo',
+                        4 => 'Abril',
+                        5 => 'Mayo',
+                        6 => 'Junio',
+                        7 => 'Julio',
+                        8 => 'Agosto',
+                        9 => 'Septiembre',
+                        10 => 'Octubre',
+                        11 => 'Noviembre',
+                        12 => 'Diciembre'
+                    ];
+            
+@endphp
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0"> Tus Visitas Distritales - {{$anioActual}}</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0"><strong style="color: blue">Visitas Mensuales de - {{$meses_array[$mes]}} /{{$anio}}</strong> </h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Visitas</li>
+                  <li class="breadcrumb-item"><a href="{{route('visitas.index')}}">Visitas</a></li>
+                  <li class="breadcrumb-item"><a href="{{route('visitas.index_mes')}}">Desafios Mensuales</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Completar Desafio Mensuales</li>
                 </ol>
               </div>
+            </div>
+            <div class="row">
+                <div class="col p-3">
+                    <h4>Pastor: &nbsp; {{$pastor->nombre}}  &nbsp; {{$pastor->ape_paterno}} &nbsp; {{$pastor->ape_materno}} </h4>
+                    <h4>Unidad Educativa: &nbsp;{{$unidad->nombre}} </h4>
+                </div> 
             </div>
           </div>
         </div>
@@ -39,7 +82,6 @@
                                 <table id="example" class="display">
                                     <thead>
                                         <tr>
-                                            <th>Iglesia</th>
                                             <th>P / F visitada</th>
                                             <th>Fecha de visita</th>
                                             <th>Presentes</th>
@@ -52,9 +94,6 @@
                                     <tbody>
                                         @foreach ($visitas as $visita)
                                         <tr>
-                                            <td>
-                                                {{$visita->nombre_iglesia}}
-                                            </td>
                                             <td>
                                                 {{$visita->nombre_visitado}} 
                                             </td>
@@ -77,13 +116,12 @@
                                             <td> 
                                                 {{$visita->descripcion_lugar}}
                                             </td>
+                                            
                                         </tr>
-                                         
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Iglesia</th>
                                             <th>P / F visitada</th>
                                             <th>Fecha de visita</th>
                                             <th>Presentes</th>

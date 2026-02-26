@@ -78,5 +78,12 @@ class Pastor extends Model
     }
 
     
+    //ralCIONES CON CAPELLANES DE ASEA
+
+    public function visitasCapellania()
+    {
+        // Usamos un nombre descriptivo para no confundir con visitas a iglesias
+        return $this->hasMany(VisitaCapellan::class, 'id_pastor', 'id_pastor');
+    }
 
 }

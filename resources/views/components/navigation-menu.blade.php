@@ -34,7 +34,38 @@
                           <p>Dashboard Pastores</p>
                         </a>
                       </li>
+                  @endcan 
+                  <!--Dashboasr de capellanes-->
+                  @can('ver dashboard pastores-panel')
+                      <li class="nav-item ms-3">
+                        <a href="{{ route('dashboard.capellan')}}" class="nav-link ">
+                          <i class="bi bi-pie-chart-fill"></i>
+                          <p>Dashboard Capellanes</p>
+                        </a>
+                      </li>
                   @endcan
+                  <!--Dashboasr de capellanes-->
+                      <li class="nav-item ms-3">
+                        <a href="{{ route('asea.index')}}" class="nav-link ">
+                          <i class="bi bi-pie-chart-fill"></i>
+                          <p>ASEA</p>
+                        </a>
+                      </li>
+                      <li class="nav-item ms-3">
+                        <a href="{{ route('visita_cape.index')}}" class="nav-link ">
+                          <i class="bi bi-pie-chart-fill"></i>
+                          <p>Visita ASEA</p>
+                        </a>
+                      </li>
+                      <li class="nav-item ms-3">
+                        <a href="{{ route('visita_cape.index_mes')}}" class="nav-link ">
+                          <i class="bi bi-pie-chart-fill"></i>
+                          <p>Visita Mes ASEA</p>
+                        </a>
+                      </li>
+                  
+                  
+
                   @can('ver meses-remesas')
                       <li class="nav-item ms-3">
                         <a href="{{ route('dashboard.tesorero')}}" class="nav-link ">
