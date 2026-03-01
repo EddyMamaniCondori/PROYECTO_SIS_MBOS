@@ -63,42 +63,46 @@
                           </select>
                         </div>
                         <!--SELECT PERSOMNALIZADO-->
-                        <div class="col-4">
-                          <label class="form-label fw-semibold">Tipo:</label>
-                          <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
-                              --Escoge el tipo--
-                            </button>
-                            <ul class="dropdown-menu p-2" style="width:100%;">
-                              <li>
-                                <label class="form-check d-flex align-items-center">
-                                  <input class="form-check-input me-2" type="checkbox" name="tipo[]" value="Iglesia">
-                                  <i class="bi bi-house-check-fill text-success me-2"></i> Iglesias
-                                </label>
-                              </li>
-                              <li>
-                                <label class="form-check d-flex align-items-center">
-                                  <input class="form-check-input me-2" type="checkbox" name="tipo[]" value="Grupo">
-                                  <i class="bi bi-house-fill text-primary me-2"></i> Grupos
-                                </label>
-                              </li>
-                              <li>
-                                <label class="form-check d-flex align-items-center">
-                                  <input class="form-check-input me-2" type="checkbox" name="tipo[]" value="Filial">
-                                  <i class="bi bi-house-gear-fill text-warning me-2"></i> Filiales
-                                </label>
-                              </li>
-                            </ul>
-                          </div>
+                        <div class="col-3">
+                            <label class="form-label fw-semibold">Tipo:</label>
+                            <div class="d-flex flex-wrap gap-3 p-2 border rounded bg-light">
+                                <div class="form-check d-flex align-items-center">
+                                    <input class="form-check-input me-2" type="checkbox" name="tipo[]" value="Iglesia" id="tipoIglesia">
+                                    <label class="form-check-label d-flex align-items-center" for="tipoIglesia">
+                                        <i class="bi bi-house-check-fill text-success me-2"></i> Iglesias
+                                    </label>
+                                </div>
+                                <div class="form-check d-flex align-items-center">
+                                    <input class="form-check-input me-2" type="checkbox" name="tipo[]" value="Grupo" id="tipoGrupo">
+                                    <label class="form-check-label d-flex align-items-center" for="tipoGrupo">
+                                        <i class="bi bi-house-fill text-primary me-2"></i> Grupos
+                                    </label>
+                                </div>
+                                <div class="form-check d-flex align-items-center">
+                                    <input class="form-check-input me-2" type="checkbox" name="tipo[]" value="Filial" id="tipoFilial">
+                                    <label class="form-check-label d-flex align-items-center" for="tipoFilial">
+                                        <i class="bi bi-house-gear-fill text-warning me-2"></i> Filiales
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <!--SELECT PERSOMNALIZADO-->
-                        <div class="col-3">
+                        <div class="col-2">
                             <label class="form-label fw-semibold">Estado de entrega:</label>
                             <select name="entregado" id="entregado" class="form-select">
                                 <option value="1">Entregado</option>
                                 <option value="0">Pendiente</option>
                             </select>
                         </div>
+                        <!--EL ALTO,,,, ALTIPLANO-->
+                        <div class="col-2">
+                            <label class="form-label fw-semibold">Estado de entrega:</label>
+                            <select name="lugar" id="lugar" class="form-select">
+                                <option value="EL ALTO">El Alto</option>
+                                <option value="ALTIPLANO">Altiplano</option>
+                            </select>
+                        </div>
+
                         <!--SELECT PERSOMNALIZADO-->
                         <input type="hidden" name="anio"  id="anio" value="{{$anio}}">
                         <input type="hidden" name="mes"  id="mes" value="{{$mes}}">
@@ -214,6 +218,7 @@
 
                                                           <input type="hidden" name="id_iglesia" id="id_iglesia" value="{{ $dato->id_iglesia }}">
                                                           <input type="hidden" name="anio" id="anio" value="{{ $anio }}">
+                                                          <input type="hidden" name="mes" id="mes" value="{{ $mes }}">
                                                           <input type="hidden" name="distrito" id="distrito" value="{{ $dato->nombre_distrito}}">
                                                           <button type="submit" class="btn btn-success">
                                                               <i class="bi bi-file-earmark-bar-graph-fill"></i> Registrar

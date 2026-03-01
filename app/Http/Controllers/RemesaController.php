@@ -132,6 +132,8 @@ class RemesaController extends Controller
 
     public function filtro_mes(Request $request)
     {
+
+        //dd($request);
         $anio = $request->anio;
         $mes = $request->mes;
         if ($request->entregado == 1) {
@@ -142,7 +144,8 @@ class RemesaController extends Controller
         // 1. Capturamos los datos del request
         $filtro_tipo = $request->input('tipo');     // Array: ['grupo', 'filial']
         $filtro_personal = $request->input('id_personal'); // ID directo: "43"
-        //dd($filtro_personal, $filtro_tipo);
+        $filtro_lugar = $request->input('lugar');
+        //dd($filtro_personal, $filtro_tipo, $filtro_lugar);
         // 2. Iniciamos la estructura de la consulta
         if($request->id_personal = "-1"){
             $query = DB::table('generas as xg')
@@ -169,6 +172,7 @@ class RemesaController extends Controller
             ->where('xg.mes', $mes)
             ->where('xg.anio', $anio)
             ->where('xi.estado', true)
+            ->where('xi.lugar', $filtro_lugar)
             ->wherelike('xr.estado', $estado_texto);
                 
         }else{
@@ -197,6 +201,7 @@ class RemesaController extends Controller
             ->where('xg.anio', $anio)
             ->where('xi.estado', true)
             ->where('xr.id_personal', $filtro_personal)
+            ->where('xi.lugar', $filtro_lugar)
             ->wherelike('xr.estado', $estado_texto);
         }
         // 3. Aplicamos el filtro de TIPO (si el usuario seleccionó alguno)
@@ -491,8 +496,10 @@ class RemesaController extends Controller
 
     public function llenar_filial(Request $request) //permision 'ver remesas filiales - remesas',
     {
+        //dd($request);
         $idIglesia = $request->id_iglesia;
         $anio = $request->anio;
+        $mes = $request->mes;
         $distrito = $request->distrito;
         // Validar entrada
         $iglesia = Iglesia::where('id_iglesia', $idIglesia)
@@ -532,13 +539,17 @@ class RemesaController extends Controller
         foreach ($resultados as $r) {
             $r->nombre_mes = $nombreMes[$r->mes] ?? 'Desconocido';
         }
-        return view('remesafiliales.index_unico', compact('resultados', 'distrito', 'iglesia'));
+        return view('remesafiliales.index_unico', compact('resultados', 'distrito', 'iglesia', 'anio', 'mes'));
     }
 
 
     public function registrar_remesa_filial(Request $request, $id){ //permision 'llenar remesas filiales - remesas',
         DB::beginTransaction();
+        //dd($request);
         try {
+            
+            $mes = $request->mes;
+            $anio = $request->anio;
             $remesa = Remesa::find($id);
             $remesa_filial = RemesaFilial::find($id);
 
@@ -552,6 +563,7 @@ class RemesaController extends Controller
             $remesa->fecha_entrega = $request->fecha_entrega;
             $remesa->estado = 'ENTREGADO';
             $remesa->observacion = $request->observacion;
+            
 
             // 🔹 Calcular diferencia de días
             $fechaEntrega = Carbon::parse($request->fecha_entrega);
@@ -573,13 +585,78 @@ class RemesaController extends Controller
             $remesa_filial->pro_templo = $request->pro_templo;
             $remesa_filial->fondo_local = $request->fondo_local;
             $remesa_filial->monto_remesa = $request->monto_remesa;
+            $remesa_filial->gasto = $request->gasto;
             $remesa_filial->save();
             DB::commit();
 
+            /******************************************/
+            //  SE HACE LA ACTUALIZACION DE LOS DIFERENTES MESES A ENTREGADO
+            /******************************************/
+            $remesasIds = DB::table('remesas as xr')
+                ->join('generas as xg', 'xr.id_remesa', '=', 'xg.id_remesa')
+                ->where('xg.id_iglesia', $request->id_iglesia)
+                ->where('xg.anio', $request->anio)
+                ->where('xr.estado', 'PENDIENTE')
+                ->pluck('xr.id_remesa'); // Esto nos devuelve solo una lista de IDs
+
+            // 2. Recorrer la lista y actualizar con findOrFail
+            foreach ($remesasIds as $id) {
+                $remesa = Remesa::findOrFail($id);
+                $remesa->fecha_entrega = $request->fecha_entrega;
+                $remesa->estado = 'ENTREGADO';
+                $remesa->save();
+            }
+            //dd($remesasIds);
+            /******************************************/
+            //  LLENAMOS LA PUNTUALIDAD
+            /******************************************/
+            $iglesia = Genera::where('id_remesa', $remesa->id_remesa)
+                 ->with('iglesia')
+                 ->first()?->iglesia;
+
+                if ($iglesia) {
+                    $lugar = strtoupper($iglesia->lugar ?? ''); // Normalizar el texto por seguridad
+                    $estrella = "0"; // Valor por defecto
+
+                    // Calcular la estrella según el tipo de iglesia
+                    if ($lugar === 'EL ALTO') {
+                        // Si entregó antes o el mismo día → 2
+                        if ($diferencia >= 0) {
+                            $estrella = "2";
+                        }
+                        // Si entregó con hasta 2 días de retraso → 1
+                        elseif ($diferencia < 0 && abs($diferencia) <= 2) {
+                            $estrella = "1";
+                        }
+                        // Más de 2 días de retraso → 0
+                        else {
+                            $estrella = "0";
+                        }
+                    } 
+                    elseif ($lugar === 'ALTIPLANO') {
+                        // Hasta 5 días de retraso → 2, sino → 0
+                        if ($diferencia >= 0 || abs($diferencia) <= 5) {
+                            $estrella = "2";
+                        } else {
+                            $estrella = "0";
+                        }
+                    }
+                    // buscamos la puntualidad
+                    $puntualidad = Puntualidad::where('id_iglesia', $iglesia->id_iglesia)
+                          ->where('anio', now()->year)
+                          ->first();
+
+                    // 🔹 Guardar estrella en la remesa
+                    Mes::where('id_puntualidad', $puntualidad->id_puntualidad)
+                    ->where('mes', $mes)
+                    ->update(['tipo' => $estrella]);
+
+                }
             // Crear un nuevo request con los datos que llenar_filial necesita
             $nuevoRequest = new Request([
                 'id_iglesia' => $request->id_iglesia,
-                'anio' => 2026,
+                'anio' => $request->anio,
+                'mes' => $request->mes,
                 'distrito' => $request->distrito,
             ]);
             // Instanciar el controlador
@@ -589,7 +666,16 @@ class RemesaController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Error al registrar la remesa: ' . $e->getMessage());
+            $nuevoRequest = new Request([
+                'id_iglesia' => $request->id_iglesia,
+                'anio' => $request->anio,
+                'mes' => $request->mes,
+                'distrito' => $request->distrito,
+            ]);
+            // Instanciar el controlador
+            $controller = new RemesaController();
+            // Llamar al método normalmente
+            return $controller->llenar_filial($nuevoRequest)->with('error', 'Error al registrar la remesa: ' . $e->getMessage());
         }
     }
 

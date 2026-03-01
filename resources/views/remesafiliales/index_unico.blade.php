@@ -46,7 +46,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="card shadow-sm border-0 rounded-3 ">
-                                <center><h2 class=" text-primary mt-3">{{ $iglesia->nombre }}</h2></center>
+                                <center><h2 class=" text-primary mt-3">{{ $iglesia->id_iglesia }} {{ $iglesia->nombre }}</h2></center>
                             <div class="card-body">
                                 <hr>
                                 <p class="mb-1"><strong>Codigo:</strong> {{ $iglesia->codigo }}</p>
@@ -61,6 +61,12 @@
                                 </p>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ route('remesas.index_mes', ['mes' => $mes, 'anio' => $anio]) }}" 
+                            class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver
+                        </a>
                     </div>
                 </div>
             </div>
@@ -93,6 +99,7 @@
                                             <th>pro templo</th>
                                             <th>fondo local</th>
                                             <th>remesa</th>
+                                            <th>gasto</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -159,6 +166,9 @@
                                                 {{$dato->monto_remesa}}
                                             </td>
                                             <td>
+                                                {{$dato->gasto}}
+                                            </td>
+                                            <td>
                                                 <div class="btn-group  justify-content-center" role="group" >
                                                     <!-- Cerrar Mes -->
                                                     <button type="button" 
@@ -187,8 +197,8 @@
                                                     <center><strong style="color: green;"> {{$dato->nombre_mes}} - {{$dato->anio}}</strong></center>
                                                     <input type="hidden" name="id_iglesia" id="id_iglesia" class="form-control" value="{{ $iglesia->id_iglesia }}">
                                                     <input type="hidden" name="distrito" id="distrito" class="distrito" value="{{ $distrito}}">
-                                                    
-                                                    
+                                                    <input type="hidden" name="anio" id="anio" value="{{ $anio }}">
+                                                    <input type="hidden" name="mes" id="mes" value="{{ $mes }}">
                                                     <hr>
                                                     <label for="fecha_entrega" class="form-label">Fecha de entrega:</label>
                                                     <input type="date" name="fecha_entrega" id="fecha_entrega" class="form-control" required value="{{ now()->format('Y-m-d') }}" >
@@ -245,6 +255,17 @@
                                                             </div>
                                                             <div class="col-8">
                                                                 <input type="number" name="pro_templo" class="pro_templo" class="form-control" step="0.001" min="0" value="{{$dato->pro_templo}}" required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mt-3">
+                                                        <div class="row">
+                                                            <div class="col-3">
+                                                                <label for="pro_templo" class="form-label">Gasto:</label>
+                                                            </div>
+                                                            <div class="col-8">
+                                                                <input type="number" name="gasto" class="gasto" class="form-control" step="0.001" min="0" value="{{$dato->gasto}}" required>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -319,6 +340,7 @@
                                                                 <input type="number" name="monto_remesa" class="monto_remesa" class="form-control" step="0.01" min="0" value="0" readonly>
                                                             </div>
                                                         </div> 
+                                                        
                                                     
                                                     </div>
                                                 </div>
@@ -349,6 +371,7 @@
                                             <th>pro templo</th>
                                             <th>fondo local</th>
                                             <th>remesa</th>
+                                            <th>gasto</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </tfoot>
