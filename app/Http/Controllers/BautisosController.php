@@ -63,6 +63,21 @@ class BautisosController extends Controller
                     ->orderBy('xd.nombre')
                     ->get();
 
+        $unidades_educativas = DB::table('unidad_educativas as xd')
+                    ->leftJoin('bautisos as xb', )
+                    ->select(
+                        'xd.id_distrito',
+                        'xd.nombre as nombre_distrito',
+                        DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'bautizo' THEN 1 ELSE 0 END), 0) as nro_bautizo"),
+                        DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'profesion de fe' THEN 1 ELSE 0 END), 0) as nro_profesion_fe"),
+                        DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'rebautismo' THEN 1 ELSE 0 END), 0) as nro_rebautismo"),
+                        DB::raw("COALESCE(COUNT(xb.id_bautiso), 0) as total")
+                    )
+                    ->where('xd.estado', true)
+                    ->groupBy('xd.id_distrito', 'xd.nombre')
+                    ->orderBy('xd.nombre')
+                    ->get();
+
         return view('bautisos.index', compact('distritos','año'));
     }
     /**

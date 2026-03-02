@@ -205,7 +205,6 @@
     colors: ['#0d6efd', '#20c997', '#dc3545'], // azul, verde, rojo
     xaxis: { categories: graficos_todo.categorias },
     dataLabels: { enabled: true },
-    title: { text: 'Desafíos y Bautizos Alcanzados', align: 'center' },
     legend: { show: false },
     plotOptions: {
       bar: { columnWidth: '50%', endingShape: 'rounded', distributed: true }

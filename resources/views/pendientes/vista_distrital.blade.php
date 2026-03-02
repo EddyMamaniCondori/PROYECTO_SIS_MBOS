@@ -144,7 +144,7 @@
                                                     <i class="bi bi-check-circle-fill text-success"></i>
                                                 @elseif ($dato->mes_febrero === 'PENDIENTE')
                                                     <i class="bi bi-x-circle-fill text-danger"></i>
-                                                @elseif ($dato->mes_febero === 'SIN REGISTRO')
+                                                @elseif ($dato->mes_febrero === 'SIN REGISTRO')
                                                     <i class="bi bi-circle text-secondary"></i>
                                                 @else
                                                     <i class="bi bi-question-circle text-muted"></i>

@@ -11,18 +11,64 @@
 
 @section('content')
 
-<x-alerts/>
+@if (session('success'))
+    <script>
+        const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
+        });
+        Toast.fire({
+        icon: "success",
+        title: "{{ session('success') }}"
+        });
+    </script>
+@endif
+@php
+            $meses_array = [
+                        1 => 'Enero',
+                        2 => 'Febrero',
+                        3 => 'Marzo',
+                        4 => 'Abril',
+                        5 => 'Mayo',
+                        6 => 'Junio',
+                        7 => 'Julio',
+                        8 => 'Agosto',
+                        9 => 'Septiembre',
+                        10 => 'Octubre',
+                        11 => 'Noviembre',
+                        12 => 'Diciembre'
+                    ];
+            
+@endphp
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0"> Tus Visitas Distritales - {{$anioActual}}</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Tus visitas en - {{$meses_array[$mensual->mes]}} /{{$anioActual}}</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Visitas</li>
+                  <li class="breadcrumb-item"><a href="{{route('visitas.index')}}">Visitas</a></li>
+                  <li class="breadcrumb-item"><a href="{{route('visitas.index_mes')}}">Meses</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Visitas Mes</li>
                 </ol>
               </div>
+              <div class="row">
+                @if (now()->startOfDay()->lte(\Carbon\Carbon::parse($mensual->fecha_limite)->startOfDay()))
+                    <a href="{{ route('visita_cape.create', ['id_mensual' => $mensual->id_mensual]) }}">
+                        <button type="button" class="btn btn-primary">
+                            <i class="fa-solid fa-plus"></i> &nbsp; Añadir nueva Visita
+                        </button>
+                    </a>
+                @endif
+            </div>
             </div>
           </div>
         </div>
@@ -39,7 +85,6 @@
                                 <table id="example" class="display">
                                     <thead>
                                         <tr>
-                                            <th>Iglesia</th>
                                             <th>P / F visitada</th>
                                             <th>Fecha de visita</th>
                                             <th>Presentes</th>
@@ -47,14 +92,12 @@
                                             <th>Hora</th>
                                             <th>Motivo</th>
                                             <th>Descripcion del lugar</th>
+                                            <th>acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($visitas as $visita)
                                         <tr>
-                                            <td>
-                                                {{$visita->nombre_iglesia}}
-                                            </td>
                                             <td>
                                                 {{$visita->nombre_visitado}} 
                                             </td>
@@ -77,13 +120,41 @@
                                             <td> 
                                                 {{$visita->descripcion_lugar}}
                                             </td>
+                                            <td> 
+                                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                                <a href="{{ route('visita_cape.edit', ['id_mensual' => $mensual->id_mensual, 'id_visita_cape' => $visita->id_visita_cape]) }}" class="btn btn-warning">
+                                                    <i class="bi bi-pencil-square"></i> Editar
+                                                </a>
+                                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$visita->id_visita_cape}}">Eliminar</button>
+                                            </td>
                                         </tr>
-                                         
+                                         <div class="modal fade" id="confirmModal-{{$visita->id_visita_cape}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de Confirmacion</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <strong style="color: red;">¿Seguro que quieres eliminar esta visita? </strong><br>
+                                                    <hr>
+                                                    <strong> Nombre: </strong> {{$visita->nombre_visitado}}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                    <form action="{{ route('visita_cape.destroy', ['id_mensual' => $mensual->id_mensual, 'id_visita_cape' => $visita->id_visita_cape]) }}" method="POST" >
+                                                        @method('DELETE')
+                                                        @csrf
+                                                    <button type="submit" class="btn btn-danger">Confirmar</button>
+                                                    </form>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            </div>
                                         @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>Iglesia</th>
                                             <th>P / F visitada</th>
                                             <th>Fecha de visita</th>
                                             <th>Presentes</th>
@@ -91,6 +162,7 @@
                                             <th>Hora</th>
                                             <th>Motivo</th>
                                             <th>Descripcion del lugar</th>
+                                            <th>acciones</th>
                                         </tr>
                                     </tfoot>
                                 </table>
