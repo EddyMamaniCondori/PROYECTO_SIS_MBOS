@@ -94,7 +94,7 @@
                                                 @method('POST')
                                                     <input type="hidden" name="id_ue" id="id_ue" value="{{$ue->id_ue}}">
                                                     <input type="hidden" name="id_pastor" id="id_pastor  " value="{{$ue->id_persona}}">
-                                                    <input type="hidden" name="anio" id="anio" value="{{$ue->año}}">
+                                                    <input type="hidden" name="anio" id="anio" value="{{$anio}}">
                                                     <button type="submit" class="btn btn-warning"><i class="bi bi-database-add"></i> Habilitar Colegio</button>
                                                 </form>
                                             </td>
