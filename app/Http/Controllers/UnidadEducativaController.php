@@ -38,7 +38,7 @@ class UnidadEducativaController extends Controller
                     left join personas xpp on xc.id_pastor =xpp.id_persona
                     where xu.estado = false');
         $resultado = DB::select('select max(xu.año) as max_anio from unidad_educativas xu');
-        $anio = $resultado[0]->max_anio;
+        $anio = $resultado[0]->max_anio ?? date('Y');
         return view('unidades_educativas.indexeliminados', compact('anio', 'ues'));
     }
 
