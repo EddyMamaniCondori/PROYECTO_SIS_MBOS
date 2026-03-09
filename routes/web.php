@@ -346,7 +346,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/visitas/pastor_distrital/{mes}/{anio}/{id_pastor}', [DesafioMensualController::class, 'ver_visitas_del_pastor'])
         ->name('visitas.pastor_distrital');
 
-    Route::get('/visitas/pastor_distrital/{mes}/{anio}/{id_pastor}', [DesafioMensualController::class, 'ver_visitas_del_cape'])
+    Route::get('/visitas/pastor_cape/{mes}/{anio}/{id_pastor}', [DesafioMensualController::class, 'ver_visitas_del_cape'])
         ->name('visitas.capellan');
     /*ruta para signaciones */
 

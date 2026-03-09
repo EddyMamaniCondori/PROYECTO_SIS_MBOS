@@ -382,6 +382,7 @@ class DesafioMensualController extends Controller
 
             $diferencia = $d->desafio_visitas - $d->visitas_alcanzadas;
 
+            
             return [
                 'id_distrito' => $d->id_distrito,
                 'desafio'     => $d->desafio_visitas,
@@ -390,7 +391,7 @@ class DesafioMensualController extends Controller
             ];
         });
 
-        ///dd($mes, $anio);
+        //dd($mes, $anio, $resultados, $totalDistritos, $completaron, $faltan);
         return view(
             'desafio_mensuales.dashboard_mensual_visitas',
             compact(
