@@ -26,7 +26,7 @@ class UnidadEducativaController extends Controller
 
         // Convertimos a colección y agrupamos por el nombre de la Unidad Educativa
         $resultado = DB::select('select max(xu.año) as max_anio from unidad_educativas xu');
-        $anio = $resultado[0]->max_anio;
+        $anio = $resultado[0]->max_anio ?? date('Y');
         return view('unidades_educativas.index', compact('anio', 'ues'));
     }
     public function index_eliminados()
