@@ -15,20 +15,22 @@
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Unidades Educativas - ASEA - {{ $anio }}
-                                    </h3></div>
+              <div class="col-sm-6"><strong><h3 class="mb-0" style="color:#1B0D6B">Unidades Educativas - ASEA - {{ $anio }}
+                                    </h3></strong></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
-                  <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                  <li class="breadcrumb-item"><a href="{{route('panel')}}">Inicio</a></li>
                   <li class="breadcrumb-item active" aria-current="page">Unidades Educativas</li>
                 </ol>
               </div>
-              <div class="row">
-                <a href="{{route('asea.create')}}"><button type="button" class="btn btn-success"> <i class="fa-solid fa-plus"></i> &nbsp Nueva Unidad Educativa</button> </a><br>
-               
-              </div>
-              <div class="row pt-2 pb-2">
-                <a href="{{route('asea.indexdelete')}}"><button type="button" class="btn btn-danger"> <i class="bi bi-person-fill-x"></i> &nbsp Unidades Educativas Inhabilitados </button> </a><br>
+              <div class="d-flex justify-content-end gap-2 pb-2">
+                <a href="{{route('asea.create')}}" class="btn btn-success">
+                    <i class="fa-solid fa-plus"></i> &nbsp; Nuevo Registro
+                </a>
+                
+                <a href="{{route('asea.indexdelete')}}" class="btn btn-danger">
+                    <i class="bi bi-person-fill-x"></i> &nbsp; Registros Desactivados
+                </a>
             </div>
           </div>
         </div>
@@ -55,13 +57,13 @@
                                         @foreach ($ues as $ue)
                                         <tr>
                                             <td>
-                                                {{$ue->nombre}}
+                                                {{$ue->id_ue}}{{$ue->nombre}}
                                             </td>
 
 
                                             <td>
                                                 @if (!is_null($ue->id_persona))
-                                                    {{ $ue->nombre_c }}
+                                                    {{$ue->id_persona}}{{ $ue->nombre_c }}
                                                     &nbsp; {{ $ue->ape_paterno}}
                                                     &nbsp; {{ $ue->ape_materno}}
                                                 @else
@@ -85,6 +87,16 @@
                                                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModalEdit-{{$ue->id_ue}}"> <i class="bi bi-pencil-square"></i>Editar</button>
 
                                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$ue->id_ue}}"> <i class="bi bi-trash-fill"></i>Eliminar</button>
+                                                
+                                                
+                                                <form action="{{ route('asea.habilitar')}}" method="POST">
+                                                @csrf
+                                                @method('POST')
+                                                    <input type="hidden" name="id_ue" id="id_ue" value="{{$ue->id_ue}}">
+                                                    <input type="hidden" name="id_pastor" id="id_pastor  " value="{{$ue->id_persona}}">
+                                                    <input type="hidden" name="anio" id="anio" value="{{$ue->año}}">
+                                                    <button type="submit" class="btn btn-warning"><i class="bi bi-database-add"></i> Habilitar Colegio</button>
+                                                </form>
                                             </td>
                                         </tr>
 
@@ -108,8 +120,8 @@
                                                                 @csrf
                                                             <button type="submit" class="btn btn-danger">Confirmar</button>
                                                             </form>
-                                                            
                                                         </div>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>

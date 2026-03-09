@@ -114,7 +114,7 @@
                         <i class="bi bi-building"></i>
                     </div>
                     <div>
-                        <h5 class="summary-title">Total de Distritos</h5>
+                        <h5 class="summary-title">Total de Capellanes</h5>
                         <h2 class="summary-value">{{ $totalDistritos }}</h2>
                     </div>
                 </div>
@@ -127,7 +127,7 @@
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
                     <div>
-                        <h5 class="summary-title">Distritos que Cumplieron</h5>
+                        <h5 class="summary-title">Capellanes que Cumplieron</h5>
                         <h2 class="summary-value">{{ $completaron }}</h2>
                     </div>
                 </div>
@@ -140,7 +140,7 @@
                         <i class="bi bi-x-circle-fill"></i>
                     </div>
                     <div>
-                        <h5 class="summary-title">Distritos que Faltan</h5>
+                        <h5 class="summary-title">Capellanes que Faltan</h5>
                         <h2 class="summary-value">{{ $faltan }}</h2>
                     </div>
                 </div>
@@ -157,15 +157,15 @@
         <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-header">
-                    <i class="fas fa-table me-1"></i> Distritos del Mes
+                    <i class="fas fa-table me-1"></i> Capellanes
                 </div>
                 <div class="card-body">
 
                     <table id="example" class="display">
                         <thead>
                             <tr>
-                                <th>Distrito</th>
-                                <th>Pastor</th>
+                                <th>Colegio</th>
+                                <th>Capellan</th>
                                 <th>Desafío</th>
                                 <th>Alcanzado</th>
                                 <th>Acciones</th>
@@ -181,17 +181,18 @@
                                 <td>{{ $r->visitas_alcanzadas }}</td>
 
                                 <td>
-                                    
-                                    @if($r->id_pastor)
-                                        <a href="{{ route('visitas.capellan', ['mes' => $mes, 'anio' => $anio, 'id_pastor' => $r->id_pastor]) }}" 
-                                        class="btn btn-primary btn-sm">
-                                            <i class="bi bi-eye"></i> Ver Visitas
-                                        </a>
-                                    @else
-                                        <button class="btn btn-secondary btn-sm" disabled title="No hay pastor asignado">
-                                            <i class="bi bi-eye-slash"></i> Sin Pastor
-                                        </button>
-                                    @endif
+                                    @can('ASEA-DIRE - ver visitas de capellanes')
+                                        @if($r->id_pastor)
+                                            <a href="{{ route('visitas.capellan', ['mes' => $mes, 'anio' => $anio, 'id_pastor' => $r->id_pastor]) }}" 
+                                            class="btn btn-primary btn-sm">
+                                                <i class="bi bi-eye"></i> Ver Visitas
+                                            </a>
+                                        @else
+                                            <button class="btn btn-secondary btn-sm" disabled title="No hay pastor asignado">
+                                                <i class="bi bi-eye-slash"></i> Sin Pastor
+                                            </button>
+                                        @endif
+                                    @endcan
                                     <button 
                                         class="btn btn-info text-white ver-grafica"
                                         data-id="{{ $r->id_ue }}">

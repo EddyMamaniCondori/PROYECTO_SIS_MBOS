@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Auth;
 class BautisosController extends Controller
 {
     /**
-     * 'ver-bautisos',
+    *   'ver-bautisos',
     *        'crear-bautisos',
     *        'editar-bautisos',
     *        'eliminar-bautisos',
@@ -63,22 +63,24 @@ class BautisosController extends Controller
                     ->orderBy('xd.nombre')
                     ->get();
 
-        $unidades_educativas = DB::table('unidad_educativas as xd')
-                    ->leftJoin('bautisos as xb', )
-                    ->select(
-                        'xd.id_distrito',
-                        'xd.nombre as nombre_distrito',
-                        DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'bautizo' THEN 1 ELSE 0 END), 0) as nro_bautizo"),
-                        DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'profesion de fe' THEN 1 ELSE 0 END), 0) as nro_profesion_fe"),
-                        DB::raw("COALESCE(SUM(CASE WHEN xb.tipo = 'rebautismo' THEN 1 ELSE 0 END), 0) as nro_rebautismo"),
-                        DB::raw("COALESCE(COUNT(xb.id_bautiso), 0) as total")
-                    )
-                    ->where('xd.estado', true)
-                    ->groupBy('xd.id_distrito', 'xd.nombre')
-                    ->orderBy('xd.nombre')
-                    ->get();
-
-        return view('bautisos.index', compact('distritos','año'));
+        $unidad_educativas = DB::table('unidad_educativas as xu')
+                ->select(
+                    'xu.id_ue',
+                    'xu.nombre',
+                    'xd.desafio_bautizo',
+                    DB::raw("SUM(CASE WHEN xbc.tipo = 'bautizo' THEN 1 ELSE 0 END) AS nro_bautizo"),
+                    DB::raw("SUM(CASE WHEN xbc.tipo = 'rebautismo' THEN 1 ELSE 0 END) AS nro_rebautizo"),
+                    DB::raw("SUM(CASE WHEN xbc.tipo = 'profesion de fe' THEN 1 ELSE 0 END) AS nro_profesiondefe"),
+                    DB::raw("COUNT(xbc.id_bautiso) AS total")
+                )
+                ->leftJoin('bautismo_capellans as xbc', 'xu.id_ue', '=', 'xbc.id_ue')
+                ->leftJoin('desafios as xd', 'xu.id_ue', '=', 'xd.id_ue')
+                ->where('xd.anio', $año)
+                ->groupBy('xu.id_ue', 'xu.nombre', 'xd.desafio_bautizo')
+                ->orderBy('xu.id_ue', 'asc')
+                ->get();
+    
+        return view('bautisos.index', compact('distritos','año', 'unidad_educativas'));
     }
     /**
      * Show the form for creating a new resource.

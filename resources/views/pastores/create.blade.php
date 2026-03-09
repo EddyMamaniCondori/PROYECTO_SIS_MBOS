@@ -84,6 +84,16 @@
                                 <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
+
+                        <!--edad-->
+                        <div class="col-md-4">
+                            <label for="email" class="form-label">Correo electrónico:</label> <span class="text-danger">*</span>
+                            <input type="text" name="email" id="email" class="form-control" value="{{@old('email',  $pastor->email)}}"> <!--name= debe tener mismo valor de la base de datos-->
+                            @error('email')
+                                <small class="text-danger">{{$message}}</small>
+                            @enderror
+                        </div>
+
                     
                         <h5 class="mb-0"><strong>Datos de direccion</strong></h5>
                         <hr>
@@ -140,6 +150,23 @@
                                 <small class="text-danger">{{$message}}</small>
                             @enderror
                         </div>
+
+                        <div class="col-md-6">
+                            <label for="rol" class="form-label">Asignar Rol:</label>
+                            <select name="rol" id="rol" class="form-select">
+                                <option value="">-- Seleccione un rol --</option>
+                                @foreach($roles as $rol)
+                                    <option value="{{ $rol->name }}" {{ old('rol') == $rol->name ? 'selected' : '' }}>
+                                        {{ $rol->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('rol')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        
                         <div>
                             <a href="{{route('pastores.index')}}"><button type="button" class="btn btn-secondary"> Cancelar </button></a>
                             <button type="submit" class="btn btn-primary"> Guardar </button>

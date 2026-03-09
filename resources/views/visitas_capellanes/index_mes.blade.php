@@ -93,15 +93,17 @@
                                                     <!--<a href="{{ route('visitas.llenar_mes', $visita->id_mensual) }}" class="btn btn-primary">
                                                         <i class="bi bi-pencil-square"></i> Completar
                                                     </a>-->
-                                                    @if (now()->startOfDay()->lte(\Carbon\Carbon::parse($visita->fecha_limite)->startOfDay()))
-                                                        <a href="{{ route('visita_cape.llenar_mes', $visita->id_mensual) }}" class="btn btn-success">
-                                                            <i class="bi bi-archive"></i> Completar
-                                                        </a>
-                                                    @else
-                                                        <a href="{{ route('visita_cape.llenar_mes', $visita->id_mensual) }}" class="btn btn-primary">
-                                                            <i class="bi bi-pencil-square"></i> Ver
-                                                        </a>
-                                                    @endif
+                                                    @canany(['ASEA_CAPE - ver visitas por meses', 'ASEA_CAPE - crear visitas', 'ASEA_CAPE - editar visitas'])
+                                                        @if (now()->startOfDay()->lte(\Carbon\Carbon::parse($visita->fecha_limite)->startOfDay()))
+                                                            <a href="{{ route('visita_cape.llenar_mes', $visita->id_mensual) }}" class="btn btn-success">
+                                                                <i class="bi bi-archive"></i> Completar
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ route('visita_cape.llenar_mes', $visita->id_mensual) }}" class="btn btn-primary">
+                                                                <i class="bi bi-pencil-square"></i> Ver
+                                                            </a>
+                                                        @endif
+                                                    @endcanany
                                             </td>   
                                         </tr>
                                         @endforeach

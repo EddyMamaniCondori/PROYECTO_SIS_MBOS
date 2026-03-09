@@ -22,6 +22,7 @@ class VisitaCapellanController extends Controller
     {
         $anioActual = now()->year; //muestro los estudiantes del año actual
         $persona = Auth::user(); 
+        
         $ue = DB::table('capellan')
                 ->select('id_ue')
                 ->where('id_pastor', $persona->id_persona)

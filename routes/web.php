@@ -31,7 +31,7 @@ use App\Http\Controllers\AuditoriaController;
 
 use App\Http\Controllers\UnidadEducativaController;
 use App\Http\Controllers\VisitaCapellanController;
-
+use App\Http\Controllers\BautismoCapellanController;
 
 Route::get('/', function () {
 
@@ -61,8 +61,14 @@ Route::get('/', function () {
         return redirect()->route('dashboard.pastor');
     }
 
-    if ($user->hasRole('Pastor Capellán ASEA')) {
+    if ($user->hasRole('ASEA_capellan')) {
         return redirect()->route('dashboard.capellan');
+    }
+    if ($user->hasRole('ASEA_director')) {
+        return redirect()->route('dashboard.asea');
+    }
+    if ($user->hasRole('ASEA_secretaria')) {
+        return redirect()->route('dashboard.asea');
     }
     return redirect()->route('panel');
 });
@@ -98,9 +104,12 @@ Route::middleware(['auth'])->group(function () {
     //pastor
     Route::get('/dashboard/pastor/', [PanelController::class, 'dashboard_pastores'])
         ->name('dashboard.pastor');
-    //capellan
+    //ASEA - capellan
     Route::get('/dashboard/capellan/', [PanelController::class, 'dashboard_capellan'])
         ->name('dashboard.capellan');
+    //ASEA - director y secretaria  
+    Route::get('/dashboard/asea/', [PanelController::class, 'dashboard_asea_direc_secre'])
+        ->name('dashboard.asea');
 
     Route::get('/dashboard/ver/pastor/{id}/{anio}', [PanelController::class, 'ver_avance_pastores'])
         ->name('dashboard.ver.pastor');
@@ -496,6 +505,12 @@ Route::middleware(['auth'])->group(function () {
         
     Route::post('asea/liberarcape/{id_ue}/{id_pastor}/{anio}', [UnidadEducativaController::class, 'liberarAsignacion'])
         ->name('asea.liberarcape');
+    // Ruta para habilitar desafíos
+    Route::post('/asea/habilitar', [UnidadEducativaController::class, 'habilitar_desafios'])
+        ->name('asea.habilitar');
+
+    Route::put('/asea/update-desafio/{id}', [UnidadEducativaController::class, 'update_desafio'])
+        ->name('asea.update_desafio');
 
     /**
      * *******************************************************************************
@@ -512,8 +527,21 @@ Route::middleware(['auth'])->group(function () {
         ->name('visita_cape.destroy');
     Route::get('/visita_cape/{id_mensual}/{id_visita_cape}/edit', [VisitaCapellanController::class, 'edit_v'])
         ->name('visita_cape.edit');
+    /**
+     * *******************************************************************************
+     *                          ASEA - BAUTISOS CAPELLANES
+     * *********************************************************************************
+     */
+    Route::get('/bautizos_cape/distrito/{id_ue}', [BautismoCapellanController::class, 'show'])->name('bautizos_cape.show');
+    Route::delete('/bautizos_cape/{id}', [BautismoCapellanController::class, 'destroy'])->name('bautisos_cape.destroy');
+    Route::post('/bautizos_cape', [BautismoCapellanController::class, 'store'])->name('bautizos_cape.store');
+    Route::put('/bautizos_cape/update/{id}', [BautismoCapellanController::class, 'update'])->name('bautizos_cape.update');
+    Route::get('bautisos_cape/dashboard/colegio', [BautismoCapellanController::class, 'dashboard_general_pastores'])
+        ->name('bautisos_cape.dashboard.colegio');
+    
+    
 
-        
+
     Route::resource('pastores', PastorController::class);
     Route::resource('personales', PersonalController::class);
     Route::resource('administrativos', AdministrativoController::class);

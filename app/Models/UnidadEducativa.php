@@ -17,6 +17,8 @@ class UnidadEducativa extends Model
         'estado',
         'sw_cambio',
         'año',
+        'desafios_bautismos',
+        'bautismos_alcanzados',
     ];
 
     protected $casts = [

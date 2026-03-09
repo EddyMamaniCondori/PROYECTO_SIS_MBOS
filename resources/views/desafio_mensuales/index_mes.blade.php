@@ -46,16 +46,18 @@
               </div>
                 <div class="row">
                     <div class="d-flex justify-content-end">
-                        @if($siguienteMes <= 12)
-                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal-mes"> 
-                                <i class="bi bi-calendar2-plus-fill"></i> Habilitar {{$meses_array[$siguienteMes]}}
-                            </button>
-                        @else
-                            {{-- Aquí el botón original de mes "desaparece" y puedes mostrar el de Nueva Gestión --}}
-                            <button type="button" class="btn btn-warning"> 
-                                <i class="bi bi-arrow-repeat"></i> Habilitar Gestión {{ $anio + 1 }}
-                            </button>
-                        @endif
+                        @can('crear-desafios mensuales')
+                            @if($siguienteMes <= 12)
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal-mes"> 
+                                    <i class="bi bi-calendar2-plus-fill"></i> Habilitar {{$meses_array[$siguienteMes]}}
+                                </button>
+                            @else
+                                {{-- Aquí el botón original de mes "desaparece" y puedes mostrar el de Nueva Gestión --}}
+                                <button type="button" class="btn btn-warning"> 
+                                    <i class="bi bi-arrow-repeat"></i> Habilitar Gestión {{ $anio + 1 }}
+                                </button>
+                            @endif
+                        @endcan
                     </div>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal-mes" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -137,15 +139,17 @@
                                                 <div class="btn-group btn-group" role="group" aria-label="Acciones Mensuales">
                                                     
                                                     <!-- 1. Ver Avance (Acción Principal de Lectura) -->
+                                                    @can('ASEA-DIRE - ver seguimiento de visitas')
+                                                    <a href="{{ route('mensuales.dashboard.cape', ['mes' => $mensual->mes, 'anio' => $mensual->anio]) }}"
+                                                    class="btn btn-warning" title="Ver gráficas y resumen">
+                                                        <i class="bi bi-bar-chart"></i> Ver Avance Capellanes
+                                                    </a>
+                                                    @endcan
+
                                                     @can('graficos x mes MBOS-desafios mensuales')
                                                     <a href="{{ route('mensuales.dashboard', ['mes' => $mensual->mes, 'anio' => $mensual->anio]) }}"
                                                     class="btn btn-success" title="Ver gráficas y resumen">
                                                         <i class="bi bi-bar-chart"></i> Ver Avance Pastores
-                                                    </a>
-
-                                                    <a href="{{ route('mensuales.dashboard.cape', ['mes' => $mensual->mes, 'anio' => $mensual->anio]) }}"
-                                                    class="btn btn-warning" title="Ver gráficas y resumen">
-                                                        <i class="bi bi-bar-chart"></i> Ver Avance Capellanes
                                                     </a>
                                                     @endcan
 

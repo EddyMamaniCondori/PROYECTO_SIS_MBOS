@@ -8,6 +8,7 @@ use App\Models\Distrito;
 use App\Models\Desafio;
 use App\Models\Mensual;
 use App\Models\Persona;
+use App\Models\UnidadEducativa;
 use Illuminate\Support\Facades\DB;
 
 class PanelController extends Controller
@@ -142,79 +143,7 @@ class PanelController extends Controller
         return view('dashboards.dashboard_pastores', compact('resumenIglesias', 'graficos_final', 'distrito','meses', 'desafios', 'alcanzados', 'grafico_estudiantes', 'grafico_instructores' ));
     }
 
-    public function dashboard_capellan() //permision 'ver dashboard pastores - panel',
-    {
-        $anio = now()->year;
-        $persona = Auth::user(); 
-        $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
-        
-        if (!$distrito) {
-            return redirect()->route('perfil')
-                ->with('error', 'No tienes un distrito asignado. ¡Comunícate con el Administrador!');
-        }
-        $id_distrito = $distrito->id_distrito;
 
-        /**DATOS DE BAUTISOS DEL DISTRITO */
-        $bautiso = DB::table('desafios as xd')
-            ->join('distritos as xdd', 'xd.id_distrito', '=', 'xdd.id_distrito')
-            ->where('xdd.id_distrito', $id_distrito)
-            ->where('xd.anio', $anio)
-            ->select(
-                'xdd.id_distrito',
-                'xdd.nombre as nombre_distrito',
-                'xd.desafio_bautizo',
-                'xd.bautizos_alcanzados',
-                DB::raw('(xd.desafio_bautizo - xd.bautizos_alcanzados) as diferencia')
-            )
-            ->first();
-
-
-        $graficos_final = [
-            'categorias' => ['Desafío', 'Alcanzado', 'Diferencia'],
-            'valores' => [
-                (int) $bautiso?->desafio_bautizo,
-                (int) $bautiso?->bautizos_alcanzados,
-                (int) $bautiso?->diferencia
-            ]
-        ];
-        /**DATOS DE VISITAS DEL DISTRITO */
-        // Obtener el desafío anual del distrito
-        $desafio = Desafio::where('anio', $anio)
-            ->where('id_distrito', $id_distrito)
-            ->first();
-        if (!$desafio) {
-            return redirect()->back()->with('error', 'Desafío anual no encontrado.');
-        }
-        $mensuales = Mensual::where('id_desafio', $desafio->id_desafio)
-            ->orderBy('mes') // importante para que los meses estén en orden
-            ->get();
-        $mensuales = $mensuales->filter(fn($m) => $m->mes <= now()->month); // SOLO LOS DESAFIOS DE HASTA EL MES ACTUAL
-
-        $meses = [];
-        $desafios = [];
-        $alcanzados = [];
-        $nombresMeses = [
-            1 => 'Enero',
-            2 => 'Febrero',
-            3 => 'Marzo',
-            4 => 'Abril',
-            5 => 'Mayo',
-            6 => 'Junio',
-            7 => 'Julio',
-            8 => 'Agosto',
-            9 => 'Septiembre',
-            10 => 'Octubre',
-            11 => 'Noviembre',
-            12 => 'Diciembre',
-        ];
-
-        foreach ($mensuales as $m) {
-            $meses[] = $nombresMeses[$m->mes] ?? 'Desconocido';
-            $desafios[] = (int) $m->desafio_visitas;
-            $alcanzados[] = (int) $m->visitas_alcanzadas;
-        }  
-        return view('dashboards.dashboard_capellanes', compact('graficos_final', 'distrito','meses', 'desafios', 'alcanzados'));
-    }
     //MBOS - puede ver el avance en graficos de los pastores
     public function ver_avance_pastores($id, $anio) //permision 'ver avanve pastores - panel',
     {
@@ -519,8 +448,8 @@ class PanelController extends Controller
         // PROMEDIO MENSUAL (solo meses con datos)
         $promedioMensual = array_sum($dataMensual) / max(1, count(array_filter($dataMensual)));
         // Ranking top 5 distritos
-        $topDistritos = DB::select("
-            SELECT d.nombre AS distrito, SUM(xri.monto) AS total
+        $topDistritos = DB::select(
+            "SELECT d.nombre AS distrito, SUM(xri.monto) AS total
             FROM iglesias i
             JOIN distritos d ON d.id_distrito = i.distrito_id
             JOIN generas xg ON xg.id_iglesia = i.id_iglesia
@@ -532,8 +461,8 @@ class PanelController extends Controller
         ", [$anio]);
 
         // Distritos de alerta (< 50%)
-        $alertas = DB::select("
-            SELECT 
+        $alertas = DB::select(
+            "SELECT 
                 d.id_distrito,
                 d.nombre AS distrito,
                 SUM(xri.monto) AS total,
@@ -586,7 +515,7 @@ class PanelController extends Controller
 
 
         // ============================
-    // 🔵 2. BAUTISMOS – GENERAL MBOS
+        // 🔵 2. BAUTISMOS – GENERAL MBOS
         // ============================
         $b_desafio = DB::table('desafios')
                     ->where('anio', $anio)
@@ -705,5 +634,181 @@ class PanelController extends Controller
             'r_diferencia',
             'r_porcentaje',
         ));
+    }
+
+
+
+    /**________________DASHBOARDS PARA ASEA_________________*/
+        public function dashboard_capellan() //permision 'ver dashboard pastores - panel',
+    {
+
+        $anioActual = now()->year; //muestro los estudiantes del año actual
+        $persona = Auth::user(); 
+        $ue = DB::table('capellan')
+                ->select('id_ue')
+                ->where('id_pastor', $persona->id_persona)
+                ->first();
+        if (!$ue) {
+            return redirect()->route('panel')->with('success', 'No tienes un ue asignado.');
+        }
+        $id_ue = $ue->id_ue;  
+        $unidadeducativa = UnidadEducativa::findOrFail($id_ue);
+        $anioDistritos = DB::table('unidad_educativas')
+            ->where('estado', true)
+            ->value('año');
+
+        $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
+
+        /**DATOS DE BAUTISOS DEL DISTRITO */
+        $bautiso = DB::table('unidad_educativas')
+            ->where('año', $anio)
+            ->where('id_ue', $id_ue)
+            ->select(
+                'desafios_bautismos',
+                'bautismos_alcanzados',
+                DB::raw('(desafios_bautismos - bautismos_alcanzados) AS diferencia')
+            )
+            ->first();
+
+        $graficos_final = [
+            'categorias' => ['Desafío', 'Alcanzado', 'Diferencia'],
+            'valores' => [
+                (int) $bautiso?->desafios_bautismos,
+                (int) $bautiso?->bautismos_alcanzados,
+                (int) $bautiso?->diferencia
+            ]
+        ];
+
+        /**DATOS DE VISITAS DEL DISTRITO */
+        // Obtener el desafío anual del distrito
+        $desafio = Desafio::where('anio', $anio)
+            ->where('id_ue', $id_ue)
+            ->first();
+        if (!$desafio) {
+            return redirect()->back()->with('error', 'Desafío anual no encontrado.');
+        }
+        $mensuales = Mensual::where('id_desafio', $desafio->id_desafio)
+            ->orderBy('mes') // importante para que los meses estén en orden
+            ->get();
+        $mensuales = $mensuales->filter(fn($m) => $m->mes <= now()->month); // SOLO LOS DESAFIOS DE HASTA EL MES ACTUAL
+
+        $meses = [];
+        $desafios = [];
+        $alcanzados = [];
+        $nombresMeses = [
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre',
+        ];
+
+        foreach ($mensuales as $m) {
+            $meses[] = $nombresMeses[$m->mes] ?? 'Desconocido';
+            $desafios[] = (int) $m->desafio_visitas;
+            $alcanzados[] = (int) $m->visitas_alcanzadas;
+        }  
+        return view('dashboards.dashboard_capellanes', compact('graficos_final', 'unidadeducativa','meses', 'desafios', 'alcanzados'));
+    }
+
+
+    public function dashboard_asea_direc_secre() //permision 'ver dashboard pastores - panel',
+    {
+
+        $anioActual = now()->year; //muestro los estudiantes del año actual
+        $anioDistritos = DB::table('unidad_educativas')
+            ->where('estado', true)
+            ->value('año');
+
+        $anio = ($anioDistritos < $anioActual) ? $anioDistritos : $anioActual;
+        $persona = Auth::user();
+        $ue = null;
+        if ($persona->hasRole('ASEA_director')) {
+            $ue = DB::table('unidad_educativas')
+                    ->select('id_ue')
+                    ->where('id_director', $persona->id_persona)
+                    ->where('año', $anio)
+                    ->first();
+        }
+        if (!$ue) {
+            return redirect()->route('panel')->with('error', 'No tienes una Unidad Educativa asignada como Capellán.');
+        }
+        $id_ue = $ue->id_ue;
+        $unidadeducativa = UnidadEducativa::findOrFail($id_ue);
+        
+        //dd($anio, $unidadeducativa, $persona);
+        /**DATOS DE BAUTISOS DEL DISTRITO */
+        $bautiso = DB::table('unidad_educativas')
+            ->where('año', $anio)
+            ->where('id_ue', $id_ue)
+            ->select(
+                'desafios_bautismos',
+                'bautismos_alcanzados',
+                DB::raw('(bautismos_alcanzados - desafios_bautismos) AS diferencia')
+            )
+            ->first();
+
+        $graficos_final = [
+            'categorias' => ['Desafío', 'Alcanzado', 'Diferencia'],
+            'valores' => [
+                (int) $bautiso?->desafios_bautismos,
+                (int) $bautiso?->bautismos_alcanzados,
+                (int) $bautiso?->diferencia
+            ]
+        ];
+        // 1. Obtener tus datos mediante el Query Builder
+        $resultados = DB::table('capellan AS c')
+            ->join('personas AS p', 'c.id_pastor', '=', 'p.id_persona')
+            ->join('desafios AS xd', 'p.id_persona', '=', 'xd.id_pastor')
+            ->leftJoin('mensuales AS xm', 'xd.id_desafio', '=', 'xm.id_desafio')
+            ->where('c.id_ue', $id_ue)
+            ->where('c.año', $anio)
+            ->where('xd.anio', $anio)
+            ->where('xm.anio', $anio)
+            ->select(
+                'p.id_persona', 
+                'p.nombre', 
+                'p.ape_paterno', 
+                'p.ape_materno',
+                'xm.mes', 
+                'xm.desafio_visitas', 
+                'xm.visitas_alcanzadas'
+            )
+            ->get();
+        $mesMaximo = $resultados->max('mes') ?? 12;
+        // 2. Procesar y normalizar los datos
+        $datosFormateados = $resultados->groupBy('id_persona')->map(function ($pastorData) use($mesMaximo){
+            // Crear una base de 12 meses con ceros
+            $meses = collect(range(1, $mesMaximo))->mapWithKeys(function ($mes) {
+                return [$mes => ['desafio' => 0, 'alcanzado' => 0]];
+            })->toArray();
+
+            // Rellenar con los datos reales encontrados
+            foreach ($pastorData as $item) {
+            // Solo llenar si el mes existe (por el left join)
+                if ($item->mes) {
+                    $meses[$item->mes] = [
+                        'desafio' => (int) $item->desafio_visitas,
+                        'alcanzado' => (int) $item->visitas_alcanzadas
+                    ];
+                }
+            }
+
+            return [
+                'id_persona' => $pastorData->first()->id_persona,
+                'nombre_completo' => "{$pastorData->first()->nombre} {$pastorData->first()->ape_paterno} {$pastorData->first()->ape_materno}",
+                'mes_limite' => $mesMaximo,
+                'series' => $meses // Esto es lo que usaremos para ApexCharts
+            ];
+        })->values();
+        //dd($graficos_final, $datosFormateados, $unidadeducativa);
+        return view('dashboards.dashboard_directores_colegio', compact('graficos_final', 'unidadeducativa','datosFormateados'));
     }
 }

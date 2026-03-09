@@ -17,7 +17,7 @@
 
     <style>
        .parallax-banner {
-    height: 300px;
+    height: 350px;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -44,7 +44,7 @@
             
             <!--begin::Row-->
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0"><strong> {{$distrito->nombre}}</strong></h3></div>
+              <div class="col-sm-6"><h3 class="mb-0"><strong> {{$unidadeducativa->nombre}}</strong></h3></div>
             </div>
             <!--end::Row-->
           </div>

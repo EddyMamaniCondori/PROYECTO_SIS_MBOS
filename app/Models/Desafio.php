@@ -20,6 +20,7 @@ class Desafio extends Model
         'estado',
         'id_distrito',
         'id_pastor',
+        'id_ue',
     ];
 
     // 🔹 Relación con Distrito

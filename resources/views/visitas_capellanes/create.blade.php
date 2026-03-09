@@ -145,7 +145,7 @@
                         <input type="hidden" name="id_ue" id="id_ue" value="{{$id_ue}}">
                     
                         <div>
-                            <a href="{{route('visitas.llenar_mes', $mensual->id_mensual)}}"><button type="button" class="btn btn-secondary"> <i class="bi bi-x"></i> Cancelar </button></a>
+                            <a href="{{route('visita_cape.llenar_mes', $mensual->id_mensual)}}"><button type="button" class="btn btn-secondary"> <i class="bi bi-x"></i> Cancelar </button></a>
                             <button type="submit" class="btn btn-primary">  <i class="bi bi-bookmark"></i> Guardar </button>
                         </div>
                     </div>

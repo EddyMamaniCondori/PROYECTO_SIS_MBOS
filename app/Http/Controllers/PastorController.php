@@ -82,7 +82,8 @@ class PastorController extends Controller
      */
     public function create() //VERIFICADO //permission crear  - pastores
     { 
-        return view('pastores.create');
+        $roles = Role::whereIn('name', ['Pastor', 'ASEA_capellan'])->get();
+        return view('pastores.create', compact('roles'));
     }
 
     /**
@@ -103,7 +104,9 @@ class PastorController extends Controller
                 'contratado'         => $request->filled('fecha_contratacion'), // true si hay fecha, false si no
                 'nro_distritos'      => 0,
             ]);
-            $pers->assignRole('Pastor');
+            if ($request->filled('rol')) {
+                $pers->assignRole($request->rol);
+            }
             //AuditoriaHelper::registrar('CREATE', 'Pastores', $pers->id_persona);
             DB::commit();   
         } catch (Exception $e) {

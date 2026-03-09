@@ -16,7 +16,7 @@ use App\Models\UnidadEducativa;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\DesafioMensualRequest;
 use Exception;
-
+use Illuminate\Support\Facades\Auth;
 class DesafioMensualController extends Controller
 {
     /**
@@ -123,7 +123,7 @@ class DesafioMensualController extends Controller
             // 1. Buscar todos los desafíos  del año
             $desafios = Desafio::where('anio', $validated['anio'])
                 ->get();
-
+            //dd($desafios);
             // Verificar si existen desafíos para ese año
             if ($desafios->isEmpty()) {
                 return redirect()->back()->with('error', 'No existen desafíos para el año ' . $validated['anio']);
@@ -298,14 +298,29 @@ class DesafioMensualController extends Controller
                 'xp.ape_materno'
             )
             ->get();
-        return view('desafio_mensuales.asignar_desafios_a_mes_masivo', compact('resultados', 'mes', 'anio'));
+        $resultados2 = Mensual::query()
+            ->join('desafios as xd', 'mensuales.id_desafio', '=', 'xd.id_desafio')
+            ->join('unidad_educativas as xue', 'xd.id_ue', '=', 'xue.id_ue')
+            ->leftjoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
+            ->where('mensuales.anio', $anio)
+            ->where('mensuales.mes', $mes)
+            ->select(
+                'xue.nombre', 
+                'xd.id_desafio', 
+                'mensuales.*',
+                'xp.nombre as nombre_p',
+                'xp.ape_paterno',
+                'xp.ape_materno'
+            )
+            ->get();
+        return view('desafio_mensuales.asignar_desafios_a_mes_masivo', compact('resultados', 'mes', 'anio', 'resultados2'));
     }
     //actualiza el desafio mensual en su campo desafio_visitas masivamente
     public function updateMasivo(Request $request) // permision 'editar desafios masivo-desafios mensuales',
     {
         try {
             DB::beginTransaction();
-
+            //dd($request);
             // Verificar que llegan datos
             if (!$request->has('registros')) {
                 return back()->with('error', 'No se enviaron datos para actualizar.');
@@ -391,65 +406,141 @@ class DesafioMensualController extends Controller
     }
 
 
-
+    //va mostrar todos graficos x mes para capellanes
+    // este metodo
     public function dashboard_mes_x_distrito_cape($mes, $anio) //Permision 'graficos x mes MBOS-desafios mensuales',
     {
-        // Obtener los resultados
-        $resultados = Mensual::query()
-            ->join('desafios as xd', 'mensuales.id_desafio', '=', 'xd.id_desafio')
-            ->join('unidad_educativas as xue', 'xd.id_ue', '=', 'xue.id_ue')
-            ->leftJoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
-            ->where('mensuales.anio', $anio)
-            ->where('mensuales.mes', $mes)
-            ->select(
-                'xue.id_ue',
-                'xue.nombre as nombre_distrito',
-                'mensuales.desafio_visitas',
-                'mensuales.visitas_alcanzadas',
-                'xp.id_persona as id_pastor',
-                'xp.nombre as nombre_p',
-                'xp.ape_paterno',
-                'xp.ape_materno'
-            )
-            ->get();
+        $persona = Auth::user();
+        $id_ue = null; 
+        // 1. Lógica para el DIRECTOR
+        if ($persona->hasRole('ASEA_director')) {
+            $ue_director = DB::table('unidad_educativas')
+                            ->select('id_ue')
+                            ->where('id_director', $persona->id_persona)
+                            ->first();
 
-        //dd($resultados);
-        // ---- CÁLCULOS PARA LAS TARJETAS ----
-        $totalDistritos = $resultados->count();
-        $completaron = $resultados->filter(fn ($r) => 
-                (int)$r->visitas_alcanzadas >= (int)$r->desafio_visitas
-            )->count();
-        
-        $faltan = $totalDistritos - $completaron;
-        //dd($completaron, $totalDistritos, $faltan);
+            if (!$ue_director) {
+                return redirect()->route('panel')->with('error', 'No eres director de ninguna Unidad Educativa.');
+            }
+            $id_ue = $ue_director->id_ue;
+
+            // Obtener los resultados
+            $resultados = Mensual::query()
+                ->join('desafios as xd', 'mensuales.id_desafio', '=', 'xd.id_desafio')
+                ->join('unidad_educativas as xue', 'xd.id_ue', '=', 'xue.id_ue')
+                ->leftJoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
+                ->where('xue.id_ue', $id_ue)
+                ->where('mensuales.anio', $anio)
+                ->where('mensuales.mes', $mes)
+                ->select(
+                    'xue.id_ue',
+                    'xue.nombre as nombre_distrito',
+                    'mensuales.desafio_visitas',
+                    'mensuales.visitas_alcanzadas',
+                    'xp.id_persona as id_pastor',
+                    'xp.nombre as nombre_p',
+                    'xp.ape_paterno',
+                    'xp.ape_materno'
+                )
+                ->get();
+
+            //dd($resultados);
+            // ---- CÁLCULOS PARA LAS TARJETAS ----
+            $totalDistritos = $resultados->count();
+            $completaron = $resultados->filter(fn ($r) => 
+                    (int)$r->visitas_alcanzadas >= (int)$r->desafio_visitas
+                )->count();
+            
+            $faltan = $totalDistritos - $completaron;
+            //dd($completaron, $totalDistritos, $faltan);
 
 
-        // ---- DATOS PARA LA GRÁFICA DINÁMICA ----
-        $graficos = $resultados->map(function ($d) {
+            // ---- DATOS PARA LA GRÁFICA DINÁMICA ----
+            $graficos = $resultados->map(function ($d) {
 
-            $diferencia = $d->desafio_visitas - $d->visitas_alcanzadas;
+                $diferencia = $d->desafio_visitas - $d->visitas_alcanzadas;
 
-            return [
-                'id_ue' => $d->id_ue,
-                'desafio'     => $d->desafio_visitas,
-                'alcanzado'   => $d->visitas_alcanzadas,
-                'diferencia'  => $diferencia,
-            ];
-        });
+                return [
+                    'id_ue' => $d->id_ue,
+                    'desafio'     => $d->desafio_visitas,
+                    'alcanzado'   => $d->visitas_alcanzadas,
+                    'diferencia'  => $diferencia,
+                ];
+            });
 
-        ///dd($mes, $anio);
-        return view(
-            'desafio_mensuales.dashboard_mensual_visitas_cape',
-            compact(
-                'resultados',
-                'mes',
-                'anio',
-                'totalDistritos',
-                'completaron',
-                'faltan',
-                'graficos'
-            )
-        );
+            ///dd($mes, $anio);
+            return view(
+                'desafio_mensuales.dashboard_mensual_visitas_cape',
+                compact(
+                    'resultados',
+                    'mes',
+                    'anio',
+                    'totalDistritos',
+                    'completaron',
+                    'faltan',
+                    'graficos'
+                )
+            );
+        }else{  // PARA CUALQUIERO OTRO USUARIO CON PERMISO
+
+            // Obtener los resultados
+            $resultados = Mensual::query()
+                ->join('desafios as xd', 'mensuales.id_desafio', '=', 'xd.id_desafio')
+                ->join('unidad_educativas as xue', 'xd.id_ue', '=', 'xue.id_ue')
+                ->leftJoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
+                ->where('mensuales.anio', $anio)
+                ->where('mensuales.mes', $mes)
+                ->select(
+                    'xue.id_ue',
+                    'xue.nombre as nombre_distrito',
+                    'mensuales.desafio_visitas',
+                    'mensuales.visitas_alcanzadas',
+                    'xp.id_persona as id_pastor',
+                    'xp.nombre as nombre_p',
+                    'xp.ape_paterno',
+                    'xp.ape_materno'
+                )
+                ->get();
+
+            //dd($resultados);
+            // ---- CÁLCULOS PARA LAS TARJETAS ----
+            $totalDistritos = $resultados->count();
+            $completaron = $resultados->filter(fn ($r) => 
+                    (int)$r->visitas_alcanzadas >= (int)$r->desafio_visitas
+                )->count();
+            
+            $faltan = $totalDistritos - $completaron;
+            //dd($completaron, $totalDistritos, $faltan);
+
+
+            // ---- DATOS PARA LA GRÁFICA DINÁMICA ----
+            $graficos = $resultados->map(function ($d) {
+
+                $diferencia = $d->desafio_visitas - $d->visitas_alcanzadas;
+
+                return [
+                    'id_ue' => $d->id_ue,
+                    'desafio'     => $d->desafio_visitas,
+                    'alcanzado'   => $d->visitas_alcanzadas,
+                    'diferencia'  => $diferencia,
+                ];
+            });
+
+            ///dd($mes, $anio);
+            return view(
+                'desafio_mensuales.dashboard_mensual_visitas_cape',
+                compact(
+                    'resultados',
+                    'mes',
+                    'anio',
+                    'totalDistritos',
+                    'completaron',
+                    'faltan',
+                    'graficos'
+                )
+            );
+
+        }
     }
 
     //para ver las visitas de un pastor distrital

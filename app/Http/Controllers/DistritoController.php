@@ -184,7 +184,7 @@ class DistritoController extends Controller
                 'nro_iglesias' => $data['nro_iglesias'] ?? 0,
                 'id_pastor'    => $data['id_pastor'],
                 'id_grupo'     => $data['id_grupo'],
-                'sw_cambio'     => $sw_cambio,
+                'sw_cambio'    => $sw_cambio,
                 'año'         => $anio, 
             ]);
 

@@ -123,6 +123,64 @@
                                             </div>
                                         </div>
                                         @endforeach
+
+                                         @foreach ($ues as $ue)
+                                        <tr style="background-color: #9ec6e4;">
+                                            <td>
+                                                {{$ue->id_ue}}   {{$ue->nombre}}  
+                                            </td>
+                                            <td>
+                                                {{ $ue->nombres_capellanes }} 
+                                            </td>
+                                            <td class="text-center">
+                                                {{ $ue->año}}
+                                            </td>
+                                            <td class="text-center">
+                                                {{ $ue->desafios_bautismos}}
+                                            </td>
+                                            <td class="text-center">
+                                                {{ $ue->bautismos_alcanzados}}
+                                            </td>               
+                                            <td> 
+                                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal-bautizo{{ $ue->id_ue }}">
+                                                        <i class="bi bi-pencil-square"></i>Cambiar
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="exampleModal-bautizo{{ $ue->id_ue }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Cambiar Desafio Anual de Bautizos  </h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div>
+                                                    <strong>Unidad Educativa: </strong> {{ $ue->nombre }}  <br>
+                                                    <strong>Pastores: </strong> {{ $ue->nombres_capellanes }}<br>
+                                                    <strong>Gestion: </strong> {{ $ue->año}} <br>
+                                                </div>
+                                                <hr>
+                                                <form action="{{ route('asea.update_desafio', $ue->id_ue)}}" method="POST">
+                                                @csrf
+                                                @method('PUT') 
+                                                    <div class="modal-body">
+                                                        <div class="col-md-6 mb-3">
+                                                            <label  class="form-label">Desafío Bautizos:</label>
+                                                            <input type="number" id="desafios_bautismos" name="desafios_bautismos" min="0" class="form-control" value="{{ old('desafios_bautismos', $ue->desafios_bautismos) }}" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                                    </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        @endforeach
                                     </tbody>
                                     <tfoot>
                                         <tr>

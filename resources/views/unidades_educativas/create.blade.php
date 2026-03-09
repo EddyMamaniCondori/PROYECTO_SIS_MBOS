@@ -1,7 +1,7 @@
 @extends('template')
 
 
-@section('title', 'Crear')
+@section('title', 'Crear Unidad Educativa')
 
 @push('css')
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -16,16 +16,17 @@
 @endpush
 
 @section('content')
+<x-alerts/>
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0">Crear Distrito</h3></div>
+              <div class="col-sm-6"><h3 class="mb-0">Crear Unidad Educativa</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Inicio</a></li>
-                  <li class="breadcrumb-item"><a href="{{ route('distritos.index')}}">Distritos</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">Crear Distritos</li>
+                  <li class="breadcrumb-item"><a href="{{ route('asea.index')}}">Unidades Educativas</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Crear Unidad Educativa</li>
                 </ol>
               </div>
             </div>
@@ -35,7 +36,8 @@
         <div class="app-content">
           <div class="container-fluid">
             <!--begin::TABLA-->
-            <form action="{{ route('distritos.store')}}" method="POST" > <!--en actiion va que accion vamos ha acer con este formulario una ves de click en guardar-->
+            <div class="bg-body border rounded shadow-sm p-2">
+            <form action="{{ route('asea.store')}}" method="POST" > <!--en actiion va que accion vamos ha acer con este formulario una ves de click en guardar-->
             @csrf
             <h5 class="mb-0"><strong>Datos Generales</strong></h5>
                     <hr>
@@ -50,10 +52,10 @@
 
                     <!-- Select de distritos (oculto al inicio) -->
                    <div class="col-md-6 mt-3" >
-                        <label for="id_pastor" class="form-label">Pastor:</label> <br>
+                        <label for="id_pastor" class="form-label">Capellan:</label> <br>
                       
                       <select data-size="9" title="-- Seleccione un pastor --" data-live-search="true" name="id_pastor" id="id_pastor" class="form-control selectpicker show-tick" >
-                          @foreach($pastores as $pastor)
+                          @foreach($pastores_libres as $pastor)
                               <option value="{{ $pastor->id_pastor }}" 
                                   {{ old('id_pastor') == $pastor->id_pastor ? 'selected' : '' }}>
                                   {{ $pastor->nombre }} {{ $pastor->ape_paterno }} {{ $pastor->ape_materno }}
@@ -64,35 +66,14 @@
                           <small class="text-danger">{{ $message }}</small>
                       @enderror
                   </div>
-
-                  <h5 class="mb-0"><strong>Asignar a un grupo</strong></h5>
-                    <hr>
-                <span class="text-danger">En caso de no pertenecer a un grupo no llene este espacio</span>
-
-                <!-- Select de grupos (oculto al inicio) -->
-                <div class="col-md-6 mt-3" >
-                    <label for="id_grupo" class="form-label">Grupo:</label>
-                    <select data-size="9" title="-- Seleccione un grupo --" data-live-search="true" name="id_grupo" id="id_grupo" class="form-control selectpicker show-tick" >
-                        @foreach($grupos as $grupo)
-                            <option value="{{ $grupo->id_grupo }}" 
-                                {{ old('id_grupo') == $grupo->id_grupo ? 'selected' : '' }}>
-                                {{ $grupo->nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('id_grupo')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
-                </div>
-
-
                     <div>
                         <button type="submit" class="btn btn-primary"> Guardar </button>
-                        <a href="{{route('distritos.index')}}"><button type="button" class="btn btn-danger"> Cancelar </button></a>
+                        <a href="{{ route('asea.index')}}"><button type="button" class="btn btn-danger"> Cancelar </button></a>
                     </div>
                 </div>
 
             </form>
+            </div>
             </div>
           </div>
           <!--end::Container-->

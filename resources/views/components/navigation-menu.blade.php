@@ -6,11 +6,29 @@
             <span class="brand-text fw-light">MBOS</span>
           </a>
         </div>
-
-
         <div class="sidebar-wrapper">
           <nav class="mt-2">
             <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview"  role="navigation" aria-label="Main navigation" data-accordion="false"  id="navigation">
+                  <!--Dashboasr de capellanes-->
+                  @can('ASEA_CAPE - ver dashboard principal')
+                      <li class="nav-item">
+                        <a href="{{ route('dashboard.capellan')}}" class="nav-link ">
+                          <i class="bi bi-graph-up"></i>
+                          <p>Dashboard</p>
+                        </a>
+                      </li>
+                  @endcan
+                  <!--Dashboasr de Directores-->
+                  @can('ASEA-DIRE - ver dashboard colegio')
+                      <li class="nav-item">
+                        <a href="{{ route('dashboard.asea')}}" class="nav-link ">
+                          <i class="bi bi-graph-up"></i>
+                          <p>Dashboard</p>
+                        </a>
+                      </li>
+                  @endcan
+
+               @canany(['ver dashboard panel principal', 'ver dashboard pastores-panel', 'ver meses-remesas', 'ver-desafios bautisos mbos anuales'])
               <li class="nav-item">
                 <a href="#" class="nav-link ">
                   <i class="nav-icon bi bi-speedometer"></i>
@@ -20,13 +38,14 @@
                   </p>
                 </a>
                 <ul class="nav nav-treeview">
-                  <li class="nav-item ms-3">
+                  @can('ver dashboard panel principal')
+                      <li class="nav-item ms-3">
                         <a href="{{ route('panel')}}" class="nav-link ">
                           <i class="bi bi-pie-chart-fill"></i>
                           <p>Panel Principal</p>
                         </a>
                       </li>
-
+                  @endcan 
                   @can('ver dashboard pastores-panel')
                       <li class="nav-item ms-3">
                         <a href="{{ route('dashboard.pastor')}}" class="nav-link ">
@@ -35,37 +54,6 @@
                         </a>
                       </li>
                   @endcan 
-                  <!--Dashboasr de capellanes-->
-                  @can('ver dashboard pastores-panel')
-                      <li class="nav-item ms-3">
-                        <a href="{{ route('dashboard.capellan')}}" class="nav-link ">
-                          <i class="bi bi-pie-chart-fill"></i>
-                          <p>Dashboard Capellanes</p>
-                        </a>
-                      </li>
-                  @endcan
-                  <!--Dashboasr de capellanes-->
-                      <li class="nav-item ms-3">
-                        <a href="{{ route('asea.index')}}" class="nav-link ">
-                          <i class="bi bi-pie-chart-fill"></i>
-                          <p>ASEA</p>
-                        </a>
-                      </li>
-                      <li class="nav-item ms-3">
-                        <a href="{{ route('visita_cape.index')}}" class="nav-link ">
-                          <i class="bi bi-pie-chart-fill"></i>
-                          <p>Visita ASEA</p>
-                        </a>
-                      </li>
-                      <li class="nav-item ms-3">
-                        <a href="{{ route('visita_cape.index_mes')}}" class="nav-link ">
-                          <i class="bi bi-pie-chart-fill"></i>
-                          <p>Visita Mes ASEA</p>
-                        </a>
-                      </li>
-                  
-                  
-
                   @can('ver meses-remesas')
                       <li class="nav-item ms-3">
                         <a href="{{ route('dashboard.tesorero')}}" class="nav-link ">
@@ -84,10 +72,49 @@
                   @endcan
                 </ul>
               </li>
+              @endcanany
               <!--SECCION sEXREATRIA-->
               @can('ver-personal')
               <li class="nav-header"> SECRETARIA </li>
               @endcan
+
+      
+              @canany(['ASEA_SECRE - ver colegios', 'ASEA_SECRE - crear colegios', 'ASEA_SECRE - editar colegios', 'ASEA_SECRE - asignar capellan colegios'])
+                    <li class="nav-item">
+                      <a href="{{ route('asea.index')}}" class="nav-link">
+                        <i class="bi bi-building"></i>
+                        <p>Unidad Educativa</p>
+                      </a>
+                    </li>
+              @endcanany
+              
+              @canany(['ASEA_CAPE - ver meses de visitas', 'ASEA_CAPE - ver visitas por meses', 'ASEA_CAPE - crear visitas'])
+                <li class="nav-item">
+                  <a href="{{ route('visita_cape.index_mes')}}" class="nav-link">
+                    <i class="bi bi-person-walking"></i>
+                    <p>Visitas</p>
+                  </a>
+                </li>
+              @endcanany
+              @can('ASEA_CAPE - ver dashboard bautismos colegio')
+              <li class="nav-item">
+                <a href="{{ route('bautisos_cape.dashboard.colegio')}}" class="nav-link">
+                  <i class="fa-solid fa-dove"></i>
+                  <p>Bautismos</p>
+                </a>
+              </li>
+              @endcan
+
+              @can('ASEA-DIRE - ver meses de visitas')
+                <li class="nav-item">
+                  <a href="{{route('desafios_mensuales.index')}}" class="nav-link">
+                    <i class="fa-solid fa-route"></i>
+                    <p>Seguimiento Visitas</p>
+                  </a>
+                </li>
+              @endcan
+
+
               <!-- desplegable-->
               @canany(['ver-pastores', 'ver-personal', 'ver-administrativo'])
               <li class="nav-item">
@@ -413,26 +440,18 @@
               <!--SECCCION DESAFIOS-->
               <!--SECCCION DESAFIOS-->
               @cannot('ver-presidente-mbos')
-                @canany(['ver-desafios','ver-desafios mensuales','ver-desafios eventos'])
+
+                @canany(['ver-desafios','ver-desafios eventos'])
                   <li class="nav-header"> DESAFIOS </li>
                   <!--desplehgable-->
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="bi bi-house-fill"></i>
-                      <p>
-                        Desafios Anual
-                        <i class="nav-arrow bi bi-chevron-right"></i>
-                      </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                      <li class="nav-item ms-3">
+                  @canany(['ver-desafios','ver-desafios eventos'])
+                      <li class="nav-item">
                         <a href="{{ route('desafios.index')  }}" class="nav-link">
-                          <i class="bi bi-houses"></i>
+                          <i class="bi bi-house-fill"></i>
                           <p>Administra Desafios</p>
                         </a>
                       </li>
-                    </ul>
-                  </li>
+                  @endcanany
                   <!--termina desplehgable-->
                   @canany(['ver-desafios bautisos mbos anuales', 'dashboard-mbos bautisos'])
                     <li class="nav-item">
@@ -464,7 +483,7 @@
                     </li>
                   @endcanany
                   <!--desplehgable-->
-                  @canany(['ver-desafios mensuales','ver los blancos de 1 mes-desafios mensuales','editar desafios mes masivo-desafios mensuales'])
+                  @canany([ 'ver-desafios mensuales','ver los blancos de 1 mes-desafios mensuales','editar desafios mes masivo-desafios mensuales'])
                     <li class="nav-item">
                       <a href="#" class="nav-link">
                         <i class="fa-solid fa-route"></i>

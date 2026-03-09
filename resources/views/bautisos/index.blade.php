@@ -11,25 +11,7 @@
 
 @section('content')
 
-@if (session('success'))
-    <script>
-        const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-        });
-        Toast.fire({
-        icon: "success",
-        title: "{{ session('success') }}"
-        });
-    </script>
-@endif
+<x-alerts/>
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
@@ -90,6 +72,38 @@
                                                 </form>-->
 
                                                 <form action="{{ route('bautisos.show', $bautiso->id_distrito) }}" method="GET">
+                                                    <button type="submit" class="btn btn-success">
+                                                        <i class="bi bi-file-earmark-plus"></i> Registrar
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+
+                                        @foreach ($unidad_educativas as $ue)
+                                        <tr style="background-color: #99D2F2;">
+                                            <td>
+                                            {{$ue->nombre}} 
+                                            </td>
+                                            <td>
+                                                {{$ue->nro_bautizo}}
+                                            </td>
+                                            <td>
+                                                {{$ue->nro_profesiondefe}}
+                                            </td>
+                                            <td>
+                                                {{$ue->nro_rebautizo}}
+                                            </td>
+                                            <td> 
+                                                {{$ue->total}}
+                                            </td>
+                                            <td> 
+                                                <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                                <!--<form action="" method="get">
+                                                    <button type="submit" class="btn btn-warning"><i class="bi bi-graph-up"></i>Avance</button>
+                                                </form>-->
+
+                                                <form action="{{ route('bautizos_cape.show', $ue->id_ue) }}" method="GET">
                                                     <button type="submit" class="btn btn-success">
                                                         <i class="bi bi-file-earmark-plus"></i> Registrar
                                                     </button>

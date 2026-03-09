@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\UnidadEducativa;
+use App\Models\Desafio;
 use Illuminate\Http\Request;
+
+use App\Http\Requests\UnidadEducativaRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Pastor;
 use Illuminate\Support\Facades\Request as FacadesRequest;
@@ -44,15 +47,53 @@ class UnidadEducativaController extends Controller
      */
     public function create()
     {
-        //
+    
+        $pastores_libres = DB::select("
+                        SELECT xpp.id_persona, xpp.nombre, xpp.ape_paterno, xpp.ape_materno, xp.*
+                        FROM pastors xp
+                        JOIN personas xpp ON xp.id_pastor = xpp.id_persona
+                        WHERE cargo like 'capellan'
+                        and xpp.estado = true
+						and xpp.id_persona not in (select xc.id_pastor
+													from capellan xc)
+                    ");
+        return view('unidades_educativas.create', compact('pastores_libres'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UnidadEducativaRequest $request)
     {
-        //
+        $anio = DB::table('unidad_educativas')
+            ->where('estado', true)
+            ->value('año'); 
+        try {
+            DB::beginTransaction();
+            $datos = array_merge($request->validated(), ['año' => $anio]);
+            $unidadEducativa = UnidadEducativa::create($datos);
+            $id_pastor = $request->input('id_pastor');
+            if (!empty($id_pastor)) {
+                // Usamos una sentencia que inserta solo si no existe la combinación (evita errores de duplicados)
+                //dd($unidadEducativa, $id_pastor, $anio);
+                DB::insert("
+                    INSERT INTO capellan (id_pastor, id_ue, año, created_at, updated_at)
+                    SELECT ?, ?, ?, NOW(), NOW()
+                ", [
+                    $id_pastor, 
+                    $unidadEducativa->id_ue, // El ID de la UE que acabas de crear/editar
+                    $anio
+                ]);
+            }
+            DB::commit();
+            return redirect()->route('asea.index')
+                            ->with('success', 'Unidad Educativa creado correctamente');
+        } catch (\Exception $e) {
+           DB::rollBack();
+
+            \Log::error('Error al crear distrito: ' . $e->getMessage());
+            return back()->with('error', 'Ocurrió un error al registrar la Unidad Educativa.');
+        }
     }
 
     /**
@@ -266,5 +307,46 @@ class UnidadEducativaController extends Controller
         //dd($anio, $pastores_libres, $colegio, $capellanes);
         return view('unidades_educativas.index_asignaciones', compact('anio', 'pastores_libres', 'colegio', 'capellanes'))->with('success','Capellan liberado correctamente');
     }
+
+
+    public function habilitar_desafios(Request $request)//permissions 'cambiar asignaciones ACT - distritos',
+    {
+        //dd($request);
+        // 1. Validar los datos que vienen del formulario/API
+        $validated = $request->validate([
+            'anio'      => 'required|integer',
+            'id_pastor' => 'required|exists:pastors,id_pastor',
+            'id_ue'     => 'required|exists:unidad_educativas,id_ue',
+        ]);
+
+        // 2. Insertar en la base de datos
+        $desafio = Desafio::create($validated);
+        return redirect()->route('asea.index')->with('success', 'Se habilitó correctamente, puede asignar el desafío en el apartado de DESAFÍOS.');
+    }
+    
+
+    public function update_desafio(Request $request, $id_ue)
+    {
+        // 1. Validar que sea un número positivo
+        $request->validate([
+            'desafios_bautismos' => 'required|integer|min:0',
+        ]);
+
+        //dd($request->validate(), $id_ue);
+
+        // 2. Buscar y actualizar
+        // Nota: Asegúrate de usar el nombre correcto de la llave primaria si no es 'id'
+        $ue = UnidadEducativa::where('id_ue', $id_ue)->firstOrFail();
+        
+        $ue->update([
+            'desafios_bautismos' => $request->desafios_bautismos
+        ]);
+
+        $ue->save();
+        //ddd($ue);
+        // 3. Redireccionar con mensaje de éxito
+        return redirect()->back()->with('success', 'El desafío de bautismos ha sido actualizado.');
+    }
+
 
 }

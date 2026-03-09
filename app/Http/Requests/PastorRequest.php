@@ -41,6 +41,12 @@ class PastorRequest extends FormRequest
             'fecha_ordenacion'   => 'nullable|date|before_or_equal:today',
             'cargo'              => 'nullable|string|max:80',
             'fecha_contratacion' => 'nullable|date|before_or_equal:today',
+            'rol'            => 'required|string|exists:roles,name',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('personas', 'email')->ignore($this->route('pastore'), 'id_persona'),
+            ],
         ];
     }
     public function messages()

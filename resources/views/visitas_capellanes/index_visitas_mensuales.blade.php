@@ -11,25 +11,6 @@
 
 @section('content')
 
-@if (session('success'))
-    <script>
-        const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-        }
-        });
-        Toast.fire({
-        icon: "success",
-        title: "{{ session('success') }}"
-        });
-    </script>
-@endif
 @php
             $meses_array = [
                         1 => 'Enero',
@@ -47,6 +28,7 @@
                     ];
             
 @endphp
+        <x-alerts/>        
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
@@ -60,15 +42,18 @@
                   <li class="breadcrumb-item active" aria-current="page">Visitas Mes</li>
                 </ol>
               </div>
-              <div class="row">
-                @if (now()->startOfDay()->lte(\Carbon\Carbon::parse($mensual->fecha_limite)->startOfDay()))
-                    <a href="{{ route('visita_cape.create', ['id_mensual' => $mensual->id_mensual]) }}">
-                        <button type="button" class="btn btn-primary">
-                            <i class="fa-solid fa-plus"></i> &nbsp; Añadir nueva Visita
-                        </button>
-                    </a>
-                @endif
-            </div>
+
+                @can('ASEA_CAPE - crear visitas')
+                    <div class="row">
+                        @if (now()->startOfDay()->lte(\Carbon\Carbon::parse($mensual->fecha_limite)->startOfDay()))
+                            <a href="{{ route('visita_cape.create', ['id_mensual' => $mensual->id_mensual]) }}">
+                                <button type="button" class="btn btn-primary">
+                                    <i class="fa-solid fa-plus"></i> &nbsp; Añadir Nueva Visita
+                                </button>
+                            </a>
+                        @endif
+                    </div>
+                @endcan
             </div>
           </div>
         </div>
@@ -122,10 +107,14 @@
                                             </td>
                                             <td> 
                                                 <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                                @can('ASEA_CAPE - editar visitas')
                                                 <a href="{{ route('visita_cape.edit', ['id_mensual' => $mensual->id_mensual, 'id_visita_cape' => $visita->id_visita_cape]) }}" class="btn btn-warning">
                                                     <i class="bi bi-pencil-square"></i> Editar
                                                 </a>
+                                                @endcan
+                                                @can('ASEA_CAPE - eliminar visitas')
                                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{$visita->id_visita_cape}}">Eliminar</button>
+                                                @endcan
                                             </td>
                                         </tr>
                                          <div class="modal fade" id="confirmModal-{{$visita->id_visita_cape}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

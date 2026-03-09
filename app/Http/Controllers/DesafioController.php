@@ -245,9 +245,32 @@ class DesafioController extends Controller
                         )
                         ->get();
 
+                $ues = DB::select("
+                                    SELECT 
+                                        xu.id_ue, 
+                                        xu.nombre, 
+                                        xu.año, 
+                                        -- Concatenamos nombres y apellidos en una sola celda
+                                        STRING_AGG(CONCAT(xpp.nombre, ' ', xpp.ape_paterno, ' ', xpp.ape_materno), ' / ') AS nombres_capellanes,
+                                        xu.desafios_bautismos, 
+                                        xu.bautismos_alcanzados
+                                    FROM unidad_educativas xu
+                                    LEFT JOIN capellan xc ON xu.id_ue = xc.id_ue
+                                    LEFT JOIN personas xpp ON xc.id_pastor = xpp.id_persona
+                                    WHERE xu.estado = true
+                                    AND xu.año = ?
+                                    AND xu.id_ue IN (SELECT DISTINCT xd.id_ue FROM desafios xd WHERE xd.id_ue IS NOT NULL)
+                                    GROUP BY 
+                                        xu.id_ue, 
+                                        xu.nombre, 
+                                        xu.año, 
+                                        xu.desafios_bautismos, 
+                                        xu.bautismos_alcanzados", [$anioDistritos] 
+                                );
+
                 $anioActual = $anioDistritos;
                 $anioMen = $anioActual+1; 
-                return view('bautisos.index_bautizo', compact('desafios', 'anioActual'))
+                return view('bautisos.index_bautizo', compact('desafios', 'anioActual', 'ues'))
                         ->with('info', "Desafíos del {$anioMen} pendientes. Habilita el nuevo período en ADMINISTRAR DESAFÍOS.");
             }
             // Obtener todos los desafíos del año actual
@@ -263,7 +286,30 @@ class DesafioController extends Controller
                         'xp.ape_materno as ape_materno_p'
                     )
                     ->get();
-            return view('bautisos.index_bautizo', compact('desafios', 'anioActual'));
+            $ues = DB::select("
+                                    SELECT 
+                                        xu.id_ue, 
+                                        xu.nombre, 
+                                        xu.año, 
+                                        -- Concatenamos nombres y apellidos en una sola celda
+                                        STRING_AGG(CONCAT(xpp.nombre, ' ', xpp.ape_paterno, ' ', xpp.ape_materno), ' / ') AS nombres_capellanes,
+                                        xu.desafios_bautismos, 
+                                        xu.bautismos_alcanzados
+                                    FROM unidad_educativas xu
+                                    LEFT JOIN capellan xc ON xu.id_ue = xc.id_ue
+                                    LEFT JOIN personas xpp ON xc.id_pastor = xpp.id_persona
+                                    WHERE xu.estado = true
+                                    AND xu.año = ?
+                                    AND xu.id_ue IN (SELECT DISTINCT xd.id_ue FROM desafios xd WHERE xd.id_ue IS NOT NULL)
+                                    GROUP BY 
+                                        xu.id_ue, 
+                                        xu.nombre, 
+                                        xu.año, 
+                                        xu.desafios_bautismos, 
+                                        xu.bautismos_alcanzados", [$anioActual] 
+                                );
+           
+            return view('bautisos.index_bautizo', compact('desafios', 'anioActual', 'ues'));
             
         } catch (\Exception $e) {
             \Log::error('Error en index_bautisos de DesafioController: ' . $e->getMessage());

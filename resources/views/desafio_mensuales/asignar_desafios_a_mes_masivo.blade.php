@@ -121,6 +121,33 @@ $meses_array = [
                                 <td>{{ $item->fecha_limite }}</td>
                             </tr>
                             @endforeach
+                            @foreach ($resultados2 as $item1)
+                            <tr style="background-color: #9ec6e4;">
+                                <td>{{ $item1->id_mensual }}</td>
+
+                                <td>{{ $item1->nombre }}</td>
+
+                                <td>
+                                    {{ $item1->nombre_p }} 
+                                    {{ $item1->ape_paterno }} 
+                                    {{ $item1->ape_materno }}
+                                </td>
+
+                                <td>{{ $meses_array[$item1->mes] }} - {{ $item1->anio }}</td>
+
+                                <td>
+                                    <input 
+                                        type="number"
+                                        min="0"
+                                        name="registros[{{ $item1->id_mensual }}][desafio_visitas]"
+                                        value="{{ $item1->desafio_visitas }}"
+                                        class="table-input" required
+                                    >
+                                </td>
+
+                                <td>{{ $item1->fecha_limite }}</td>
+                            </tr>
+                            @endforeach
                         </tbody>
 
                         <tfoot>
