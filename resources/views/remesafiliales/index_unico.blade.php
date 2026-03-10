@@ -49,7 +49,7 @@
                                 <center><h2 class=" text-primary mt-3">{{ $iglesia->codigo }} {{ $iglesia->nombre }}</h2></center>
                             <div class="card-body">
                                 <hr>
-                                <p class="mb-1"><strong>Codigo MBOS:</strong> {{ $iglesia->id_iglesia }} </p>
+                                <p class="mb-1"><strong>Codigo:</strong> {{ $iglesia->codigo }}  </p>
                                 <p class="mb-1"><strong>Tipo:</strong> {{ $iglesia->tipo }}</p>
                                 <p class="mb-1"><strong>Dirección:</strong> {{ $iglesia->direccion ?? 'Sin registrar' }}</p>
                                 <p class="mb-1"><strong>Distrito:</strong> {{$distrito }}</p>

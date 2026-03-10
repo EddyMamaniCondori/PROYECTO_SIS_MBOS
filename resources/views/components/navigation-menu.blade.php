@@ -652,6 +652,16 @@
                       </a>
                     </li>
                 @endcan
+
+                @can('ver-puntualidad')
+                    <li class="nav-item">
+                      <a href="{{ route('responsable.index')  }}" class="nav-link">
+                        <i class="bi bi-person-gear"></i>
+                        <p> Responsable Remesas</p>
+                      </a>
+                    </li>
+                @endcan
+                  
                   
                 @can('ver-blanco')
                 <li class="nav-item">

@@ -21,7 +21,8 @@ class Distrito extends Model
         'sw_cambio',
         'estado',
         'fecha_asignacion',
-        'año'
+        'año',
+        'id_responsable_remesa'
     ];
     
     /************************************************

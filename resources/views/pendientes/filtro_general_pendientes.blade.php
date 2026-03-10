@@ -1,7 +1,7 @@
 @extends('template')
 
 
-@section('title', 'Crear Unidad Educativa')
+@section('title', 'Filtro Remesas Pendientes')
 
 @push('css')
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -55,97 +55,104 @@
             </div>
                 <div class="col-md-4">
                     <label class="form-label fw-bold small d-block">Tipo</label>
-                    <div class="d-flex flex-wrap gap-2 mt-2">
-                        @foreach(['iglesia', 'filial', 'grupo', 'todos'] as $tipo)
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="tipos[]" value="{{ $tipo }}" id="t_{{ $tipo }}">
-                            <label class="form-check-label text-capitalize small" for="t_{{ $tipo }}">{{ $tipo }}</label>
+                    <div class="row g-2  mt-2">
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input tipo-checkbox" type="checkbox" name="tipos[]" value="iglesia" id="t_iglesia">
+                                <label class="form-check-label text-capitalize " for="t_iglesia"> <i class="bi bi-house-check-fill text-success me-2"></i>Iglesia</label>
+                            </div>
                         </div>
-                        @endforeach
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input tipo-checkbox" type="checkbox" name="tipos[]" value="filial" id="t_filial">
+                                <label class="form-check-label text-capitalize " for="t_filial"> <i class="bi bi-house-gear-fill text-warning me-2"></i>Filial</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input tipo-checkbox" type="checkbox" name="tipos[]" value="grupo" id="t_grupo">
+                                <label class="form-check-label text-capitalize " for="t_grupo"> <i class="bi bi-house-fill text-primary me-2"></i>Grupo</label>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="tipos[]" value="todos" id="t_todos">
+                                <label class="form-check-label text-capitalize fw-bold" for="t_todos"> <i class="bi bi-clipboard2-check text-info"></i>&nbsp;Todos</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
+          
+
+            
+
+            <hr>
             <div class="row mb-3">
-                <div class="col-12">
-                    <label class="form-label fw-bold small">Filtrar por Nivel Institucional</label>
-                    <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check filter-trigger" name="nivel_tipo" id="n_iglesia" value="panel_iglesia">
-                        <label class="btn btn-outline-primary" for="n_iglesia">Iglesia</label>
+                <div class="col-8">
+                    <label class="form-label fw-bold small">Nivel de Filtro:</label>
+                    <div class="btn-group w-100 mt-3" role="group">
+                        <input type="radio" class="btn-check main-trigger" name="nivel_principal" id="n_mbos" value="capa_mbos">
+                        <label class="btn btn-outline-primary" for="n_mbos">MBOS</label>
 
-                        <input type="radio" class="btn-check filter-trigger" name="nivel_tipo" id="n_distrito" value="panel_distrito">
-                        <label class="btn btn-outline-primary" for="n_distrito">Distrito</label>
-
-                        <input type="radio" class="btn-check filter-trigger" name="nivel_tipo" id="n_regiones" value="panel_regiones">
-                        <label class="btn btn-outline-primary" for="n_regiones">Regiones</label>
-
-                        <input type="radio" class="btn-check filter-trigger" name="nivel_tipo" id="n_encargado" value="panel_encargado">
-                        <label class="btn btn-outline-primary" for="n_encargado">Encargado</label>
-
-                        <input type="radio" class="btn-check filter-trigger" name="nivel_tipo" id="n_zona" value="panel_zona">
-                        <label class="btn btn-outline-primary" for="n_zona">Zona</label>
+                        <input type="radio" class="btn-check main-trigger" name="nivel_principal" id="n_encargado_root" value="capa_encargado">
+                        <label class="btn btn-outline-primary" for="n_encargado_root">Encargado</label>
                     </div>
                 </div>
-            </div>
-
-            <div id="dynamicPanels" class="bg-light p-3 rounded mb-4 d-none">
-                
-                <div id="panel_iglesia" class="filter-panel d-none row">
-                    <p class="small text-muted mb-2">Seleccione Iglesias:</p>
-                    @foreach($iglesias->chunk(ceil($iglesias->count() / 4)) as $chunk)
-                    <div class="col-md-3">
-                        @foreach($chunk as $i)
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="iglesias[]" value="{{ $i->id_iglesia }}">
-                            <label class="form-check-label small">{{ $i->nombre }}</label>
-                        </div>
-                        @endforeach
-                    </div>
-                    @endforeach
-                </div>
-
-                <div id="panel_distrito" class="filter-panel d-none row">
-                    <p class="small text-muted mb-2">Seleccione Distritos:</p>
-                    @foreach($distritos->chunk(ceil($distritos->count() / 4)) as $chunk)
-                    <div class="col-md-3">
-                        @foreach($chunk as $d)
-                        <div class="form-check text-capitalize">
-                            <input class="form-check-input" type="checkbox" name="distritos[]" value="{{ $d->id_distrito }}">
-                            <label class="form-check-label small">{{ $d->nombre }}</label>
-                        </div>
-                        @endforeach
-                    </div>
-                    @endforeach
-                </div>
-
-                <div id="panel_regiones" class="filter-panel d-none row text-center">
-                    @for($i = 1; $i <= 10; $i++)
-                    <div class="col-md-2 col-4 mb-2">
-                        <input type="checkbox" class="btn-check" name="regiones[]" id="reg_{{ $i }}" value="{{ $i }}">
-                        <label class="btn btn-sm btn-outline-secondary w-100" for="reg_{{ $i }}">R-{{ $i }}</label>
-                    </div>
-                    @endfor
-                </div>
-
-                <div id="panel_encargado" class="filter-panel d-none">
-                    <select class="form-select" name="encargado_id">
-                        <option value="">-- Seleccione Encargado --</option>
+                <div id="capa_encargado" class="col-4 main-layer d-none  p-3  mb-3 ">
+                    <label class="form-label fw-bold small text-primary">Seleccione el Encargado:</label>
+                    <select class="form-select" name="encargado_id" id="select_encargado">
+                        <option value="">-- Seleccione --</option>
                         @foreach($encargados as $e)
-                        <option value="{{ $e->id }}">{{ $e->nombre }}</option>
+                            <option value="{{ $e->id_persona }}">{{ $e->nombre }} {{ $e->ape_paterno }}</option>
                         @endforeach
                     </select>
                 </div>
+            </div>
 
-                <div id="panel_zona" class="filter-panel d-none d-flex justify-content-center gap-4">
-                    @foreach(['Altiplano', 'El Alto', 'Todos'] as $z)
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="zona" value="{{ $z }}" id="z_{{ $z }}">
-                        <label class="form-check-label" for="z_{{ $z }}">{{ $z }}</label>
+            
+
+            <div id="sub_opciones_container" class="d-none mb-3">
+                <label class="form-label fw-bold small" id="titulo_sub_opcion">Opciones de Filtrado:</label>
+                <div class="btn-group w-100" role="group" id="group_sub_opciones">
                     </div>
+            </div>
+
+            <div id="paneles_finales" class="p-3 rounded mb-4 border d-none bg-white shadow-sm">
+                
+                <div id="panel_distrito" class="final-panel d-none">
+                    <p class="small text-muted mb-2 fw-bold">Lista de Distritos:</p>
+                    <div class="row" id="container_distritos">
+                        @foreach($distritos as $d)
+                            <div class="col-md-3 item-distrito" data-responsable="{{ $d->id_responsable_remesa }}">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="distritos[]" value="{{ $d->id_distrito }}" id="dist_{{ $d->id_distrito }}">
+                                    <label class="form-check-label small" for="dist_{{ $d->id_distrito }}">{{ $d->nombre }}</label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div id="panel_regiones" class="final-panel d-none row text-center">
+                    @for($i = 1; $i <= 10; $i++)
+                        <div class="col-md-2 col-4 mb-2">
+                            <input type="checkbox" class="btn-check" name="regiones[]" id="reg_{{ $i }}" value="{{ $i }}">
+                            <label class="btn btn-sm btn-outline-secondary w-100" for="reg_{{ $i }}">R-{{ $i }}</label>
+                        </div>
+                    @endfor
+                </div>
+
+                <div id="panel_zona" class="final-panel d-none d-flex justify-content-center gap-4">
+                    @foreach(['Altiplano', 'El Alto', 'Todos'] as $z)
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="zona" value="{{ $z }}" id="z_{{ $z }}">
+                            <label class="form-check-label" for="z_{{ $z }}">{{ $z }}</label>
+                        </div>
                     @endforeach
                 </div>
             </div>
-
             <div class="d-flex justify-content-end gap-2">
                 <button type="submit" name="action" value="listar" class="btn btn-primary px-4 shadow-sm">
                     <i class="bi bi-search me-2"></i> Listar
@@ -238,9 +245,155 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inicializar la carga de datos
     popularPeriodos();
-    
+    // === LÓGICA DE LOS PANELES (ESTO ES LO QUE FALTABA) ===
+    filterTriggers.forEach(trigger => {
+        trigger.addEventListener('change', function() {
+            // 1. Mostrar el contenedor principal de paneles
+            dynamicWrapper.classList.remove('d-none');
+
+            // 2. Ocultar todos los paneles primero
+            panels.forEach(p => p.classList.add('d-none'));
+
+            // 3. Mostrar solo el panel seleccionado (el value del radio es el ID del panel)
+            const targetPanelId = this.value;
+            const targetPanel = document.getElementById(targetPanelId);
+            
+            if (targetPanel) {
+                targetPanel.classList.remove('d-none');
+            }
+        });
+    });
     // ... (aquí va el resto de tu lógica de paneles que ya hicimos)
 });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkTodos = document.getElementById('t_todos');
+        const otrosChecks = document.querySelectorAll('.tipo-checkbox');
 
+        if (checkTodos) {
+            checkTodos.addEventListener('change', function() {
+                otrosChecks.forEach(checkbox => {
+                    if (this.checked) {
+                        // Si "Todos" está marcado:
+                        checkbox.checked = false;    // Desmarcar
+                        checkbox.disabled = true;    // Anular/Bloquear
+                        checkbox.parentElement.classList.add('opacity-50'); // Efecto visual de deshabilitado
+                    } else {
+                        // Si "Todos" se desmarca:
+                        checkbox.disabled = false;   // Habilitar
+                        checkbox.parentElement.classList.remove('opacity-50');
+                    }
+                });
+            });
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const mainTriggers = document.querySelectorAll('.main-trigger');
+    const capaEncargado = document.getElementById('capa_encargado');
+    const subContainer = document.getElementById('sub_opciones_container');
+    const groupSubOpciones = document.getElementById('group_sub_opciones');
+    const selectEncargado = document.getElementById('select_encargado');
+    const panelesFinales = document.getElementById('paneles_finales');
+
+    // Configuración de botones por nivel
+    const config = {
+        capa_mbos: [
+            { id: 'opt_no', val: 'no_filtrar', text: 'No Filtrar' },
+            { id: 'opt_dist', val: 'panel_distrito', text: 'Distrito' },
+            { id: 'opt_reg', val: 'panel_regiones', text: 'Regiones' },
+            { id: 'opt_zona', val: 'panel_zona', text: 'Zona' }
+        ],
+        capa_encargado: [
+            { id: 'opt_no', val: 'no_filtrar', text: 'No Filtrar' },
+            { id: 'opt_dist', val: 'panel_distrito', text: 'Distrito' },
+            { id: 'opt_zona', val: 'panel_zona', text: 'Zona' }
+        ]
+    };
+
+    // 1. Cambio Principal (MBOS vs Encargado)
+    mainTriggers.forEach(t => {
+        t.addEventListener('change', function() {
+            resetTodo();
+            if (this.value === 'capa_mbos') {
+                capaEncargado.classList.add('d-none');
+                renderSubOpciones('capa_mbos');
+            } else {
+                capaEncargado.classList.remove('d-none');
+            }
+        });
+    });
+
+    // 2. Si elige Encargado, esperar a que seleccione uno de la lista
+    selectEncargado.addEventListener('change', function() {
+        if (this.value !== "") {
+            renderSubOpciones('capa_encargado');
+            filtrarDistritosPorEncargado(this.value);
+        } else {
+            subContainer.classList.add('d-none');
+        }
+    });
+
+    function renderSubOpciones(tipo) {
+        subContainer.classList.remove('d-none');
+        groupSubOpciones.innerHTML = '';
+        
+        config[tipo].forEach(opt => {
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.className = 'btn-check sub-trigger';
+            radio.name = 'sub_nivel_tipo';
+            radio.id = opt.id;
+            radio.value = opt.val;
+
+            const label = document.createElement('label');
+            label.className = 'btn btn-outline-success';
+            label.htmlFor = opt.id;
+            label.innerText = opt.text;
+
+            radio.addEventListener('change', function() {
+                mostrarPanelFinal(this.value);
+            });
+
+            groupSubOpciones.appendChild(radio);
+            groupSubOpciones.appendChild(label);
+        });
+    }
+
+    function mostrarPanelFinal(panelId) {
+        // Ocultar todos
+        document.querySelectorAll('.final-panel').forEach(p => p.classList.add('d-none'));
+        
+        if (panelId === 'no_filtrar') {
+            panelesFinales.classList.add('d-none');
+        } else {
+            panelesFinales.classList.remove('d-none');
+            document.getElementById(panelId).classList.remove('d-none');
+        }
+    }
+
+    function filtrarDistritosPorEncargado(idPersona) {
+        const items = document.querySelectorAll('.item-distrito');
+        items.forEach(item => {
+            // Si idPersona es null (MBOS), mostrar todos. Si no, filtrar.
+            if (!idPersona || item.getAttribute('data-responsable') == idPersona) {
+                item.classList.remove('d-none');
+            } else {
+                item.classList.add('d-none');
+            }
+        });
+    }
+
+    function resetTodo() {
+        subContainer.classList.add('d-none');
+        panelesFinales.classList.add('d-none');
+        selectEncargado.value = "";
+        // Mostrar todos los distritos por defecto al resetear
+        document.querySelectorAll('.item-distrito').forEach(i => i.classList.remove('d-none'));
+    }
+});
+</script>
 @endpush

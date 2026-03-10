@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ResponsableRemesaController;
 use App\Http\Controllers\PastorController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\AdministrativoController;
@@ -548,8 +548,14 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/bautizos_cape/update/{id}', [BautismoCapellanController::class, 'update'])->name('bautizos_cape.update');
     Route::get('bautisos_cape/dashboard/colegio', [BautismoCapellanController::class, 'dashboard_general_pastores'])
         ->name('bautisos_cape.dashboard.colegio');
-    
-    
+     /**
+     * *******************************************************************************
+     *                          RESPONSABLES DE REMESAS
+     * *********************************************************************************
+     */
+    Route::get('/remesa/responsable', [ResponsableRemesaController::class, 'index'])->name('responsable.index');
+    // Ruta para el proceso de asignación (usualmente un POST si procesas un formulario)
+    Route::post('/remesa/asignar-responsable', [ResponsableRemesaController::class, 'asignar_responsable'])->name('remesa.asignar-responsable');
 
 
     Route::resource('pastores', PastorController::class);

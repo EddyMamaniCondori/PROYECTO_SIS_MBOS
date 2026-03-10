@@ -160,7 +160,6 @@
                                                             @csrf
 
                                                             <div class="modal-body">
-
                                                                 @if (!is_null($distrito->id_pastor))
                                                                     <p style="color: red;"><strong>  IMPORTANTE:</strong> Recuerda que cuando realices el cambio al pastor <strong>{{ $distrito->nombre_pastor }}
                                                                     &nbsp;{{ $distrito->ape_paterno_pastor }}

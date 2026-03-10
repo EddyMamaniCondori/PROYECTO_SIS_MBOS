@@ -268,7 +268,13 @@ class PendientesController extends Controller
         
         $iglesias = Iglesia::all();
         $distritos = Distrito::all(); 
-        $encargados = Persona::all();
+        $encargados = DB::select('select xpp.id_persona, xpp.nombre, xpp.ape_paterno, xpp.ape_materno
+                            from personales xp
+                            join personas xpp on xp.id_personal = xpp.id_persona
+                            join model_has_roles xm on xm.model_id = xpp.id_persona
+                            join roles xr on xm.role_id = xr.id
+                            where xr.name like ?', ['%Tesorero%']);
+                            
         $periodos = DB::table('generas')
             ->selectRaw("TO_CHAR(mes, 'FM00') || ' - ' || anio as label")
             ->selectRaw("anio, mes")
