@@ -690,6 +690,17 @@
                       </p>
                     </a>
                     <ul class="nav nav-treeview">
+
+                    @can('ver anual-pendientes')
+                        <li class="nav-item ms-3">
+                        <a href="{{ route('remesas.pendientes_filtro_general')}} " class="nav-link">
+                          <i class="bi bi-stopwatch"></i>
+                          <p> Filtro General</p>
+                        </a>
+                      </li>
+                    @endcan
+
+                    
                     @can('ver anual-pendientes')
                         <li class="nav-item ms-3">
                         <a href="{{ route('remesas.pendientes')}} " class="nav-link">

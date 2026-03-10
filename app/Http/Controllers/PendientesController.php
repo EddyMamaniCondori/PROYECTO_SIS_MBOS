@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Distrito; 
+use App\Models\Iglesia; 
+use App\Models\Persona; 
 class PendientesController extends Controller
 {
     /**
@@ -259,5 +261,35 @@ class PendientesController extends Controller
 
         return view('pendientes.vista_distrital', compact('datos')); 
     }
+
+    public function filtro_general_pendientes() //este es el filtro general de pendientes por diferentes tipos 
+    {
+        //dd($request);
+        
+        $iglesias = Iglesia::all();
+        $distritos = Distrito::all(); 
+        $encargados = Persona::all();
+        $periodos = DB::table('generas')
+            ->selectRaw("TO_CHAR(mes, 'FM00') || ' - ' || anio as label")
+            ->selectRaw("anio, mes")
+            ->where('anio', '>=', now()->year - 1)
+            ->distinct()
+            ->orderBy('anio', 'desc')
+            ->orderBy('mes', 'desc')
+            ->get();
+        return view('pendientes.filtro_general_pendientes', compact('periodos','iglesias', 'distritos', 'encargados')); 
+    }
+
+    public function pdf_filtro_general_pendientes(Request $request) //este es el filtro general de pendientes por diferentes tipos 
+    {
+        dd($request);
+        
+        $iglesias = Iglesia::all();
+        $distritos = Distrito::all(); 
+        $encargados = Persona::all();
+        //dd($iglesias, $distritos, $encargados);
+        return view('pendientes.filtro_general_pendientes', compact('iglesias', 'distritos', 'encargados')); 
+    }
+
 
 }

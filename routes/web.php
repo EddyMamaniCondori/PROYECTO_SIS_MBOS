@@ -148,6 +148,11 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::get('remesas/pendientes', [PendientesController::class, 'index'])
         ->name('remesas.pendientes');
+
+
+
+
+
     Route::post('/remesas/pendientes/anual/filtro', [PendientesController::class, 'filtro_anual'])->name('remesas.pendiente.anual.filtro');
     Route::get('remesas/pendientes/mensual', [PendientesController::class, 'index_mensual'])
         ->name('remesas.pendientes.mensual');
@@ -155,6 +160,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('remesas/pendientes/distrital', [PendientesController::class, 'index_distrital'])
         ->name('remesas.pendientes.distrital');
 
+    Route::get('remesas/pendientes/filtro_general', [PendientesController::class, 'filtro_general_pendientes'])
+        ->name('remesas.pendientes_filtro_general');
+
+    Route::post('remesas/pendientes/filtro_general/pdf', [PendientesController::class, 'pdf_filtro_general_pendientes'])
+        ->name('remesas.pendientes_filtro_general.pdf');
     /**
      *_______________GRAFICOS DE REMESAS
     * 
