@@ -7,6 +7,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Distrito; 
 use App\Models\Iglesia; 
 use App\Models\Persona; 
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+
+use App\Exports\PendientesExport;
+
+
 class PendientesController extends Controller
 {
     /**
@@ -288,13 +294,182 @@ class PendientesController extends Controller
 
     public function pdf_filtro_general_pendientes(Request $request) //este es el filtro general de pendientes por diferentes tipos 
     {
-        dd($request);
+        //dd($request);
+        // Supongamos que recibes el array desde el request
+        $tiposSeleccionados = $request->input('tipos'); // Ej: ['iglesia', 'filial'] o ['todos']
+        $query = DB::table('generas as xg')
+            ->leftJoin('remesas as xr', 'xg.id_remesa', '=', 'xr.id_remesa')
+            ->leftJoin('iglesias as xi', 'xg.id_iglesia', '=', 'xi.id_iglesia')
+            ->leftJoin('distritos as xd', 'xi.distrito_id', '=', 'xd.id_distrito')
+            ->leftJoin('personas as xpas', 'xd.id_pastor', '=', 'xpas.id_persona')
+            ->leftJoin('personas as xres', 'xd.id_responsable_remesa', '=', 'xres.id_persona')
+            ->select(
+                'xi.distrito_id', 
+                'xd.nombre as distrito', 
+                'xi.codigo', 
+                'xi.nombre as nombre_igle', 
+                'xi.tipo', 
+                'xg.id_remesa',
+                'xg.id_iglesia', 
+                'xg.mes', 
+                'xg.anio', 
+                'xr.estado',
+                DB::raw("xpas.nombre || ' ' || COALESCE(xpas.ape_paterno, '') || ' ' || COALESCE(xpas.ape_materno, '') as nombre_pas"),
+                DB::raw("xres.nombre || ' ' || COALESCE(xres.ape_paterno, '') || ' ' || COALESCE(xres.ape_materno, '') as nombre_res")
+            );
+
+        // --- LÓGICA DE FILTRADO POR TIPO ---
+
+        if (!empty($tiposSeleccionados) && !in_array('todos', $tiposSeleccionados)) {
+            $query->whereIn('xi.tipo', $tiposSeleccionados);
+        }
+         // --- LÓGICA DE FILTRADO POR PERIODOS---
+        // Extraer Mes e Inicio
+        $inicio = explode('-', $request->periodo_inicio); // [02, 2026]
+        $mesInicio = (int)$inicio[0];
+        $anioInicio = (int)$inicio[1];
+        // Determinar si hay un rango o es mes único
+        $esRango = $request->has('periodo_fin') && $request->periodo_fin !== $request->periodo_inicio;
+        //integramos al Query
+        $query->where(function($q) use ($mesInicio, $anioInicio, $esRango, $request) {
+            if (!$esRango) {
+                // CASO 1: Mes Único
+                $q->where('xg.mes', $mesInicio)
+                ->where('xg.anio', $anioInicio);
+            } else {
+                // CASO 2: Rango de Meses
+                $fin = explode('-', $request->periodo_fin);
+                $mesFin = (int)$fin[0];
+                $anioFin = (int)$fin[1];
+
+                // Lógica: (Anio > AnioInicio O (Anio == AnioInicio Y Mes >= MesInicio))
+                // Y (Anio < AnioFin O (Anio == AnioFin Y Mes <= MesFin))
+                $q->where(function($sub) use ($mesInicio, $anioInicio, $mesFin, $anioFin) {
+                    $sub->whereRaw("(xg.anio * 100 + xg.mes) BETWEEN ? AND ?", [
+                        ($anioInicio * 100 + $mesInicio),
+                        ($anioFin * 100 + $mesFin)
+                    ]);
+                });
+            }
+        });
+        if ($request->nivel_principal === 'capa_encargado' && $request->encargado_id) {
+            $query->where('xd.id_responsable_remesa', $request->encargado_id);
+        }
+
+        if ($request->sub_nivel_tipo === 'panel_distrito' && $request->has('distritos')) {
+            // Aplicamos el filtro a la tabla distritos (xd)
+            $query->whereIn('xd.id_distrito', $request->distritos);
+        }
+        // CASO: SUB-NIVEL ZONA
+        elseif ($request->sub_nivel_tipo === 'panel_zona' && $request->has('zona')) {
+            if ($request->zona !== 'TODOS') {
+                $query->where('xi.lugar', $request->zona);
+            }
+        }
         
-        $iglesias = Iglesia::all();
-        $distritos = Distrito::all(); 
-        $encargados = Persona::all();
-        //dd($iglesias, $distritos, $encargados);
-        return view('pendientes.filtro_general_pendientes', compact('iglesias', 'distritos', 'encargados')); 
+        $resultados = $query->orderBy('xd.nombre')
+                        ->orderBy('xi.nombre')
+                        ->orderBy('xg.mes')
+                        ->get();
+
+        
+       
+
+
+        //dd($resultados);
+
+
+        // 2. Generar la lista de meses/años del rango (Cabeceras)
+        $periodos = $resultados->map(function($item) {
+            return $item->anio . '-' . str_pad($item->mes, 2, '0', STR_PAD_LEFT);
+        })->unique()->sort()->values();
+
+
+         
+            if ($request->action === 'excel') {
+                $mesesNom = [
+                    1 => 'Ene', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr', 5 => 'May', 6 => 'Jun',
+                    7 => 'Jul', 8 => 'Ago', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dic'
+                ];
+
+                $datosAgrupados = $resultados->groupBy('distrito')->map(function ($itemsDistrito, $distrito) use ($periodos) {
+                    return $itemsDistrito->groupBy('id_iglesia')->map(function ($itemsIglesia) use ($periodos, $distrito) {
+                        $primero = $itemsIglesia->first();
+                        
+                        $estados = $itemsIglesia->mapWithKeys(function ($item) {
+                            $key = $item->anio . '-' . str_pad($item->mes, 2, '0', STR_PAD_LEFT);
+                            return [$key => $item->estado];
+                        });
+
+                        return (object)[
+                            'distrito'   => $distrito, // Ahora sí funcionará
+                            'codigo'     => $primero->codigo,
+                            'nombre'     => $primero->nombre_igle,
+                            'tipo'       => $primero->tipo,
+                            'nombre_pas' => $primero->nombre_pas,
+                            'nombre_res' => $primero->nombre_res,
+                            'estados'    => $estados
+                        ];
+                    });
+                });
+                $fechaHora = now()->format('Y-m-d_H-i');
+
+                $nombreArchivo = "Reporte_remesas_pendientes_{$fechaHora}.xlsx";
+                
+                return Excel::download(
+                    new PendientesExport($datosAgrupados, $periodos, $mesesNom), 
+                    $nombreArchivo
+                );
+            }
+
+
+        if(count($periodos) > 1){// por si son varios meses
+            $datosAgrupados = $resultados->groupBy('distrito')->map(function ($itemsDistrito) use ($periodos) {
+                return $itemsDistrito->groupBy('id_iglesia')->map(function ($itemsIglesia) use ($periodos) {
+                    $primero = $itemsIglesia->first();
+                    
+                    // Creamos un mapa de estados: "2026-02" => "ENTREGADO"
+                    $estados = $itemsIglesia->mapWithKeys(function ($item) {
+                                    // Creamos la llave "2026-02" (Año-Mes con dos dígitos)
+                                    $key = $item->anio . '-' . str_pad($item->mes, 2, '0', STR_PAD_LEFT);
+                                    return [$key => $item->estado];
+                                });
+                    // Nota: debes agregar 'concat(anio, "-", lpad(mes, 2, "0")) as mes_anio_key' en tu SELECT SQL
+                    
+                    return (object)[
+                        'codigo' => $primero->codigo,
+                        'nombre' => $primero->nombre_igle,
+                        'tipo'   => $primero->tipo,
+                        'nombre_pas' => $primero->nombre_pas,
+                        'nombre_res' => $primero->nombre_res,
+                        'estados' => $estados
+                    ];
+                });
+            });
+             //dd($datosAgrupados);
+            $pdf = Pdf::loadView('pdf.pdf_reporte_pendientes_varios_meses', [
+                'datos' => $datosAgrupados,
+                'periodos' => $periodos,
+                'mesesNom' => [
+                    1 => 'Ene', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr', 5 => 'May', 6 => 'Jun',
+                    7 => 'Jul', 8 => 'Ago', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dic'
+                ]
+            ])->setPaper('letter', 'portrait'); // Recomendado Landscape para muchas columnas
+            return $pdf->stream();
+
+        }else{ //por si es solo 1 mes
+            $datosAgrupados = $resultados->groupBy('distrito'); 
+            $pdf = Pdf::loadView('pdf.pdf_reporte_pendientes', [
+                'datos' => $datosAgrupados,
+                'periodo' => $request->periodo_inicio . ($request->has('periodo_fin') ? ' a ' . $request->periodo_fin : ''),
+            ])->setPaper('letter', 'portrait');
+
+            // stream() abre el PDF en el navegador
+            return $pdf->stream('Reporte_Pendientes_MBOS.pdf');
+        }
+        
+
+        
     }
 
 

@@ -39,9 +39,8 @@
           
 
     <div class="card border-0 shadow-sm mb-4">
-    <form id="filterForm" action="{{ route('remesas.pendientes_filtro_general.pdf')}}" method="POST" class="card-body">
+    <form id="filterForm" action="{{ route('remesas.pendientes_filtro_general.pdf')}}" method="POST" class="card-body" target="_blank">
         @csrf
-        
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <label class="form-label fw-bold small">Periodo Inicial</label>
@@ -58,19 +57,19 @@
                     <div class="row g-2  mt-2">
                         <div class="col-6">
                             <div class="form-check">
-                                <input class="form-check-input tipo-checkbox" type="checkbox" name="tipos[]" value="iglesia" id="t_iglesia">
+                                <input class="form-check-input tipo-checkbox" type="checkbox" name="tipos[]" value="Iglesia" id="t_iglesia">
                                 <label class="form-check-label text-capitalize " for="t_iglesia"> <i class="bi bi-house-check-fill text-success me-2"></i>Iglesia</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-check">
-                                <input class="form-check-input tipo-checkbox" type="checkbox" name="tipos[]" value="filial" id="t_filial">
+                                <input class="form-check-input tipo-checkbox" type="checkbox" name="tipos[]" value="Filial" id="t_filial">
                                 <label class="form-check-label text-capitalize " for="t_filial"> <i class="bi bi-house-gear-fill text-warning me-2"></i>Filial</label>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="form-check">
-                                <input class="form-check-input tipo-checkbox" type="checkbox" name="tipos[]" value="grupo" id="t_grupo">
+                                <input class="form-check-input tipo-checkbox" type="checkbox" name="tipos[]" value="Grupo" id="t_grupo">
                                 <label class="form-check-label text-capitalize " for="t_grupo"> <i class="bi bi-house-fill text-primary me-2"></i>Grupo</label>
                             </div>
                         </div>
@@ -83,12 +82,6 @@
                     </div>
                 </div>
             </div>
-
-          
-
-            
-
-            <hr>
             <div class="row mb-3">
                 <div class="col-8">
                     <label class="form-label fw-bold small">Nivel de Filtro:</label>
@@ -114,7 +107,7 @@
             
 
             <div id="sub_opciones_container" class="d-none mb-3">
-                <label class="form-label fw-bold small" id="titulo_sub_opcion">Opciones de Filtrado:</label>
+                <label class="form-label fw-bold small" id="titulo_sub_opcion">Filtros Adicionales:</label>
                 <div class="btn-group w-100" role="group" id="group_sub_opciones">
                     </div>
             </div>
@@ -135,17 +128,8 @@
                     </div>
                 </div>
 
-                <div id="panel_regiones" class="final-panel d-none row text-center">
-                    @for($i = 1; $i <= 10; $i++)
-                        <div class="col-md-2 col-4 mb-2">
-                            <input type="checkbox" class="btn-check" name="regiones[]" id="reg_{{ $i }}" value="{{ $i }}">
-                            <label class="btn btn-sm btn-outline-secondary w-100" for="reg_{{ $i }}">R-{{ $i }}</label>
-                        </div>
-                    @endfor
-                </div>
-
                 <div id="panel_zona" class="final-panel d-none d-flex justify-content-center gap-4">
-                    @foreach(['Altiplano', 'El Alto', 'Todos'] as $z)
+                    @foreach(['ALTIPLANO', 'EL ALTO', 'TODOS'] as $z)
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="zona" value="{{ $z }}" id="z_{{ $z }}">
                             <label class="form-check-label" for="z_{{ $z }}">{{ $z }}</label>
@@ -178,9 +162,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const periodoInicio = document.getElementById('periodo_inicio');
     const periodoFin = document.getElementById('periodo_fin');
-    const filterTriggers = document.querySelectorAll('.filter-trigger');
-    const panels = document.querySelectorAll('.filter-panel');
-    const dynamicWrapper = document.getElementById('dynamicPanels');
 
     // 1. Datos de periodos (01-2026 hasta 12-2026)
     const listaPeriodos = @json($periodos);
@@ -245,24 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inicializar la carga de datos
     popularPeriodos();
-    // === LÓGICA DE LOS PANELES (ESTO ES LO QUE FALTABA) ===
-    filterTriggers.forEach(trigger => {
-        trigger.addEventListener('change', function() {
-            // 1. Mostrar el contenedor principal de paneles
-            dynamicWrapper.classList.remove('d-none');
-
-            // 2. Ocultar todos los paneles primero
-            panels.forEach(p => p.classList.add('d-none'));
-
-            // 3. Mostrar solo el panel seleccionado (el value del radio es el ID del panel)
-            const targetPanelId = this.value;
-            const targetPanel = document.getElementById(targetPanelId);
-            
-            if (targetPanel) {
-                targetPanel.classList.remove('d-none');
-            }
-        });
-    });
+    
     // ... (aquí va el resto de tu lógica de paneles que ya hicimos)
 });
 </script>
@@ -304,7 +268,6 @@ document.addEventListener('DOMContentLoaded', function() {
         capa_mbos: [
             { id: 'opt_no', val: 'no_filtrar', text: 'No Filtrar' },
             { id: 'opt_dist', val: 'panel_distrito', text: 'Distrito' },
-            { id: 'opt_reg', val: 'panel_regiones', text: 'Regiones' },
             { id: 'opt_zona', val: 'panel_zona', text: 'Zona' }
         ],
         capa_encargado: [
@@ -348,6 +311,10 @@ document.addEventListener('DOMContentLoaded', function() {
             radio.name = 'sub_nivel_tipo';
             radio.id = opt.id;
             radio.value = opt.val;
+
+            if (opt.val === 'no_filtrar') {
+                radio.checked = true;
+            }
 
             const label = document.createElement('label');
             label.className = 'btn btn-outline-success';
