@@ -78,6 +78,59 @@
         .fila-filial {
             color: #dc3545; /* Rojo de Bootstrap */
         }
+        /** PARA EL TOTAL GENERAL */
+        .fila-resumen {
+           padding-top: 15px;
+        }
+
+        .resumen-tipos {
+            width: 100%;
+            margin-top: 10px;
+            border-top: 1px solid #ffcdd2; /* Línea divisoria suave */
+            padding-top: 10px;
+        }
+
+        .badge-tipo {
+            display: inline-block;
+            width: 30%; /* Para que quepan 3 en una fila */
+            text-align: center;
+        }
+
+        .numero-tipo {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+            display: block;
+        }
+
+        .label-tipo {
+            font-size: 8px;
+            color: #777;
+            text-transform: uppercase;
+        }
+
+        .distrito-header {
+            background-color: #f1f4f9; /* Gris azulado muy suave */
+            color: #333;
+            padding: 7px 15px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-left: 5px solid #0d47a1; /* El borde azul de la imagen */
+            margin-top: 20px;
+            margin-bottom: 5px;
+            clear: both; /* Evita que se encime con lo anterior */
+        }
+
+        .distrito-count {
+            float: right; /* Esto lo manda a la derecha del div */
+            font-size: 10px;
+            background-color: #0d47a1; /* Fondo azul para el número */
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-top: -2px; /* Ajuste fino para centrar verticalmente */
+        }
 
     </style>
 </head>
@@ -123,11 +176,51 @@
                 </div>
             </td>
         </tr>
+
+        <tr>
+            <td colspan="3" class="fila-resumen">
+                <div class="caja-total">
+                    <span class="texto-total">Total General de Pendientes</span>
+                    <span class="valor-total">{{ $total }}</span>
+                    
+                    <div class="resumen-tipos">
+                        <div class="badge-tipo">
+                            <span class="numero-tipo">{{ $totalIglesias }}</span>
+                            <span class="label-tipo">Iglesias</span>
+                        </div>
+                        
+                        <div class="badge-tipo" style="border-left: 1px solid #ffcdd2; border-right: 1px solid #ffcdd2;">
+                            <span class="numero-tipo">{{ $totalGrupos }}</span>
+                            <span class="label-tipo">Grupos</span>
+                        </div>
+                        
+                        <div class="badge-tipo">
+                            
+                            <span class="numero-tipo">{{ $totalFiliales }}</span>
+                            <span class="label-tipo">Filiales</span>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+
     </table>
 
     <div class="linea-separadora"></div>
     @foreach($datos as $distrito => $iglesias)
-         <div class="distrito-header">Distrito: {{ $distrito }}</div>
+
+        @php
+            // Sumamos los pendientes de cada iglesia en este distrito
+            $totalPendientesDistrito = $iglesias->sum(function($iglesia) {
+                // Filtramos los estados de la iglesia que sean 'PENDIENTE' y los contamos
+                return collect($iglesia->estados)->filter(function($estado) {
+                    return $estado === 'PENDIENTE';
+                })->count();
+            });
+        @endphp
+        <div class="distrito-header">Distrito: {{ $distrito }}
+            <span class="distrito-count">{{ $totalPendientesDistrito }} Pendientes</span>
+        </div>
         <table>
             <thead>
                 <tr>

@@ -316,7 +316,8 @@ class PendientesController extends Controller
                 'xr.estado',
                 DB::raw("xpas.nombre || ' ' || COALESCE(xpas.ape_paterno, '') || ' ' || COALESCE(xpas.ape_materno, '') as nombre_pas"),
                 DB::raw("xres.nombre || ' ' || COALESCE(xres.ape_paterno, '') || ' ' || COALESCE(xres.ape_materno, '') as nombre_res")
-            );
+            )
+            ->where('xr.estado', 'PENDIENTE');
 
         // --- LÓGICA DE FILTRADO POR TIPO ---
 
@@ -422,6 +423,10 @@ class PendientesController extends Controller
                 );
             }
 
+        $totalGeneral = $resultados->count();
+        $totalIglesias = $resultados->where('tipo', 'Iglesia')->count();
+        $totalFiliales = $resultados->where('tipo', 'Filial')->count();
+        $totalGrupos   = $resultados->where('tipo', 'Grupo')->count();
 
         if(count($periodos) > 1){// por si son varios meses
             $datosAgrupados = $resultados->groupBy('distrito')->map(function ($itemsDistrito) use ($periodos) {
@@ -449,6 +454,10 @@ class PendientesController extends Controller
              //dd($datosAgrupados);
             $pdf = Pdf::loadView('pdf.pdf_reporte_pendientes_varios_meses', [
                 'datos' => $datosAgrupados,
+                'total'         => $totalGeneral,
+                'totalIglesias' => $totalIglesias,
+                'totalFiliales' => $totalFiliales,
+                'totalGrupos'   => $totalGrupos,
                 'periodos' => $periodos,
                 'mesesNom' => [
                     1 => 'Ene', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr', 5 => 'May', 6 => 'Jun',
@@ -458,9 +467,16 @@ class PendientesController extends Controller
             return $pdf->stream();
 
         }else{ //por si es solo 1 mes
+
+            
+
             $datosAgrupados = $resultados->groupBy('distrito'); 
             $pdf = Pdf::loadView('pdf.pdf_reporte_pendientes', [
                 'datos' => $datosAgrupados,
+                'total'         => $totalGeneral,
+                'totalIglesias' => $totalIglesias,
+                'totalFiliales' => $totalFiliales,
+                'totalGrupos'   => $totalGrupos,
                 'periodo' => $request->periodo_inicio . ($request->has('periodo_fin') ? ' a ' . $request->periodo_fin : ''),
             ])->setPaper('letter', 'portrait');
 
