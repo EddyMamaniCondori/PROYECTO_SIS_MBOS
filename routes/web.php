@@ -126,7 +126,7 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::get('/blancos/index/', [BlancoController::class, 'index'])
         ->name('blancos.index');
-    Route::post('/blancos/filtrar', [blancoController::class, 'index_filtro'])->name('blancos.filtro');
+    Route::post('/blanco/filtrar', [blancoController::class, 'index_filtro'])->name('blanco.filtro');
     
     /**
      *_________________Bautisos

@@ -471,7 +471,6 @@ class RemesaController extends Controller
 
     public function llenar_filial(Request $request) //permision 'ver remesas filiales - remesas',
     {
-        //dd($request);
         $idIglesia = $request->id_iglesia;
         $anio = $request->anio;
         $mes = $request->mes;
@@ -523,6 +522,11 @@ class RemesaController extends Controller
         //dd($request);
         try {
             
+            $cierre         = $request->boolean('cierre');
+            $deposito       = $request->boolean('deposito');
+            $documentacion  = $request->boolean('documentacion');
+
+
             $mes = $request->mes;
             $anio = $request->anio;
             $remesa = Remesa::find($id);
@@ -532,9 +536,9 @@ class RemesaController extends Controller
                 return redirect()->back()->with('info', 'Esta remesa no existe.');
             }
 
-            $remesa->cierre = $request->cierre;
-            $remesa->deposito = $request->deposito;
-            $remesa->documentacion = $request->documentacion;
+            $remesa->cierre = $cierre;
+            $remesa->deposito = $deposito;
+            $remesa->documentacion = $documentacion;
             $remesa->fecha_entrega = $request->fecha_entrega;
             $remesa->estado = 'ENTREGADO';
             $remesa->observacion = $request->observacion;
@@ -567,7 +571,7 @@ class RemesaController extends Controller
             /******************************************/
             //  SE HACE LA ACTUALIZACION DE LOS DIFERENTES MESES A ENTREGADO
             /******************************************/
-            $remesasIds = DB::table('remesas as xr')
+            /*$remesasIds = DB::table('remesas as xr')
                 ->join('generas as xg', 'xr.id_remesa', '=', 'xg.id_remesa')
                 ->where('xg.id_iglesia', $request->id_iglesia)
                 ->where('xg.anio', $request->anio)
@@ -580,7 +584,7 @@ class RemesaController extends Controller
                 $remesa->fecha_entrega = $request->fecha_entrega;
                 $remesa->estado = 'ENTREGADO';
                 $remesa->save();
-            }
+            }*/
             //dd($remesasIds);
             /******************************************/
             //  LLENAMOS LA PUNTUALIDAD

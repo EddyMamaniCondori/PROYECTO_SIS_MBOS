@@ -36,7 +36,7 @@
               <div class="col-8">
                 <div class="row">
                   <div class="card mb-4">
-                    <form class="mt-3 mb-3" action="{{ route('blancos.filtro') }}" method="POST" id="filtroForm">
+                    <form class="mt-3 mb-3" action="{{ route('blanco.filtro') }}" method="POST" id="filtroForm">
                     @csrf  
                       <div class="row">
                         <!--SELECT PERSOMNALIZADO-->

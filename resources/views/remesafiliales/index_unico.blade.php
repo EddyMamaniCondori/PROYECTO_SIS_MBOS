@@ -184,174 +184,123 @@
                                         </tr>
 
                                              <!-- Modal -->
-                                            <div class="modal fade" id="confirmModal-{{ $dato->id_remesa }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                <form action="{{ route('remesasfilial.registrar', ['id' => $dato->id_remesa]) }}" method="POST">
-                                                @csrf
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Registro de remesas</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <center><strong style="color: green;"> {{$dato->nombre_mes}} - {{$dato->anio}}</strong></center>
-                                                    <input type="hidden" name="id_iglesia" id="id_iglesia" class="form-control" value="{{ $iglesia->id_iglesia }}">
-                                                    <input type="hidden" name="distrito" id="distrito" class="distrito" value="{{ $distrito}}">
-                                                    <input type="hidden" name="anio" id="anio" value="{{ $anio }}">
-                                                    <input type="hidden" name="mes" id="mes" value="{{ $mes }}">
-                                                    <hr>
-                                                    <label for="fecha_entrega" class="form-label">Fecha de entrega:</label>
-                                                    <input type="date" name="fecha_entrega" id="fecha_entrega" class="form-control" required value="{{ now()->format('Y-m-d') }}" >
-                                                    
-                                                    
-                                                    <div class="form-check form-switch">
-                                                        <input type="hidden" name="cierre" value="false">
-                                                        <input class="form-check-input" type="checkbox" role="switch" id="switchCierre" name="cierre" value="true" 
-                                                            @if($dato->cierre) checked @endif>
-                                                        <label class="form-check-label" for="switchCierre">Cierre:</label>
-                                                    </div>
+                                            <div class="modal fade" id="confirmModal-{{ $dato->id_remesa }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-lg border-0">
+                                                    <div class="modal-content shadow-lg">
+                                                        <form action="{{ route('remesasfilial.registrar', ['id' => $dato->id_remesa]) }}" method="POST">
+                                                            @csrf
+                                                            <div class="modal-header bg-primary text-white">
+                                                                <h5 class="modal-title">
+                                                                    <i class="bi bi-pencil-square me-2"></i> Registro de Remesa: {{ $dato->nombre_mes }} - {{ $dato->anio }}
+                                                                </h5>
+                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
 
-                                                    <div class="form-check form-switch">
-                                                        <input type="hidden" name="deposito" value="false">
-                                                        <input class="form-check-input" type="checkbox" role="switch" id="switchDeposito" name="deposito" value="true"
-                                                            @if($dato->deposito) checked @endif>
-                                                        <label class="form-check-label" for="switchDeposito">Depósito:</label>
-                                                    </div>
+                                                            <div class="modal-body p-0"> <div class="row g-0">
+                                                                    <div class="col-md-6 p-4 border-end">
+                                                                        <h6 class="text-uppercase fw-bold text-primary mb-4 border-bottom pb-2">Datos de Registro</h6>
+                                                                        
+                                                                        <input type="hidden" name="id_iglesia" value="{{ $iglesia->id_iglesia }}">
+                                                                        <input type="hidden" name="distrito" value="{{ $distrito }}">
+                                                                        <input type="hidden" name="anio" value="{{ $anio }}">
+                                                                        <input type="hidden" name="mes" value="{{ $mes }}">
 
-                                                    <div class="form-check form-switch">
-                                                        <input type="hidden" name="documentacion" value="false">
-                                                        <input class="form-check-input" type="checkbox" role="switch" id="switchDocumentacion" name="documentacion" value="true"
-                                                            @if($dato->documentacion) checked @endif>
-                                                        <label class="form-check-label" for="switchDocumentacion">Documentación:</label>
-                                                    </div>
+                                                                        <div class="mb-3">
+                                                                            <label class="form-label fw-bold small">Fecha de Entrega:</label>
+                                                                            <input type="date" name="fecha_entrega" class="form-control" required value="{{ now()->format('Y-m-d') }}">
+                                                                        </div>
 
+                                                                        <div class="d-flex gap-3 mb-4">
+                                                                            <div class="form-check form-switch">
+                                                                                <input class="form-check-input" type="checkbox" role="switch" id="switchCierre-{{ $dato->id_remesa }}" name="cierre" @if($dato->cierre) checked @endif>
+                                                                                <label class="form-check-label small" for="switchCierre-{{ $dato->id_remesa }}">CIE</label>
+                                                                            </div>
+                                                                            <div class="form-check form-switch">
+                                                                                <input class="form-check-input" type="checkbox" role="switch" id="switchDep-{{ $dato->id_remesa }}" name="deposito"  @if($dato->deposito) checked @endif>
+                                                                                <label class="form-check-label small" for="switchDep-{{ $dato->id_remesa }}">DEP</label>
+                                                                            </div>
+                                                                            <div class="form-check form-switch">
+                                                                                <input class="form-check-input" type="checkbox" role="switch" id="switchDoc-{{ $dato->id_remesa }}" name="documentacion" @if($dato->documentacion) checked @endif>
+                                                                                <label class="form-check-label small" for="switchDoc-{{ $dato->id_remesa }}">DOC</label>
+                                                                            </div>
+                                                                        </div>
 
-                                                    <div class="mt-3">
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                                <label for="ofrenda" class="form-label">Ofrenda:</label>
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <input type="number" name="ofrenda" class="ofrenda" class="form-control" step="0.001" min="0" value="{{$dato->ofrenda}}" required>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                                        <div class="row g-2">
+                                                                            <div class="col-6 mb-3">
+                                                                                <label class="form-label small fw-bold text-secondary">Ofrenda:</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text bg-light">Bs</span>
+                                                                                    <input type="number" name="ofrenda" class="ofrenda form-control border-primary fw-bold" step="0.01" value="{{ $dato->ofrenda }}" required>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-6 mb-3">
+                                                                                <label class="form-label small fw-bold text-secondary">Diezmo:</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text bg-light">Bs</span>
+                                                                                    <input type="number" name="diezmo" class="diezmo form-control border-primary fw-bold" step="0.01" value="{{ $dato->diezmo }}" required>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-6 mb-3">
+                                                                                <label class="form-label small fw-bold text-secondary">Pro Templo:</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text bg-light">Bs</span>
+                                                                                    <input type="number" name="pro_templo" class="pro_templo form-control border-primary fw-bold" step="0.01" value="{{ $dato->pro_templo }}" required>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="col-6 mb-3">
+                                                                                <label class="form-label small fw-bold text-secondary">Gasto Realizado:</label>
+                                                                                <div class="input-group">
+                                                                                    <span class="input-group-text bg-light text-danger"><i class="bi bi-dash-circle"></i></span>
+                                                                                    <input type="number" name="gasto" class="gasto form-control border-danger" step="0.01" value="{{ $dato->gasto }}" required>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
 
-                                                    <div class="mt-3">
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                                <label for="diezmo" class="form-label">Diezmo:</label>
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <input type="number" name="diezmo" class="diezmo" class="form-control" step="0.001" min="0" value="{{$dato->diezmo}}" required>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                                    <div class="col-md-6 p-4 bg-light">
+                                                                        <h6 class="text-uppercase fw-bold text-success mb-4 border-bottom pb-2">Distribución de Fondos</h6>
+                                                                        
+                                                                        <div class="mb-3">
+                                                                            <label class="small text-muted d-block mb-1">Fondo Local (60% Of + Pro Templo)</label>
+                                                                            <input type="number" name="fondo_local" class="fondo_local form-control-plaintext fs-4 fw-bold text-dark p-0" readonly>
+                                                                        </div>
 
-                                                    <div class="mt-3">
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                                <label for="pro_templo" class="form-label">Pro Templo:</label>
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <input type="number" name="pro_templo" class="pro_templo" class="form-control" step="0.001" min="0" value="{{$dato->pro_templo}}" required>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                                        <div class="mb-3">
+                                                                            <label class="small text-muted d-block mb-1">Remesa MBOS (40% Of + Diezmo)</label>
+                                                                            <input type="number" name="monto_remesa" class="monto_remesa form-control-plaintext fs-4 fw-bold text-primary p-0" readonly>
+                                                                        </div>
 
-                                                    <div class="mt-3">
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                                <label for="pro_templo" class="form-label">Gasto:</label>
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <input type="number" name="gasto" class="gasto" class="form-control" step="0.001" min="0" value="{{$dato->gasto}}" required>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                                        <hr>
 
-                                                    <hr>
+                                                                        <div class="card border-0 shadow-sm mt-4 bg-white">
+                                                                            <div class="card-body p-3">
+                                                                                <div class="d-flex justify-content-between mb-2">
+                                                                                    <span class="text-secondary small">Total Ingresos:</span>
+                                                                                    <input type="text" class="total_general border-0 fw-bold text-end w-50" readonly>
+                                                                                </div>
+                                                                                <div class="d-flex justify-content-between">
+                                                                                    <span class="text-secondary small">Saldo Neto (Ingresos - Gasto):</span>
+                                                                                    <input type="text" class="saldo_neto border-0 fw-bold text-end w-50" readonly>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
 
-                                                    <div class="mt-3">
-                                                        <strong><label for="fondo_local" class="form-label" style="color: #1872E7;">Fondo Local (60% Ofrenda + Pro Templo):</label></strong>
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                             60% Ofrenda = 
+                                                                        <div class="mt-4 small text-muted italic">
+                                                                            <i class="bi bi-info-circle me-1"></i> Los valores se calculan automáticamente basándose en la normativa institucional.
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="col-8">
-                                                                <input type="number" class="porcentaje_ofrenda" class="form-control" min="0" value="0" step="0.001" readonly>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                                Pro Templo =
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <input type="number" class="input_pro_templo" class="form-control" min="0" value="0" step="0.001" readonly>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <hr>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                                TOTAL FONDO LOCAL=
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <input type="number" name="fondo_local" class="fondo_local" class="form-control" min="0" value="0" step="0.01" readonly>
-                                                            </div>
-                                                        </div> 
-                                                    </div>
 
-                                                    <div class="mt-3">
-                                                        <strong><label for="fondo_local" class="form-label " style="color: #1872E7;">Remesa MBOS (Diezmo + 40% Ofrenda):</label></strong>
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                             40% Ofrenda = 
+                                                            <div class="modal-footer bg-white border-top-0 p-3">
+                                                                <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancelar</button>
+                                                                <button type="submit" class="btn btn-success px-4 shadow-sm">
+                                                                    <i class="bi bi-cloud-upload me-1"></i> Registrar Remesa
+                                                                </button>
                                                             </div>
-                                                            <div class="col-8">
-                                                                <input type="number" class="porcentaje_ofrenda_rem" class="form-control" min="0" value="0" step="0.001" readonly>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                                Diezmos =
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <input type="number" class="input_diezmo" class="form-control" min="0" value="0" step="0.001" readonly>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <hr>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-3">
-                                                                TOTAL REMESA =
-                                                            </div>
-                                                            <div class="col-8">
-                                                                <input type="number" name="monto_remesa" class="monto_remesa" class="form-control" step="0.01" min="0" value="0" readonly>
-                                                            </div>
-                                                        </div> 
-                                                        
-                                                    
+                                                        </form>
                                                     </div>
                                                 </div>
-
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                    <button type="submit" class="btn btn-success">Registrar</button>
-                                                </div>
-                                                </form>
-                                                </div>
-                                            </div>
                                             </div>
                                         @endforeach
                                     </tbody>
@@ -419,35 +368,63 @@
 </script>
 
 <script>
-$(document).on('input', '.ofrenda, .diezmo, .pro_templo', function() {
 
-    let modal = $(this).closest('.modal'); // ← Modal actual
+    // --- 1. FUNCIÓN MAESTRA DE CÁLCULOS ---
+    function ejecutarCalculos(modal) {
+        let ofrenda = parseFloat(modal.find('.ofrenda').val()) || 0;
+        let diezmo = parseFloat(modal.find('.diezmo').val()) || 0;
+        let proTemplo = parseFloat(modal.find('.pro_templo').val()) || 0;
+        let gasto     = parseFloat(modal.find('.gasto').val()) || 0;
 
-    let ofrenda = parseFloat(modal.find('.ofrenda').val()) || 0;
-    let diezmo = parseFloat(modal.find('.diezmo').val()) || 0;
-    let proTemplo = parseFloat(modal.find('.pro_templo').val()) || 0;
+        // Cálculos
+        let p60 = ofrenda * 0.6;
+        let p40 = ofrenda * 0.4;
+        let fondoLocal = p60 + proTemplo;
+        let remesa = diezmo + p40;
 
-    // Evitar negativos
-    if (ofrenda < 0) ofrenda = 0;
-    if (diezmo < 0) diezmo = 0;
-    if (proTemplo < 0) proTemplo = 0;
+        // --- NUEVOS CÁLCULOS VISUALES ---
+        let totalGeneral = diezmo + ofrenda + proTemplo;
+        let saldoNeto = totalGeneral - gasto;
+        
 
-    // Calculos
-    let p60 = ofrenda * 0.6;
-    let p40 = ofrenda * 0.4;
+        // Asignar valores al modal actual
+        modal.find('.porcentaje_ofrenda').val(p60.toFixed(2));
+        modal.find('.input_pro_templo').val(proTemplo.toFixed(2));
+        modal.find('.porcentaje_ofrenda_rem').val(p40.toFixed(2));
+        modal.find('.input_diezmo').val(diezmo.toFixed(2));
+        modal.find('.fondo_local').val(fondoLocal.toFixed(2));
+        modal.find('.monto_remesa').val(remesa.toFixed(2));
 
-    let fondoLocal = p60 + proTemplo;
-    let remesa = diezmo + p40;
+        // --- SETEAR CAMPOS VISUALES ---
+        modal.find('.total_general').val(totalGeneral.toFixed(2));
+        modal.find('.saldo_neto').val(saldoNeto.toFixed(2));
+        
+        // Opcional: Si el saldo es negativo, ponerlo en rojo
+        if(saldoNeto < 0) {
+            modal.find('.saldo_neto').addClass('text-danger').removeClass('text-success');
+        } else {
+            modal.find('.saldo_neto').addClass('text-success').removeClass('text-danger');
+        }
 
-    // Setear valores al modal actual
-    modal.find('.porcentaje_ofrenda').val(p60.toFixed(2));
-    modal.find('.input_pro_templo').val(proTemplo.toFixed(2));
-    modal.find('.porcentaje_ofrenda_rem').val(p40.toFixed(2));
-    modal.find('.input_diezmo').val(diezmo.toFixed(2));
-    modal.find('.fondo_local').val(fondoLocal.toFixed(2));
-    modal.find('.monto_remesa').val(remesa.toFixed(2));
+    }
 
-});
+
+    // --- 2. DISPARADOR AL ESCRIBIR ---
+    $(document).on('input', '.ofrenda, .diezmo, .pro_templo, .gasto', function() {
+        let modal = $(this).closest('.modal');
+        ejecutarCalculos(modal);
+    });
+
+    // --- 3. DISPARADOR AL ABRIR EL MODAL (La solución a tu problema) ---
+    $(document).on('show.bs.modal', '.modal', function() {
+        let modal = $(this);
+        // Pequeño delay para asegurar que los valores del value de Blade ya estén cargados
+        setTimeout(() => {
+            ejecutarCalculos(modal);
+        }, 100); 
+    });
+
+
 </script>
 
 
