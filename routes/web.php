@@ -271,9 +271,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::POST('/remesas/iglesia/registrar/{id_remesa}', [RemesaController::class, 'registrar_remesa_iglesia'])
         ->name('remesasiglesia.registrar');
+    Route::get('/remesas/get-data-json/{mes}/{anio}', [RemesaController::class, 'get_remesas_json'])
+     ->name('remesas.get_json');
 
 
-    
 
 
     // Ruta para procesar el formulario (POST)
@@ -495,7 +496,6 @@ Route::middleware(['auth'])->group(function () {
     [RemesasDashboardController::class, 'exportFilialesPDF'])
     ->name('remesas.filiales.pdf');
 
-       Route::post('/remesas/mes/filtrar', [RemesaController::class, 'filtro_mes'])->name('remesas.mes.filtro');
 
     /**
      * *******************************************************************************

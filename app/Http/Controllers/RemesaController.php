@@ -130,102 +130,77 @@ class RemesaController extends Controller
         ]);
     }
 
-    public function filtro_mes(Request $request)
-    {
 
-        //dd($request);
-        $anio = $request->anio;
-        $mes = $request->mes;
-        if ($request->entregado == 1) {
-            $estado_texto = 'ENTREGADO';
-        } else {
-            $estado_texto = 'PENDIENTE';
+    public function get_remesas_json(Request $request, $mes, $anio) {
+        $query = DB::table('generas as xg')
+        ->select([
+            'xd.nombre as nombre_distrito',
+            'xi.codigo',
+            'xi.id_iglesia',
+            'xp.nombre as nombre_pas',
+            'xp.ape_paterno',
+            'xp.ape_materno',
+            'xi.nombre as nombre_igle',
+            'xi.tipo as tipo_igle',
+            'xi.lugar as lugar_igle',
+            'xr.*',
+            'xperso.nombre as nombre_per',
+            'xperso.ape_paterno as ape_paterno_per'
+        ])
+        ->leftJoin('iglesias as xi', 'xg.id_iglesia', '=', 'xi.id_iglesia')
+        ->leftJoin('distritos as xd', 'xi.distrito_id', '=', 'xd.id_distrito')
+        ->leftJoin('remesas as xr', 'xg.id_remesa', '=', 'xr.id_remesa')
+        ->leftJoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
+        ->leftJoin('personas as xperso', 'xd.id_responsable_remesa', '=', 'xperso.id_persona')
+        ->where('xg.mes', $mes)
+        ->where('xg.anio', $anio)
+        ->where('xi.estado', true);
+
+        $personal = DB::select("select xp.id_persona, xp.nombre, xp.ape_paterno, xr.name
+                            from personas xp
+                            join personales xpp on xp.id_persona = xpp.id_personal
+                            join model_has_roles xm on xp.id_persona = xm.model_id 
+                            join roles xr on xm.role_id = xr.id
+                            where xr.name like 'Tesorero'
+                    ");
+        
+        // Filtro: Personal Responsable
+        if ($request->filled('id_personal') && $request->id_personal != -1) {
+            $query->where('xd.id_responsable_remesa', $request->id_personal);
         }
-        // 1. Capturamos los datos del request
-        $filtro_tipo = $request->input('tipo');     // Array: ['grupo', 'filial']
-        $filtro_personal = $request->input('id_personal'); // ID directo: "43"
-        $filtro_lugar = $request->input('lugar');
-        //dd($filtro_personal, $filtro_tipo, $filtro_lugar);
-        // 2. Iniciamos la estructura de la consulta
-        if($request->id_personal = "-1"){
-            $query = DB::table('generas as xg')
-            ->select([
-                'xd.nombre as nombre_distrito',
-                'xi.codigo',
-                'xi.id_iglesia',
-                'xp.nombre as nombre_pas',
-                'xp.ape_paterno',
-                'xp.ape_materno',
-                'xi.nombre as nombre_igle',
-                'xi.tipo as tipo_igle',
-                'xi.lugar as lugar_igle',
-                'xr.*',
-                'xperso.nombre as nombre_per',
-                'xperso.ape_paterno as ape_paterno_per'
-            ])
-            ->leftJoin('iglesias as xi', 'xg.id_iglesia', '=', 'xi.id_iglesia')
-            ->leftJoin('distritos as xd', 'xi.distrito_id', '=', 'xd.id_distrito')
-            ->leftJoin('remesas as xr', 'xg.id_remesa', '=', 'xr.id_remesa')
-            ->leftJoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
-            ->leftJoin('personas as xperso', 'xr.id_personal', '=', 'xperso.id_persona')
-            
-            ->where('xg.mes', $mes)
-            ->where('xg.anio', $anio)
-            ->where('xi.estado', true)
-            ->where('xi.lugar', $filtro_lugar)
-            ->wherelike('xr.estado', $estado_texto);
-                
-        }else{
-            $query = DB::table('generas as xg')
-            ->select([
-                'xd.nombre as nombre_distrito',
-                'xi.codigo',
-                'xi.id_iglesia',
-                'xp.nombre as nombre_pas',
-                'xp.ape_paterno',
-                'xp.ape_materno',
-                'xi.nombre as nombre_igle',
-                'xi.tipo as tipo_igle',
-                'xi.lugar as lugar_igle',
-                'xr.*',
-                'xperso.nombre as nombre_per',
-                'xperso.ape_paterno as ape_paterno_per'
-            ])
-            ->leftJoin('iglesias as xi', 'xg.id_iglesia', '=', 'xi.id_iglesia')
-            ->leftJoin('distritos as xd', 'xi.distrito_id', '=', 'xd.id_distrito')
-            ->leftJoin('remesas as xr', 'xg.id_remesa', '=', 'xr.id_remesa')
-            ->leftJoin('personas as xp', 'xd.id_pastor', '=', 'xp.id_persona')
-            ->leftJoin('personas as xperso', 'xr.id_personal', '=', 'xperso.id_persona')
-            
-            ->where('xg.mes', $mes)
-            ->where('xg.anio', $anio)
-            ->where('xi.estado', true)
-            ->where('xr.id_personal', $filtro_personal)
-            ->where('xi.lugar', $filtro_lugar)
-            ->wherelike('xr.estado', $estado_texto);
+
+        // Filtro: Tipo (Múltiple con Checkboxes)
+        if ($request->has('tipo') && !in_array('TODOS', $request->tipo)) {
+            $query->whereIn('xi.tipo', $request->tipo);
         }
-        // 3. Aplicamos el filtro de TIPO (si el usuario seleccionó alguno)
-        if (!empty($filtro_tipo)) {
-          $query->whereIn('xi.tipo', $filtro_tipo);
+
+        // Filtro: Lugar (Múltiple con Checkboxes)
+        if ($request->has('lugar') && !in_array('TODOS', $request->lugar)) {
+            $query->whereIn('xi.lugar', $request->lugar);
         }
-        // 5. Ordenamos y obtenemos los resultados
+
+        // Filtro: Estado (Múltiple: PENDIENTE, ENTREGADO, etc.)
+        if ($request->has('estado') && !in_array('TODOS', $request->estado)) {
+            $query->whereIn('xr.estado', $request->estado);
+        }
+
+        // 2. Obtenemos los resultados ordenados
         $resultados = $query->orderBy('nombre_distrito')->get();
 
-        // Consulta para llenar el select de personal en la vista
-        $personal = DB::select("
-            SELECT xp.id_persona, xp.nombre, xp.ape_paterno, xr.name
-            FROM personas xp
-            JOIN personales xpp ON xp.id_persona = xpp.id_personal
-            JOIN model_has_roles xm ON xp.id_persona = xm.model_id 
-            JOIN roles xr ON xm.role_id = xr.id
-            WHERE xr.name LIKE 'Tesorero'
-        ");
+        // 3. (Opcional) Si aún necesitas la lista de personal para algo en el JSON
+        $personal = DB::table('personas as xp')
+            ->join('personales as xpp', 'xp.id_persona', '=', 'xpp.id_personal')
+            ->join('model_has_roles as xm', 'xp.id_persona', '=', 'xm.model_id')
+            ->join('roles as xr_rol', 'xm.role_id', '=', 'xr_rol.id')
+            ->where('xr_rol.name', 'like', 'Tesorero')
+            ->select('xp.id_persona', 'xp.nombre', 'xp.ape_paterno')
+            ->get();
 
-        return view('remesas.index_mes', [
-            'datos'    => $resultados,
-            'mes'      => $mes,
-            'anio'     => $anio,
-            'personal' => $personal,
+        return response()->json([
+            'data' => $resultados,
+            'mes' => $mes,
+            'anio' => $anio,
+            'personal' => $personal
         ]);
     }
     /**
@@ -492,7 +467,7 @@ class RemesaController extends Controller
         //
     }
 
-//muestra la vista de cada filiala
+    //muestra la vista de cada filiala
 
     public function llenar_filial(Request $request) //permision 'ver remesas filiales - remesas',
     {
@@ -712,7 +687,7 @@ class RemesaController extends Controller
                 $remesa->estado_dias = "Entregado con " . abs($diferencia) . " día(s) de retraso";
             }
             $remesa->save();
-             // empesamos la asignacion de punti va hasat comiit
+            // empesamos la asignacion de punti va hasat comiit
 
             $iglesia = Genera::where('id_remesa', $remesa->id_remesa)
                  ->with('iglesia')
@@ -760,12 +735,18 @@ class RemesaController extends Controller
 
             
             DB::commit();
-
+            return response()->json([
+                'success' => true, 
+                'message' => 'Remesa registrada correctamente en el sistema.'
+            ]);
 
             return redirect()->route('remesas.index_mes', ['mes' => $mes, 'anio' => $anio])->with('success', 'Registro Correcto');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Error al registrar la remesa: ' . $e->getMessage());
+            return response()->json([
+                'success' => false, 
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
         }
     }
     

@@ -156,7 +156,7 @@
             </td>
         </tr>
         <tr>
-        <td colspan="3" class="fila-resumen">
+            <td colspan="3" class="fila-resumen">
                 <div class="caja-total">
                     <span class="texto-total">Total General de Pendientes</span>
                     <span class="valor-total">{{ $total }}</span>

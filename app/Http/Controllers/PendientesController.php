@@ -464,12 +464,10 @@ class PendientesController extends Controller
                     7 => 'Jul', 8 => 'Ago', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dic'
                 ]
             ])->setPaper('letter', 'portrait'); // Recomendado Landscape para muchas columnas
-            return $pdf->stream();
-
+            $fechaHora = now()->format('d-m-Y_H-i');
+            $nombrePdf = "Rep_Pendientes_{$fechaHora}.pdf";
+            return $pdf->stream($nombrePdf);
         }else{ //por si es solo 1 mes
-
-            
-
             $datosAgrupados = $resultados->groupBy('distrito'); 
             $pdf = Pdf::loadView('pdf.pdf_reporte_pendientes', [
                 'datos' => $datosAgrupados,
@@ -480,8 +478,10 @@ class PendientesController extends Controller
                 'periodo' => $request->periodo_inicio . ($request->has('periodo_fin') ? ' a ' . $request->periodo_fin : ''),
             ])->setPaper('letter', 'portrait');
 
-            // stream() abre el PDF en el navegador
-            return $pdf->stream('Reporte_Pendientes_MBOS.pdf');
+            $fechaHora = now()->format('d-m-Y_H-i');
+            $nombrePdf = "Rep_Pendientes_{$fechaHora}.pdf";
+        
+            return $pdf->stream($nombrePdf);
         }
         
 
