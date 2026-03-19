@@ -433,8 +433,17 @@
                 {
                     data: null,
                     render: function(data) {
+                        let urlRegistro = "{{ route('remesas.registro_semanas', ':id') }}";
+                        // 2. Reemplazamos el placeholder con el valor real de JS
+                        urlRegistro = urlRegistro.replace(':id', data.id_remesa);
+
                         if (data.tipo_igle === 'Filial') {
-                            return ` <form action="{{ route('remesas.filial') }}" method="POST">@csrf
+                            return ` 
+                            <div class="btn-group">
+                            <a href="${urlRegistro}" class="btn btn-warning shadow-sm btn-sm">
+                                <i class="bi bi-pencil-square"></i> Registrar Semanas
+                            </a>
+                            <form action="{{ route('remesas.filial') }}" method="POST">@csrf
 
                                                           <input type="hidden" name="id_iglesia" id="id_iglesia" value="${data.id_iglesia }">
                                                           <input type="hidden" name="anio" id="anio" value="${anioActual }">
@@ -443,9 +452,14 @@
                                                           <button type="submit" class="btn btn-success btn-sm">
                                                               <i class="bi bi-file-earmark-bar-graph-fill"></i> Registrar
                                                           </button>
-                                                      </form>`;
+                                                      </form></div>`;
                         }
-                        return `<button type="button" class="btn btn-primary btn-sm btn-abrir-modal" 
+                        return `
+                                <div class="btn-group">
+                                <a href="${urlRegistro}" class="btn btn-warning shadow-sm btn-sm">
+                                    <i class="bi bi-pencil-square"></i> Registrar Semanas
+                                </a>    
+                                <button type="button" class="btn btn-primary btn-sm btn-abrir-modal" 
                                     data-id_remesa="${data.id_remesa}" 
                                     data-distrito="${data.nombre_distrito}"
                                     data-iglesia="${data.nombre_igle}"
@@ -460,7 +474,7 @@
                                     data-bs-toggle="modal" 
                                     data-bs-target="#confirmModal">
                                     <i class="bi bi-pencil-square"></i> Registrar
-                                </button>`;
+                                </button></div>`;
                     }
                 }
             ],

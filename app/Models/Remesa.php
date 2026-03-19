@@ -54,6 +54,14 @@ class Remesa extends Model
         return $this->belongsTo(Personal::class, 'id_personal', 'id_personal');
     }
 
+    public function semanas()
+    {
+        // Una remesa mensual tiene muchas semanas
+        return $this->hasMany(RemesaSemanal::class, 'id_remesa', 'id_remesa')
+                    ->orderBy('nro_semana', 'asc');
+    }
+
+
 
     /*public function iglesias()
     {

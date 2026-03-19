@@ -28,6 +28,7 @@ use App\Http\Controllers\roleController;
 use App\Http\Controllers\PerfilController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuditoriaController;
+use App\Http\Controllers\RemesaSemanalController;
 
 use App\Http\Controllers\UnidadEducativaController;
 use App\Http\Controllers\VisitaCapellanController;
@@ -150,9 +151,17 @@ Route::middleware(['auth'])->group(function () {
         ->name('remesas.pendientes');
 
 
+    /**
+     *_________________REMESAS SEMANALES
+    * 
+    */
+    Route::get('/remesas/{id}/registro', [RemesaSemanalController::class, 'registroSemanas'])
+        ->name('remesas.registro_semanas');
+    Route::post('/remesas/{id}/guardar', [RemesaSemanalController::class, 'guardarTodo'])
+        ->name('remesas.guardar_todo');
 
 
-
+        
     Route::post('/remesas/pendientes/anual/filtro', [PendientesController::class, 'filtro_anual'])->name('remesas.pendiente.anual.filtro');
     Route::get('remesas/pendientes/mensual', [PendientesController::class, 'index_mensual'])
         ->name('remesas.pendientes.mensual');
