@@ -18,12 +18,16 @@ class Remesa extends Model
         'cierre',
         'deposito',
         'documentacion',
+        'escaneado',
         'fecha_entrega',
         'fecha_limite',
         'estado_dias',
         'estado',
         'observacion',
         'id_personal',
+        'alerta',
+        'sw_cierre_rem',
+        'sw_det_semana'
     ];
 
 

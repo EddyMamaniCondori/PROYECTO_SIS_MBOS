@@ -22,6 +22,7 @@ class Iglesia extends Model
         'calle',
         'nro',
         'lugar',
+        'fondo_local',
         'tipo',
         'distrito_id',
     ];

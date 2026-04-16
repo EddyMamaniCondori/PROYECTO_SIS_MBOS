@@ -43,11 +43,30 @@
    
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <style>
+      /* Hace que el menú se expanda sobre el contenido sin empujarlo */
+      .main-sidebar:hover {
+          width: 250px !important; /* El ancho normal de tu menú */
+      }
 
+      /* Evita que los textos se vean feos mientras se abre */
+      .sidebar-collapse .main-sidebar:hover .nav-link p,
+      .sidebar-collapse .main-sidebar:hover .brand-text {
+          margin-left: 0;
+          display: inline-block !important;
+          visibility: visible;
+      }
+
+      /* Suaviza la transición */
+      .main-sidebar {
+          transition: width 0.3s ease-in-out !important;
+      }
+    </style>
     @stack('css')
   </head>
 
-  <body class="layout-fixed sidebar-expand-lg sidebar-open bg-body-tertiary">
+  <body class="layout-fixed sidebar-expand-lg sidebar-mini sidebar-collapse bg-body-tertiary">
     <!--begin::App Wrapper-->
     <div class="app-wrapper">
 
@@ -84,6 +103,24 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js" crossorigin="anonymous" ></script>
     <!--begin::Required Plugin(AdminLTE)-->
     <script src="{{ asset('admin/dist/js/adminlte.js') }}"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+          const sidebar = document.querySelector('.main-sidebar');
+          const body = document.querySelector('body');
+
+          if (sidebar && body) {
+              sidebar.addEventListener('mouseenter', function() {
+                  body.classList.remove('sidebar-collapse');
+                  body.classList.add('sidebar-open');
+              });
+
+              sidebar.addEventListener('mouseleave', function() {
+                  body.classList.add('sidebar-collapse');
+                  body.classList.remove('sidebar-open');
+              });
+          }
+      });
+  </script>
     <!--script scroll-->
     <script>
       const SELECTOR_SIDEBAR_WRAPPER = '.sidebar-wrapper';

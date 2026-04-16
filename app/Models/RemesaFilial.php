@@ -19,7 +19,10 @@ class RemesaFilial extends Model
         'diezmo',
         'pro_templo',
         'fondo_local',
-        'monto_remesa'
+        'monto_remesa',
+        'fondo_l_anterior',
+        'fondo_l_final',
+        'gasto',
     ];
 
     public function remesa()

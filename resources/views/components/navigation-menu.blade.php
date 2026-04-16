@@ -1,6 +1,6 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
        <!--begin::Sidebar Brand-->
-        <div class="sidebar-brand"> 
+        <div class="sidebar-brand" style="background-color: rgba(166, 187, 231, 0.05);"> 
           <a href="#" class="brand-link">
             <img src="{{asset('img/logoiasd.png')}}" alt="IASD Logo" class="brand-image opacity-75 shadow" />
             <span class="brand-text fw-light">MBOS</span>

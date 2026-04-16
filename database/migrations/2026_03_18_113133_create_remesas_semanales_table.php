@@ -12,10 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('remesas_semanales', function (Blueprint $table) {
-            $table->id();
             $table->unsignedBigInteger('id_remesa'); 
             $table->integer('nro_semana'); // 1 al 5
 
+            // 2. Definimos la LLAVE PRIMARIA COMPUESTA
+            // Esto permite que exista (18405, 1), (18405, 2), etc.
+            $table->primary(['id_remesa', 'nro_semana']);
             // Totales de la semana (Consolidados)
             $table->decimal('diezmo_total', 10, 2)->default(0);
             $table->decimal('ofrenda_total', 10, 2)->default(0);

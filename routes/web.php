@@ -150,6 +150,30 @@ Route::middleware(['auth'])->group(function () {
     Route::get('remesas/pendientes', [PendientesController::class, 'index'])
         ->name('remesas.pendientes');
 
+    /**
+     * *******************************************************************************
+     *                          RESPONSABLES DE REMESAS
+     * *********************************************************************************
+     */
+    Route::get('/remesas/iglesia/{id}', [RemesaController::class, 'index_remesa_iglesia'])
+        ->name('remesas.iglesia.index'); //ruta para ver una iglesia y sus remesas
+    
+    /**
+     * *******************************************************************************
+     *                          ALERTAS EN 
+     * *********************************************************************************
+     */
+
+    // Grupo de rutas para alertas (opcional para mantener orden)
+    Route::prefix('alertas')->group(function () {
+        Route::post('/store', [RemesaController::class, 'storeAlerta'])->name('alertas.store');
+        Route::get('/{id_iglesia}', [RemesaController::class, 'getAlertas'])->name('alertas.get');
+        Route::post('/update', [RemesaController::class, 'updateAlerta'])->name('alertas.update');
+        Route::post('/delete', [RemesaController::class, 'deleteAlerta'])->name('alertas.delete');
+    });
+    Route::post('/remesas/update-estado', [RemesaController::class, 'updateRemesa'])
+    ->name('remesas.update_estado');
+    Route::post('/remesas/revertir', [RemesaController::class, 'revertirRegistro'])->name('remesas.revertir');
 
     /**
      *_________________REMESAS SEMANALES
@@ -157,10 +181,15 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::get('/remesas/{id}/registro', [RemesaSemanalController::class, 'registroSemanas'])
         ->name('remesas.registro_semanas');
-    Route::post('/remesas/{id}/guardar', [RemesaSemanalController::class, 'guardarTodo'])
+
+    Route::post('/remesas/guardar-todo/{id}', [RemesaSemanalController::class, 'guardarTodo'])
         ->name('remesas.guardar_todo');
+    Route::get('/remesas/{id}/datos-json', [RemesaSemanalController::class, 'getDatosJSON'])
+        ->name('remesas.datos_json');
 
-
+    Route::get('/remesas/{id}/reporte-pdf', [RemesaSemanalController::class, 'generarReportePDF']) //reporte pdf
+        ->name('remesas.reporte_pdf');
+    //****************************************** */
         
     Route::post('/remesas/pendientes/anual/filtro', [PendientesController::class, 'filtro_anual'])->name('remesas.pendiente.anual.filtro');
     Route::get('remesas/pendientes/mensual', [PendientesController::class, 'index_mensual'])
@@ -274,6 +303,8 @@ Route::middleware(['auth'])->group(function () {
     Route::POST('/remesas/filial/', [RemesaController::class, 'llenar_filial'])
         ->name('remesas.filial');
 
+    Route::get('/iglesia/historial-fondo/{id}', [RemesaController::class, 'obtenerHistorialFondo'])
+        ->name('iglesia.historial');
 
     Route::POST('/remesas/filial/registrar/{id}', [RemesaController::class, 'registrar_remesa_filial'])
         ->name('remesasfilial.registrar');
@@ -281,7 +312,7 @@ Route::middleware(['auth'])->group(function () {
     Route::POST('/remesas/iglesia/registrar/{id_remesa}', [RemesaController::class, 'registrar_remesa_iglesia'])
         ->name('remesasiglesia.registrar');
     Route::get('/remesas/get-data-json/{mes}/{anio}', [RemesaController::class, 'get_remesas_json'])
-     ->name('remesas.get_json');
+        ->name('remesas.get_json');
 
 
 

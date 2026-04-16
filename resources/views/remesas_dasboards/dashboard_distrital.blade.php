@@ -34,7 +34,7 @@
       </div>
                 <div class="row ms-1">
     <div class="card mb-4">
-        <form class="mt-3 mb-3" action="{{ route('blancos.filtro', ['anio' => '']) }}" method="GET" id="filtroForm">
+        <form class="mt-3 mb-3" action="{{ route('blancos.filtro', ['anio' => ':anio']) }}" method="GET" id="filtroForm">
             <div class="row">
 
                 <div class="col-3">

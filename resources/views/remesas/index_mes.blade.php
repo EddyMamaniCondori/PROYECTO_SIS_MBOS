@@ -190,12 +190,11 @@
           <div class="container-fluid">
             <!--begin::TABLA-->
             <div class="card mb-4">
-                            <div class="card-header d-flex justify-content-between align-items-center bg-white py-3">
-                                <div class="fw-bold text-secondary">
-                                    <i class="fas fa-table me-2 text-primary"></i>
+                            <div class="card-header d-flex justify-content-between align-items-center py-3">
+                                <div class="fw-bold ">
+                                    <i class="fas fa-table me-2 "></i>
                                     TABLA DE REMESAS
                                 </div>
-
                                 <div class="dropdown ms-auto">
                                     <button class="btn btn-outline-secondary btn-sm dropdown-toggle shadow-sm" type="button" id="dropdownConfig" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="bi bi-gear-fill me-1"></i> Configurar Vista
@@ -263,6 +262,7 @@
                                             <th>CIE</th>
                                             <th>DEP</th>
                                             <th>DOC</th>
+                                            <th>SCAN</th>
                                             <th>Fecha entrega</th>
                                             <th>Fecha limite</th>
                                             <th>estado dias</th>
@@ -418,6 +418,12 @@
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
+                { 
+                    data: 'escaneado',
+                    render: function(data) {
+                        return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
+                    }
+                },
                 { data: 'fecha_entrega' },
                 { data: 'fecha_limite' },
                 { data: 'estado_dias' },
@@ -436,30 +442,31 @@
                         let urlRegistro = "{{ route('remesas.registro_semanas', ':id') }}";
                         // 2. Reemplazamos el placeholder con el valor real de JS
                         urlRegistro = urlRegistro.replace(':id', data.id_remesa);
+                        
 
                         if (data.tipo_igle === 'Filial') {
                             return ` 
                             <div class="btn-group">
-                            <a href="${urlRegistro}" class="btn btn-warning shadow-sm btn-sm">
-                                <i class="bi bi-pencil-square"></i> Registrar Semanas
-                            </a>
-                            <form action="{{ route('remesas.filial') }}" method="POST">@csrf
-
-                                                          <input type="hidden" name="id_iglesia" id="id_iglesia" value="${data.id_iglesia }">
-                                                          <input type="hidden" name="anio" id="anio" value="${anioActual }">
-                                                          <input type="hidden" name="mes" id="mes" value="${ mesActual }">
-                                                          <input type="hidden" name="distrito" id="distrito" value="${data.nombre_distrito}">
-                                                          <button type="submit" class="btn btn-success btn-sm">
-                                                              <i class="bi bi-file-earmark-bar-graph-fill"></i> Registrar
-                                                          </button>
-                                                      </form></div>`;
+                                <a href="/remesas/iglesia/${data.id_iglesia}?anio=${anioActual}&mes=${mesActual}" 
+                                        class="btn btn-sm btn-outline-danger" 
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="Ver Remesas Filiales">
+                                        <i class="bi bi-eye"></i>
+                                </a>
+                            </div>`;
                         }
+
                         return `
-                                <div class="btn-group">
-                                <a href="${urlRegistro}" class="btn btn-warning shadow-sm btn-sm">
-                                    <i class="bi bi-pencil-square"></i> Registrar Semanas
-                                </a>    
-                                <button type="button" class="btn btn-primary btn-sm btn-abrir-modal" 
+                        <div class="btn-group">
+                                <a href="/remesas/iglesia/${data.id_iglesia}?anio=${anioActual}&mes=${mesActual}" 
+                                    class="btn btn-sm btn-outline-primary" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-placement="top" 
+                                    title="Ver Remesas Filiales">
+                                    <i class="bi bi-eye"></i>
+                                </a>   
+                                <button type="button" class="btn btn-outline-primary btn-sm btn-abrir-modal" 
                                     data-id_remesa="${data.id_remesa}" 
                                     data-distrito="${data.nombre_distrito}"
                                     data-iglesia="${data.nombre_igle}"
@@ -474,7 +481,8 @@
                                     data-bs-toggle="modal" 
                                     data-bs-target="#confirmModal">
                                     <i class="bi bi-pencil-square"></i> Registrar
-                                </button></div>`;
+                                </button>
+                        </div>`;
                     }
                 }
             ],
@@ -669,8 +677,6 @@
         // *********************************************************
         //              ocultar y mostar columnas
         // **********************************************************"
-
-
         $('.toggle-vis').on('change', function (e) {
             // Obtenemos el índice de la columna desde el 'value' del check
             var columnIdx = $(this).val();
