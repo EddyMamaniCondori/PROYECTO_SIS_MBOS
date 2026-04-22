@@ -356,9 +356,8 @@
             // 1. Inicialización de DataTable Profesional
             const table = $('#tablaFiliales').DataTable({
                 scrollX: true,
-                stateSave: true,
                 pageLength: 10,
-                
+                order: [[4, 'desc']],
                 language: {
                     url: "https://cdn.datatables.net/plug-ins/1.10.25/i18n/Spanish.json"
                 }
