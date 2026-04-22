@@ -101,8 +101,16 @@ class RemesaExcelController extends Controller
                         if ($remesaPivot) {
 
                             $remesa = Remesa::find($remesaPivot->id_remesa);
-                            if ($remesa->estado !== 'ENTREGADO') {
-                                $remesa->estado = 'REGISTRADO EN ACMS';
+
+                            if ($valor == 0) {
+                                if ($remesa->estado !== 'ENTREGADO') {
+                                    $remesa->estado = 'PENDIENTE';
+                                }
+                            } else {
+                                // Si tiene un monto mayor a 0 y no está ENTREGADO, se registra en ACMS
+                                if ($remesa->estado !== 'ENTREGADO') {
+                                    $remesa->estado = 'REGISTRADO EN ACMS';
+                                }
                             }
 
                             $remesa->save();
