@@ -311,6 +311,7 @@
                             <div class="btn-group">
                                 <button class="btn btn-xs btn-custom-outline active" onclick="updateRanking('remesa')">Remesa</button>
                                 <button class="btn btn-xs btn-custom-outline" onclick="updateRanking('fondo')">Saldo Local</button>
+                                <button class="btn btn-xs btn-custom-outline" onclick="updateRanking('ofrenda')">Ofrendas</button>
                             </div>
                         </div>
                         <div id="chartRankingBar"></div>
@@ -352,6 +353,43 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"></script>
 
 <script>
+    const allFilialesData = @json($datosFiliales);
+    const dataMensual = @json($reporteMensualGlobal);
+    const mesesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    var chartRanking;
+
+    function getTop20(data, field) {
+        return [...data]
+            .sort((a, b) => (parseFloat(b[field]) || 0) - (parseFloat(a[field]) || 0))
+            .slice(0, 20);
+    }
+    window.updateRanking = function(type) {
+        if (!chartRanking) return;
+        let field, label, color, title;
+        
+        if(type === 'remesa') { 
+            field = 'total_remesa'; label = 'Remesa'; color = '#0d47a1'; title = 'Top 20: Ranking por Remesa'; 
+        } else if(type === 'fondo') { 
+            field = 'saldo_actual'; label = 'Saldo Local'; color = '#28a745'; title = 'Top 20: Ranking por Saldo Local'; 
+        } else { 
+            field = 'total_ofrenda'; label = 'Ofrendas'; color = '#ffc107'; title = 'Top 20: Ranking por Ofrendas'; 
+        }
+
+        const newTop20 = getTop20(allFilialesData, field);
+
+        chartRanking.updateOptions({
+            xaxis: { categories: newTop20.map(i => i.filial) },
+            title: { text: title },
+            colors: [color]
+        });
+
+        chartRanking.updateSeries([{ 
+            name: label, 
+            data: newTop20.map(i => parseFloat(i[field]).toFixed(2)) 
+        }]);
+
+        $(event.currentTarget).addClass('active').siblings().removeClass('active');
+    };
         $(document).ready(function() {
             // 1. Inicialización de DataTable Profesional
             const table = $('#tablaFiliales').DataTable({
@@ -439,35 +477,21 @@
             };
 
             // 4. Lógica de Ranking Dinámico (Bar Chart)
-            const rawData = @json($datosFiliales->take(20));
-            var rankingOptions = {
-                series: [{ name: 'Monto Bs', data: rawData.map(i => i.total_remesa) }],
-                chart: { type: 'bar', height: 350, toolbar: { show: false } },
-                plotOptions: { bar: { horizontal: true, borderRadius: 5, barHeight: '70%' } },
-                colors: ['#0d47a1'],
-                xaxis: { categories: rawData.map(i => i.filial) },
-                title: { text: 'Top 20 por Remesa Acumulada', style: { color: '#888' } }
-            };
-            var chartRanking = new ApexCharts(document.querySelector("#chartRankingBar"), rankingOptions);
+            
+
+            const initRank = getTop20(allFilialesData, 'total_remesa');
+            chartRanking = new ApexCharts(document.querySelector("#chartRankingBar"), {
+                series: [{ name: 'Monto Bs', data: initRank.map(i => parseFloat(i.total_remesa).toFixed(2)) }],
+                chart: { type: 'bar', height: 500, toolbar: { show: false } },
+                plotOptions: { bar: { horizontal: true, distributed: true, borderRadius: 4 } },
+                xaxis: { categories: initRank.map(i => i.filial) },
+                legend: { show: false }
+            });
             chartRanking.render();
 
-            window.updateRanking = function(type) {
-                let field, label, color, title;
-                if(type === 'remesa') { field = 'total_remesa'; label = 'Remesa'; color = '#0d47a1'; title = 'Top 20 por Remesa'; }
-                else if(type === 'fondo') { field = 'saldo_actual'; label = 'Saldo Local'; color = '#28a745'; title = 'Top 20 por Saldo Local'; }
-                else { field = 'total_ofrenda'; label = 'Ofrendas'; color = '#ffc107'; title = 'Top 20 por Ofrendas Acumuladas'; }
-
-                // Ordenar datos según el nuevo campo seleccionado
-                const sorted = [...rawData].sort((a, b) => b[field] - a[field]);
-
-                chartRanking.updateOptions({
-                    xaxis: { categories: sorted.map(i => i.filial) },
-                    colors: [color],
-                    title: { text: title }
-                });
-                chartRanking.updateSeries([{ name: label, data: sorted.map(i => i[field]) }]);
-            };
         });
+
+        
 
     // Función para toggle de columnas en la tabla
         function filterCol(option) {
@@ -479,9 +503,7 @@
             else { $('.col-remesa').show(); $('.col-fondo').show(); }
     }
 
-    // Datos pasados desde el controlador
-    const dataMensual = @json($reporteMensualGlobal);
-    const mesesLabels = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    
 
     // Inicializar arrays de 12 meses con ceros
     let remesaSerie = new Array(12).fill(0);
@@ -500,7 +522,7 @@
             { name: 'Ofrenda', data: ofrendaSerie },
             { name: 'Pro-Templo', data: proSerie }
         ],
-        chart: { height: 350, type: 'line', toolbar: { show: false }, zoom: { enabled: false } },
+        chart: { height: 350, type: 'area', toolbar: { show: false }, zoom: { enabled: false } },
         colors: ['#0d47a1', '#ffc107', '#28a745'],
         dataLabels: { enabled: false },
         stroke: { width: [4, 3, 3], curve: 'smooth', dashArray: [0, 5, 5] },
