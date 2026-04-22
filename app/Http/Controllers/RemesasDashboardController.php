@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Distrito; 
+use App\Models\Distrito;
+use App\Models\Iglesia; 
 use App\Exports\DistritalDirectExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -710,67 +711,162 @@ class RemesasDashboardController extends Controller
     }
 
 
-public function exportFilialesExcel()
-{
-    $anio = 2025;
-    $sql = "
+    public function exportFilialesExcel()
+    {
+        $anio = 2025;
+        $sql = "
+                        SELECT 
+                    base.id_iglesia,
+                    base.codigo,
+                    base.nombre,
+                    base.tipo,
+                    base.distrito,
+                    SUM(CASE WHEN base.mes = 1  THEN base.monto_remesa ELSE 0 END) AS enero,
+                    SUM(CASE WHEN base.mes = 2  THEN base.monto_remesa ELSE 0 END) AS febrero,
+                    SUM(CASE WHEN base.mes = 3  THEN base.monto_remesa ELSE 0 END) AS marzo,
+                    SUM(CASE WHEN base.mes = 4  THEN base.monto_remesa ELSE 0 END) AS abril,
+                    SUM(CASE WHEN base.mes = 5  THEN base.monto_remesa ELSE 0 END) AS mayo,
+                    SUM(CASE WHEN base.mes = 6  THEN base.monto_remesa ELSE 0 END) AS junio,
+                    SUM(CASE WHEN base.mes = 7  THEN base.monto_remesa ELSE 0 END) AS julio,
+                    SUM(CASE WHEN base.mes = 8  THEN base.monto_remesa ELSE 0 END) AS agosto,
+                    SUM(CASE WHEN base.mes = 9  THEN base.monto_remesa ELSE 0 END) AS septiembre,
+                    SUM(CASE WHEN base.mes = 10 THEN base.monto_remesa ELSE 0 END) AS octubre,
+                    SUM(CASE WHEN base.mes = 11 THEN base.monto_remesa ELSE 0 END) AS noviembre,
+                    SUM(CASE WHEN base.mes = 12 THEN base.monto_remesa ELSE 0 END) AS diciembre,
+                    SUM(base.monto_remesa) AS total_anual
+                FROM (
                     SELECT 
-                base.id_iglesia,
-                base.codigo,
-                base.nombre,
-                base.tipo,
-                base.distrito,
-                SUM(CASE WHEN base.mes = 1  THEN base.monto_remesa ELSE 0 END) AS enero,
-                SUM(CASE WHEN base.mes = 2  THEN base.monto_remesa ELSE 0 END) AS febrero,
-                SUM(CASE WHEN base.mes = 3  THEN base.monto_remesa ELSE 0 END) AS marzo,
-                SUM(CASE WHEN base.mes = 4  THEN base.monto_remesa ELSE 0 END) AS abril,
-                SUM(CASE WHEN base.mes = 5  THEN base.monto_remesa ELSE 0 END) AS mayo,
-                SUM(CASE WHEN base.mes = 6  THEN base.monto_remesa ELSE 0 END) AS junio,
-                SUM(CASE WHEN base.mes = 7  THEN base.monto_remesa ELSE 0 END) AS julio,
-                SUM(CASE WHEN base.mes = 8  THEN base.monto_remesa ELSE 0 END) AS agosto,
-                SUM(CASE WHEN base.mes = 9  THEN base.monto_remesa ELSE 0 END) AS septiembre,
-                SUM(CASE WHEN base.mes = 10 THEN base.monto_remesa ELSE 0 END) AS octubre,
-                SUM(CASE WHEN base.mes = 11 THEN base.monto_remesa ELSE 0 END) AS noviembre,
-                SUM(CASE WHEN base.mes = 12 THEN base.monto_remesa ELSE 0 END) AS diciembre,
-                SUM(base.monto_remesa) AS total_anual
-            FROM (
-                SELECT 
-                    xg.mes,
-                    xg.anio,
-                    xi.id_iglesia,
-                    xi.codigo,
-                    xi.nombre,
-                    xi.tipo,
-                    xd.nombre AS distrito,
-                    xrf.monto_remesa
+                        xg.mes,
+                        xg.anio,
+                        xi.id_iglesia,
+                        xi.codigo,
+                        xi.nombre,
+                        xi.tipo,
+                        xd.nombre AS distrito,
+                        xrf.monto_remesa
 
-                FROM remesas xr
-                JOIN generas xg 
-                    ON xg.id_remesa = xr.id_remesa
-                JOIN remesas_filiales xrf 
-                    ON xrf.id_remesa = xr.id_remesa
-                JOIN iglesias xi 
-                    ON xi.id_iglesia = xg.id_iglesia
-                LEFT JOIN distritos xd 
-                    ON xd.id_distrito = xi.distrito_id
+                    FROM remesas xr
+                    JOIN generas xg 
+                        ON xg.id_remesa = xr.id_remesa
+                    JOIN remesas_filiales xrf 
+                        ON xrf.id_remesa = xr.id_remesa
+                    JOIN iglesias xi 
+                        ON xi.id_iglesia = xg.id_iglesia
+                    LEFT JOIN distritos xd 
+                        ON xd.id_distrito = xi.distrito_id
 
-                WHERE xg.anio = ?
-            ) AS base
+                    WHERE xg.anio = ?
+                ) AS base
 
-            GROUP BY 
-                base.id_iglesia,
-                base.codigo,
-                base.nombre,
-                base.tipo,
-                base.distrito
-            ORDER BY total_anual DESC
-        ";
+                GROUP BY 
+                    base.id_iglesia,
+                    base.codigo,
+                    base.nombre,
+                    base.tipo,
+                    base.distrito
+                ORDER BY total_anual DESC
+            ";
 
-    $result = DB::select($sql, [$anio]);
+        $result = DB::select($sql, [$anio]);
 
-    return Excel::download(
-        new FilialesMensualExport($result),
-        "reporte_filiales_$anio.xlsx"
-    );
-}
+        return Excel::download(
+            new FilialesMensualExport($result),
+            "reporte_filiales_$anio.xlsx"
+        );
+    }
+    /**_******************************************************************************** */
+    /**___________________________REMESAS FILIAL PARA VISUALIZACIONES_________ */
+    /**_******************************************************************************* */
+    public function dashboardFiliales(Request $request)
+    {
+        $anio = $request->get('anio', date('Y'));
+
+        // 1. Datos base de filiales
+        $datosFiliales = Iglesia::where('tipo', 'Filial')
+            ->join('distritos', 'iglesias.distrito_id', '=', 'distritos.id_distrito')
+            ->leftJoin('generas', 'iglesias.id_iglesia', '=', 'generas.id_iglesia')
+            ->leftJoin('remesas_filiales', 'generas.id_remesa', '=', 'remesas_filiales.id_remesa')
+            ->select(
+                'iglesias.id_iglesia',
+                'iglesias.nombre as filial',
+                'distritos.nombre as distrito',
+                'iglesias.fondo_local as saldo_actual',
+                DB::raw('SUM(COALESCE(remesas_filiales.diezmo, 0)) as total_diezmo'),
+                DB::raw('SUM(COALESCE(remesas_filiales.ofrenda, 0)) as total_ofrenda'),
+                DB::raw('SUM(COALESCE(remesas_filiales.pro_templo, 0)) as total_pro_templo'),
+                DB::raw('SUM(COALESCE(remesas_filiales.monto_remesa, 0)) as total_remesa'),
+                DB::raw('SUM(COALESCE(remesas_filiales.fondo_local, 0)) as total_fondo_mensual'),
+                DB::raw('COUNT(DISTINCT CASE WHEN remesas_filiales.id_remesa IS NOT NULL THEN generas.id_iglesia END) as trajeron_remesa')
+            )
+            ->where('generas.anio', $anio)
+            ->groupBy('iglesias.id_iglesia', 'iglesias.nombre', 'distritos.nombre', 'iglesias.fondo_local')
+            ->get();
+
+        // 2. KPIs
+        $totalFiliales = Iglesia::where('tipo', 'Filial')->count();
+        $filialesQueCumplen = $datosFiliales->where('total_remesa', '>', 0)->count();
+
+        // 2. Calculamos los KPIs base
+        $kpis = [
+            'total_dinero' => $datosFiliales->sum('total_diezmo') + $datosFiliales->sum('total_ofrenda') + $datosFiliales->sum('total_pro_templo'),
+            'total_remesas' => $datosFiliales->sum('total_remesa'),
+            'total_fondo_local' => $datosFiliales->sum('total_fondo_mensual'),
+            'porcentaje_cumplimiento' => ($totalFiliales > 0) ? ($filialesQueCumplen / $totalFiliales) * 100 : 0
+        ];
+        // 1. Calculamos el Gran Total de Ingresos (Suma de sumas)
+        $totalIngresosGlobal = $datosFiliales->sum('total_diezmo') 
+                            + $datosFiliales->sum('total_ofrenda') 
+                            + $datosFiliales->sum('total_pro_templo');
+
+        // 2. Calculamos el total de meses reportados por todas las filiales
+        $cantidadMeses = DB::table('generas')
+            ->where('anio', $anio)
+            ->max('mes');
+        $divisor = ($cantidadMeses && $cantidadMeses > 0) ? $cantidadMeses : 1;
+
+        // 3. Calculamos los KPIs Extra (Usando el fix del promedio)
+        $kpisExtra = [
+            'promedio_mensual' => $totalIngresosGlobal / $divisor,
+            'filiales_inactivas' => $totalFiliales - $filialesQueCumplen,
+            'tasa_mision' => ($kpis['total_dinero'] > 0) ? ($kpis['total_remesas'] / $kpis['total_dinero']) * 100 : 0,
+        ];
+
+
+        // 3. Datos para la gráfica mensual global (3 series)
+        $reporteMensualGlobal = DB::table('remesas_filiales')
+            ->join('generas', 'remesas_filiales.id_remesa', '=', 'generas.id_remesa')
+            ->select(
+                'generas.mes',
+                DB::raw('SUM(remesas_filiales.monto_remesa) as remesa'),
+                DB::raw('SUM(remesas_filiales.ofrenda) as ofrenda'),
+                DB::raw('SUM(remesas_filiales.pro_templo) as pro_templo')
+            )
+            ->where('generas.anio', $anio)
+            ->groupBy('generas.mes')
+            ->orderBy('generas.mes')
+            ->get();
+
+        $totalesGlobales = [
+            'diezmo' => $datosFiliales->sum('total_diezmo'),
+            'ofrenda' => $datosFiliales->sum('total_ofrenda'),
+            'pro_templo' => $datosFiliales->sum('total_pro_templo'),
+        ];
+
+        return view('remesas_dasboards.dashboard_filial_mbos', compact('datosFiliales', 'totalesGlobales', 'anio', 'kpis', 'kpisExtra', 'reporteMensualGlobal'));
+    }
+
+    public function getHistorialFilial(Request $request, $id)
+    {
+        $anio = $request->get('anio', date('Y'));
+        
+        $historial = DB::table('remesas_filiales')
+            ->join('generas', 'remesas_filiales.id_remesa', '=', 'generas.id_remesa')
+            ->where('generas.id_iglesia', $id)
+            ->where('generas.anio', $anio)
+            ->select('generas.mes', 'remesas_filiales.monto_remesa', 'remesas_filiales.fondo_local')
+            ->orderBy('generas.mes', 'asc')
+            ->get();
+
+        return response()->json($historial);
+    }
 }

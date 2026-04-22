@@ -211,6 +211,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('remesas/distrital/dash', [RemesasDashboardController::class, 'index_distrital'])
         ->name('remesas.distrital.dash');
+
+    Route::get('/dashboard/filiales', [RemesasDashboardController::class, 'dashboardFiliales'])
+        ->name('remesas.dashboard.filiales');
+    Route::get('/api/historial-filial/{id}', [RemesasDashboardController::class, 'getHistorialFilial'])->name('api.historial.filial');
+      
     //muestra la grafica  de remesas balnco de 1 distrito
     Route::get('remesas/distrital/dash_general', [RemesasDashboardController::class, 'dashboard_finanzas_distrito'])
         ->name('remesas.distrital.dash_general');

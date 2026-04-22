@@ -547,15 +547,6 @@ class RemesaController extends Controller
         $fechaEntrega = Carbon::parse($request->fecha_entrega);
         $fechaLimite = Carbon::parse($remesa->fecha_limite);
         
-        // Creamos el límite inferior (Fecha Límite - 15 días)
-        $minimoPermitido = $fechaLimite->copy()->subDays(15);
-
-        if ($fechaEntrega->lt($minimoPermitido)) {
-            return response()->json([
-                'success' => false, 
-                'message' => 'Error: La fecha de entrega no puede ser anterior al ' . $minimoPermitido->format('d/m/Y') . ' (máximo 15 días antes de la fecha límite).'
-            ], 422); // Código 422: Unprocessable Entity
-        }
         DB::beginTransaction();  
         try {
             // Validación

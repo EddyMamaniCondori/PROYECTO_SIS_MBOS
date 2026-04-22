@@ -101,7 +101,7 @@ class RemesaExcelController extends Controller
                         if ($remesaPivot) {
 
                             $remesa = Remesa::find($remesaPivot->id_remesa);
-                            $remesa->estado = 'ENTREGADO';
+                            $remesa->estado = 'REGISTRADO EN ACMS';
                             $remesa->save();
 
                             $remesaIglesia = RemesaIglesia::find($remesa->id_remesa);

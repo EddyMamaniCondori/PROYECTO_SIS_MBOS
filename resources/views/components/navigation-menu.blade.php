@@ -604,11 +604,10 @@
                             <p> Dashboard General</p>
                           </a>
                         </li>
-                        
                         <li class="nav-item ms-3">
-                          <a href="{{ route('remesas.filiales.pivot')  }}" class="nav-link">
+                          <a href="{{ route('remesas.dashboard.filiales')  }}" class="nav-link">
                             <i class="bi bi-graph-up"></i>
-                            <p> Remesas Filiales</p>
+                            <p> Dashboard Filiales</p>
                           </a>
                         </li>
                       </ul>
