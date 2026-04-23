@@ -174,7 +174,12 @@ class RemesaSemanalController extends Controller
             $fechaEntrega = Carbon::parse($request->fecha_entrega);
             $fechaLimite = Carbon::parse($remesa->fecha_limite);
 
-            $diferencia = $fechaEntrega->diffInDays($fechaLimite, false); 
+            $entregaSoloFecha = $fechaEntrega->copy()->startOfDay();
+            $limiteSoloFecha = $fechaLimite->copy()->startOfDay();
+
+            $diferencia = $entregaSoloFecha->diffInDays($limiteSoloFecha, false);
+
+            
             if ($diferencia === 0) {
                 $remesa->estado_dias = 'Completado con 0 días de retraso (entrega puntual)';
             } elseif ($diferencia > 0) {

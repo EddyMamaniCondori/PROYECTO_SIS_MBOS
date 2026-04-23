@@ -407,8 +407,8 @@
                             <h6 class="text-uppercase fw-bold text-primary mb-4 border-bottom pb-2">Datos de Registro</h6>
                             
                             <div class="mb-3">
-                                <label class="form-label fw-bold small">Fecha de Entrega:</label>
-                                <input type="date" name="fecha_entrega" id="f_fecha_entrega" class="form-control" required>
+                                <label class="form-label fw-bold small">Fecha y Hora de entrega:</label>
+                                <input type="datetime-local" name="fecha_entrega" id="f_fecha_entrega" class="form-control" required>
                                 <div id="f_puntualidad_feedback" class="small mt-1 fw-bold"></div>
                             </div>
 
@@ -814,97 +814,63 @@
         const contenedor = $('#contenedor-alertas');
         const vistaVacia = $('#sin-alertas');
 
+        // Estado inicial: Limpiar y mostrar que está cargando
         contenedor.html(`
-        <div id="alerta-cargando" class="text-center py-4 text-muted">
-            <div class="spinner-border spinner-border-sm text-warning me-2" role="status"></div>
-            <span>Cargando alertas...</span>
-        </div>
-        `);
-        vistaVacia.addClass('d-none'); // Ocultamos el mensaje de "sin alertas" por si estaba visible
-        
-
-        // 1. Llamada al backend
-        $.get(`/alertas/${id_iglesia}`, function(alertas) {
-            let html = '';
-            const contenedor = $('#contenedor-alertas');
-            const vistaVacia = $('#sin-alertas');
-
-            if (!alertas || alertas.length === 0) {
-                contenedor.html(''); // Limpiamos el "Cargando..."
-                $('#body-alertas').addClass('d-none');
-                vistaVacia.removeClass('d-none');
-                bodyAlertas.hide();
-                return;
-            }else {
-                vistaVacia.addClass('d-none');
-                $('#body-alertas').removeClass('d-none');
-            }
-
-            
-
-            alertas.forEach(alerta => {
-                // Decidimos el color según el estado
-                let esRojo = alerta.estado === 'IMPORTANTE';
-                let bg = esRojo ? 'bg-danger-subtle' : 'bg-warning-subtle';
-                let border = esRojo ? 'border-danger' : 'border-warning';
-                let icono = esRojo ? 'fa-exclamation-circle' : 'fa-exclamation-triangle';
-                let textoIcono = esRojo ? 'text-danger' : 'text-warning';
-
-                // 4. Construimos el diseño de la alerta
-                html += `
-                    <div class="alert ${bg} border-0 border-start border-4 ${border} shadow-sm p-2 mb-2 rounded-3 animate__animated animate__fadeIn">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center" style="min-width: 0;">
-                                <div class="${textoIcono} me-2 d-flex align-items-center justify-content-center" style="width: 30px;">
-                                    <i class="fas ${icono} fa-lg"></i>
-                                </div>
-                                
-                                <div style="min-width: 0; overflow: hidden;">
-                                    <div class="d-flex align-items-center">
-                                        <span class="fw-bold text-dark me-2" style="font-size: 0.85rem;">${alerta.periodo}</span>
-                                        <span class="badge ${bg} ${textoIcono} border border-${border.split('-')[1]} py-0 px-1" style="font-size: 0.65rem; opacity: 0.8;">
-                                            ${alerta.estado}
-                                        </span>
-                                    </div>
-                                    <div class="text-muted text-truncate-2" style="font-size: 0.8rem; line-height: 1.2;">
-                                        ${alerta.mensaje}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="ms-2 d-flex">
-                                <button title="Editar" class="btn btn-sm btn-link text-primary p-1 me-1 btn-hover-light" 
-                                    onclick="abrirModalEditarAlerta(${alerta.id_remesa}, ${alerta.index}, '${alerta.estado}', '${alerta.mensaje}', '${alerta.periodo}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button title="Solucionado" class="btn btn-sm btn-link text-success p-1 btn-hover-light" 
-                                    onclick="solucionarAlerta(${alerta.id_remesa}, ${alerta.index})">
-                                    <i class="fas fa-check-circle"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-
-
-            // 5. Inyectamos todo el HTML de un golpe
-            contenedor.html(html);
-        }).fail(function(jqXHR) {
-            // 5. ESTADO ERROR: Si el servidor responde 500 o falla la conexión
-            console.error("Error en servidor:", jqXHR.responseText);
-
-            contenedor.html(`
-            <div class="alert alert-light border border-danger text-center py-4">
-                <i class="fas fa-wifi-slash text-danger fa-2x mb-2"></i>
-                <div class="text-danger fw-bold">Fallo: No se pudo conectar al servidor</div>
-                <button class="btn btn-sm btn-outline-danger mt-2" onclick="cargarAlertas(${id_iglesia})">
-                    <i class="fas fa-sync-alt me-1"></i> Reintentar
-                </button>
+            <div id="alerta-cargando" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm text-warning me-2" role="status"></div>
+                <span>Actualizando...</span>
             </div>
-            `);
+        `);
+        
+        $.get(`/alertas/${id_iglesia}`, function(alertas) {
+            if (!alertas || alertas.length === 0) {
+                contenedor.empty();
+                bodyAlertas.addClass('d-none'); // Usar solo d-none para consistencia
+                vistaVacia.removeClass('d-none');
+            } else {
+                vistaVacia.addClass('d-none');
+                bodyAlertas.removeClass('d-none');
+                
+                let html = '';
+                alertas.forEach(alerta => {
+                    let esRojo = alerta.estado === 'IMPORTANTE';
+                    let bg = esRojo ? 'bg-danger-subtle' : 'bg-warning-subtle';
+                    let border = esRojo ? 'border-danger' : 'border-warning';
+                    let icono = esRojo ? 'fa-exclamation-circle' : 'fa-exclamation-triangle';
+                    let textoIcono = esRojo ? 'text-danger' : 'text-warning';
 
+                    html += `
+                        <div class="alert ${bg} border-0 border-start border-4 ${border} shadow-sm p-2 mb-2 rounded-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center" style="min-width: 0;">
+                                    <div class="${textoIcono} me-2 d-flex align-items-center justify-content-center" style="width: 30px;">
+                                        <i class="fas ${icono} fa-lg"></i>
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <div class="d-flex align-items-center">
+                                            <span class="fw-bold text-dark me-2" style="font-size: 0.85rem;">${alerta.periodo}</span>
+                                            <span class="badge ${bg} ${textoIcono} border border-${border.split('-')[1]} py-0 px-1" style="font-size: 0.65rem;">
+                                                ${alerta.estado}
+                                            </span>
+                                        </div>
+                                        <div class="text-muted small">${alerta.mensaje}</div>
+                                    </div>
+                                </div>
+                                <div class="ms-2 d-flex">
+                                    <button class="btn btn-sm text-primary p-1" onclick="abrirModalEditarAlerta(${alerta.id_remesa}, ${alerta.index}, '${alerta.estado}', '${alerta.mensaje}', '${alerta.periodo}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm text-success p-1" onclick="solucionarAlerta(${alerta.id_remesa}, ${alerta.index})">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                contenedor.html(html);
+            }
+        }).fail(function() {
+            contenedor.html('<div class="text-danger small text-center py-3">Error al cargar alertas</div>');
         });
     }
 
@@ -1007,6 +973,17 @@
             return;
         }
 
+        // Bloqueamos la pantalla y mostramos cargando
+        Swal.fire({
+            title: 'Guardando alerta...',
+            text: 'Por favor espere',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+
         const data = {
             id_remesa: $('#new_id_remesa').val(),
             periodo: $('#new_periodo').val(),
@@ -1043,12 +1020,32 @@
 
         if (!data) return;
 
+        $('#f_puntualidad_feedback').html('');
+        fechaLimiteActual = data.fecha_limite;
+
         // Cargar datos en el modal
         $('#f_id_remesa').val(data.id_remesa);
         $('#f_periodo_txt').text(`${data.nombre_mes} - ${data.anio}`);
         $('#f_anio_val').val(data.anio);
         $('#f_mes_val').val(data.mes);
-        $('#f_fecha_entrega').val(data.fecha_entrega || "{{ date('Y-m-d') }}");
+        //$('#f_fecha_entrega').val(data.fecha_entrega || "{{ date('Y-m-d') }}");
+
+        let fechaParaInput = "";
+
+        if (data.fecha_entrega) {
+            // Si ya existe fecha, reemplazamos el espacio por "T" que es lo que pide el navegador
+            fechaParaInput = data.fecha_entrega;
+        } else {
+            // Si es la primera vez, generamos la fecha y hora actual en formato ISO
+            let ahora = new Date();
+            // Ajuste de zona horaria local
+            ahora.setMinutes(ahora.getMinutes() - ahora.getTimezoneOffset());
+            fechaParaInput = ahora.toISOString().slice(0, 16);
+        }
+
+        $('#f_fecha_entrega').val(fechaParaInput);
+
+
         $('#f_observacion').val(data.observacion || '');
         
         // Switches
@@ -1067,7 +1064,9 @@
         calcularFondosFilial();
         
         // Guardar fecha limite para el feedback de puntualidad (usamos la variable global que ya tienes)
-        fechaLimiteActual = data.fecha_limite; 
+        setTimeout(() => {
+            calcularPuntualidadRealTime();
+        }, 100);
         
         $('#modalFilial').modal('show');
     }
@@ -1146,59 +1145,59 @@
         const fechaEntregaVal = $('#f_fecha_entrega').val();
         const feedback = $('#f_puntualidad_feedback');
 
-        // fechaLimiteActual se llena cuando abres el modal en editarRemesa()
         if (!fechaEntregaVal || !fechaLimiteActual) {
             feedback.html('');
             return;
         }
 
-        // Parse de fechas
-        const entrega = new Date(fechaEntregaVal + 'T00:00:00');
-        const limite = new Date(fechaLimiteActual + 'T00:00:00');
+        // NORMALIZACIÓN: Extraemos solo la parte de la fecha (YYYY-MM-DD) 
+        // para que la hora no afecte el cálculo de días de puntualidad
+        const soloFechaEntrega = fechaEntregaVal.split('T')[0];
+        const soloFechaLimite = fechaLimiteActual.split(' ')[0];
 
-        // Diferencia en días
+        const entrega = new Date(soloFechaEntrega + 'T12:00:00'); // Usamos mediodía para evitar errores de zona horaria
+        const limite = new Date(soloFechaLimite + 'T12:00:00');
+
+        // Diferencia en milisegundos a días
         const diffTime = limite - entrega;
-        const diferencia = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const diferencia = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
         let mensaje = "";
         let icono = "";
         let claseCSS = "";
 
-        // lugarIglesiaActual se carga al inicio del script desde Blade
+        // Lógica por Lugar
         if (lugarIglesiaActual === 'EL ALTO') {
             if (diferencia >= 0) {
-                mensaje = "PUNTUALIDAD: Obtendrá 2 estrellas (Puntual)";
-                claseCSS = "text-success";
-                icono = "bi-star-fill text-warning"; // Estrella llena
-            } else if (Math.abs(diferencia) <= 2) {
-                mensaje = "PUNTUALIDAD: Obtendrá 1 estrella (Retraso leve)";
-                claseCSS = "text-warning";
-                icono = "bi-star-half text-warning"; // Media estrella
-            } else {
-                mensaje = "No obtendrá estrellas (Fuera de plazo)";
-                claseCSS = "text-danger";
-                icono = "bi-star text-muted"; // Estrella vacía
-            }
-        } 
-        else if (lugarIglesiaActual === 'ALTIPLANO') {
-            // Altiplano: Puntual o hasta 5 días de retraso
-            if (diferencia >= 0 || Math.abs(diferencia) <= 5) {
-                mensaje = "PUNTUALIDAD: Obtendrá 2 estrellas (Puntual)";
+                mensaje = "PUNTUALIDAD: 2 estrellas (Puntual)";
                 claseCSS = "text-success";
                 icono = "bi-star-fill text-warning";
+            } else if (Math.abs(diferencia) <= 2) {
+                mensaje = "PUNTUALIDAD: 1 estrella (Retraso leve)";
+                claseCSS = "text-warning";
+                icono = "bi-star-half text-warning";
             } else {
-                mensaje = "No obtendrá estrellas (Fuera de plazo)";
+                mensaje = "Sin estrellas (Fuera de plazo)";
                 claseCSS = "text-danger";
                 icono = "bi-star text-muted";
             }
-        } else {
-            mensaje = "Lugar no identificado para cálculo.";
-            claseCSS = "text-muted";
+        } 
+        else if (lugarIglesiaActual === 'ALTIPLANO') {
+            // Altiplano tiene 5 días de gracia
+            if (diferencia >= -5) {
+                mensaje = "PUNTUALIDAD: 2 estrellas (A tiempo)";
+                claseCSS = "text-success";
+                icono = "bi-star-fill text-warning";
+            } else {
+                mensaje = "Sin estrellas (Fuera de plazo)";
+                claseCSS = "text-danger";
+                icono = "bi-star text-muted";
+            }
         }
 
-        // Inyectar en el HTML
-        feedback.removeClass('text-success text-warning text-danger text-muted pt-1').addClass(claseCSS);
-        feedback.html(`<i class="bi ${icono}"></i> ${mensaje}`);
+        feedback.removeClass('text-success text-warning text-danger text-muted')
+                .addClass(claseCSS)
+                .html(`<i class="bi ${icono}"></i> ${mensaje} <small class="d-block text-muted">Días de diferencia: ${diferencia}</small>`);
     }
     //BOTON DE RESET
 

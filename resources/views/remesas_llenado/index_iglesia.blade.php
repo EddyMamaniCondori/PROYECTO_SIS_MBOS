@@ -181,35 +181,40 @@
                                     <ul class="dropdown-menu dropdown-menu-end p-3 shadow border-0" aria-labelledby="dropdownConfig" style="min-width: 250px;">
                                         <li class="dropdown-header text-uppercase small fw-bold">Mostrar/Ocultar Columnas</li>
                                         <li><hr class="dropdown-divider"></li>
-                                        
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="5" id="col5" checked>
-                                                <label class="form-check-label" for="col5">Remesa</label>
+                                                <label class="form-check-label" for="col5">ARQ</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="6" id="col6" checked>
-                                                <label class="form-check-label" for="col6">Fecha entrega</label>
+                                                <label class="form-check-label" for="col6">Remesa</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="7" id="col7" checked>
-                                                <label class="form-check-label" for="col7">Fecha limite</label>
+                                                <label class="form-check-label" for="col7">Fecha entrega</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="8" id="col8" checked>
-                                                <label class="form-check-label" for="col8">Estado de dias</label>
+                                                <label class="form-check-label" for="col8">Fecha limite</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="10" id="col10" checked>
-                                                <label class="form-check-label" for="col10">Observaciones</label>
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="9" id="col9" checked>
+                                                <label class="form-check-label" for="col9">Estado de dias</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="11" id="col11" checked>
+                                                <label class="form-check-label" for="col11">Observaciones</label>
                                             </div>
                                         </li>
                                     </ul>
@@ -225,6 +230,7 @@
                                             <th>DEP</th>
                                             <th>DOC</th>
                                             <th>SCAN</th>
+                                            <th>ARQ</th>
                                             <th>Remesa</th>
                                             <th>Fecha entrega</th>
                                             <th>Fecha limite</th>
@@ -350,9 +356,10 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Fecha de entrega:</label>
-                        <input type="date" name="fecha_entrega" id="modal_fecha_entrega" class="form-control" required>
-                        <div id="puntualidad_feedback" class="small mt-1 fw-bold"></div>
+                        <label class="form-label fw-bold">Fecha y Hora de entrega:</label>
+                        <input type="datetime-local" name="fecha_entrega" id="modal_fecha_entrega" class="form-control" step="1" required>
+                        
+                        <div id="f_puntualidad_feedback" class="small mt-1 fw-bold"></div>
                     </div>
 
 
@@ -379,6 +386,11 @@
                             <input type="hidden" name="escaneado" value="false">
                             <input class="form-check-input" type="checkbox" role="switch" id="modal_check_escaneado" name="escaneado" value="true">
                             <label class="form-check-label small fw-bold " for="modal_check_escaneado">SCAN</label>
+                        </div>
+                         <div class="form-check form-switch">
+                            <input type="hidden" name="arqueo" value="false">
+                            <input class="form-check-input" type="checkbox" role="switch" id="modal_check_arqueo" name="arqueo" value="true">
+                            <label class="form-check-label small fw-bold " for="modal_check_arqueo">ARQ</label>
                         </div>
                     </div>
 
@@ -478,6 +490,12 @@
                 },
                 { 
                     data: 'escaneado',
+                    render: function(data) {
+                        return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
+                    }
+                },
+                { 
+                    data: 'arqueo',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
@@ -696,97 +714,63 @@
         const contenedor = $('#contenedor-alertas');
         const vistaVacia = $('#sin-alertas');
 
+        // Estado inicial: Limpiar y mostrar que está cargando
         contenedor.html(`
-        <div id="alerta-cargando" class="text-center py-4 text-muted">
-            <div class="spinner-border spinner-border-sm text-warning me-2" role="status"></div>
-            <span>Cargando alertas...</span>
-        </div>
-        `);
-        vistaVacia.addClass('d-none'); // Ocultamos el mensaje de "sin alertas" por si estaba visible
-        
-
-        // 1. Llamada al backend
-        $.get(`/alertas/${id_iglesia}`, function(alertas) {
-            let html = '';
-            const contenedor = $('#contenedor-alertas');
-            const vistaVacia = $('#sin-alertas');
-
-            if (!alertas || alertas.length === 0) {
-                contenedor.html(''); // Limpiamos el "Cargando..."
-                $('#body-alertas').addClass('d-none');
-                vistaVacia.removeClass('d-none');
-                bodyAlertas.hide();
-                return;
-            }else {
-                vistaVacia.addClass('d-none');
-                $('#body-alertas').removeClass('d-none');
-            }
-
-            
-
-            alertas.forEach(alerta => {
-                // Decidimos el color según el estado
-                let esRojo = alerta.estado === 'IMPORTANTE';
-                let bg = esRojo ? 'bg-danger-subtle' : 'bg-warning-subtle';
-                let border = esRojo ? 'border-danger' : 'border-warning';
-                let icono = esRojo ? 'fa-exclamation-circle' : 'fa-exclamation-triangle';
-                let textoIcono = esRojo ? 'text-danger' : 'text-warning';
-
-                // 4. Construimos el diseño de la alerta
-                html += `
-                    <div class="alert ${bg} border-0 border-start border-4 ${border} shadow-sm p-2 mb-2 rounded-3 animate__animated animate__fadeIn">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center" style="min-width: 0;">
-                                <div class="${textoIcono} me-2 d-flex align-items-center justify-content-center" style="width: 30px;">
-                                    <i class="fas ${icono} fa-lg"></i>
-                                </div>
-                                
-                                <div style="min-width: 0; overflow: hidden;">
-                                    <div class="d-flex align-items-center">
-                                        <span class="fw-bold text-dark me-2" style="font-size: 0.85rem;">${alerta.periodo}</span>
-                                        <span class="badge ${bg} ${textoIcono} border border-${border.split('-')[1]} py-0 px-1" style="font-size: 0.65rem; opacity: 0.8;">
-                                            ${alerta.estado}
-                                        </span>
-                                    </div>
-                                    <div class="text-muted text-truncate-2" style="font-size: 0.8rem; line-height: 1.2;">
-                                        ${alerta.mensaje}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="ms-2 d-flex">
-                                <button title="Editar" class="btn btn-sm btn-link text-primary p-1 me-1 btn-hover-light" 
-                                    onclick="abrirModalEditarAlerta(${alerta.id_remesa}, ${alerta.index}, '${alerta.estado}', '${alerta.mensaje}', '${alerta.periodo}')">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button title="Solucionado" class="btn btn-sm btn-link text-success p-1 btn-hover-light" 
-                                    onclick="solucionarAlerta(${alerta.id_remesa}, ${alerta.index})">
-                                    <i class="fas fa-check-circle"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-
-
-            // 5. Inyectamos todo el HTML de un golpe
-            contenedor.html(html);
-        }).fail(function(jqXHR) {
-            // 5. ESTADO ERROR: Si el servidor responde 500 o falla la conexión
-            console.error("Error en servidor:", jqXHR.responseText);
-
-            contenedor.html(`
-            <div class="alert alert-light border border-danger text-center py-4">
-                <i class="fas fa-wifi-slash text-danger fa-2x mb-2"></i>
-                <div class="text-danger fw-bold">Fallo: No se pudo conectar al servidor</div>
-                <button class="btn btn-sm btn-outline-danger mt-2" onclick="cargarAlertas(${id_iglesia})">
-                    <i class="fas fa-sync-alt me-1"></i> Reintentar
-                </button>
+            <div id="alerta-cargando" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm text-warning me-2" role="status"></div>
+                <span>Actualizando...</span>
             </div>
-            `);
+        `);
+        
+        $.get(`/alertas/${id_iglesia}`, function(alertas) {
+            if (!alertas || alertas.length === 0) {
+                contenedor.empty();
+                bodyAlertas.addClass('d-none'); // Usar solo d-none para consistencia
+                vistaVacia.removeClass('d-none');
+            } else {
+                vistaVacia.addClass('d-none');
+                bodyAlertas.removeClass('d-none');
+                
+                let html = '';
+                alertas.forEach(alerta => {
+                    let esRojo = alerta.estado === 'IMPORTANTE';
+                    let bg = esRojo ? 'bg-danger-subtle' : 'bg-warning-subtle';
+                    let border = esRojo ? 'border-danger' : 'border-warning';
+                    let icono = esRojo ? 'fa-exclamation-circle' : 'fa-exclamation-triangle';
+                    let textoIcono = esRojo ? 'text-danger' : 'text-warning';
 
+                    html += `
+                        <div class="alert ${bg} border-0 border-start border-4 ${border} shadow-sm p-2 mb-2 rounded-3">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center" style="min-width: 0;">
+                                    <div class="${textoIcono} me-2 d-flex align-items-center justify-content-center" style="width: 30px;">
+                                        <i class="fas ${icono} fa-lg"></i>
+                                    </div>
+                                    <div style="min-width: 0;">
+                                        <div class="d-flex align-items-center">
+                                            <span class="fw-bold text-dark me-2" style="font-size: 0.85rem;">${alerta.periodo}</span>
+                                            <span class="badge ${bg} ${textoIcono} border border-${border.split('-')[1]} py-0 px-1" style="font-size: 0.65rem;">
+                                                ${alerta.estado}
+                                            </span>
+                                        </div>
+                                        <div class="text-muted small">${alerta.mensaje}</div>
+                                    </div>
+                                </div>
+                                <div class="ms-2 d-flex">
+                                    <button class="btn btn-sm text-primary p-1" onclick="abrirModalEditarAlerta(${alerta.id_remesa}, ${alerta.index}, '${alerta.estado}', '${alerta.mensaje}', '${alerta.periodo}')">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm text-success p-1" onclick="solucionarAlerta(${alerta.id_remesa}, ${alerta.index})">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                contenedor.html(html);
+            }
+        }).fail(function() {
+            contenedor.html('<div class="text-danger small text-center py-3">Error al cargar alertas</div>');
         });
     }
 
@@ -888,6 +872,15 @@
             Swal.fire('Atención', 'Por favor escriba un mensaje para la alerta', 'warning');
             return;
         }
+        // Bloqueamos la pantalla y mostramos cargando
+        Swal.fire({
+            title: 'Guardando alerta...',
+            text: 'Por favor espere',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         const data = {
             id_remesa: $('#new_id_remesa').val(),
@@ -917,6 +910,7 @@
 
     let fechaLimiteActual = null;
     let lugarIglesiaActual = "{{ strtoupper($iglesia->lugar ?? 'SIN LUGAR') }}";
+
     function editarRemesa(idRemesa) {
         // 1. Buscamos los datos actuales en el DataTable usando el ID
         const table = $('#example').DataTable();
@@ -924,6 +918,7 @@
 
         if (!data) return;
 
+        $('#f_puntualidad_feedback').html('');
         fechaLimiteActual = data.fecha_limite;
 
         // 2. Llenamos los campos de Solo Lectura (Texto y Hidden)
@@ -936,9 +931,22 @@
         $('#txt_monto').text(data.monto || '0.00');
 
         // 3. Llenamos los campos Editables
-        $('#modal_fecha_entrega').val(data.fecha_entrega || "{{ date('Y-m-d') }}");
+        //$('#modal_fecha_entrega').val(data.fecha_entrega || "{{ date('Y-m-d') }}");
 
-        calcularPuntualidadRealTime();
+        let fechaParaInput = "";
+
+        if (data.fecha_entrega) {
+            // Si ya existe fecha, reemplazamos el espacio por "T" que es lo que pide el navegador
+            fechaParaInput = data.fecha_entrega;
+        } else {
+            // Si es la primera vez, generamos la fecha y hora actual en formato ISO
+            let ahora = new Date();
+            // Ajuste de zona horaria local f_fecha_entrega
+            ahora.setMinutes(ahora.getMinutes() - ahora.getTimezoneOffset());
+            fechaParaInput = ahora.toISOString().slice(0, 16);
+        }
+
+        $('#modal_fecha_entrega').val(fechaParaInput);
 
         $('#modal_observacion').val(data.observacion || '');
 
@@ -948,6 +956,12 @@
         $('#modal_check_deposito').prop('checked', !!data.deposito);
         $('#modal_check_documentacion').prop('checked', !!data.documentacion);
         $('#modal_check_escaneado').prop('checked', !!data.escaneado);
+        $('#modal_check_arqueo').prop('checked', !!data.arqueo);
+
+        setTimeout(() => {
+            calcularPuntualidadRealTime();
+        }, 100);
+
 
         // 5. Mostramos el modal
         $('#confirmModal').modal('show');
@@ -1009,60 +1023,61 @@
     });
     function calcularPuntualidadRealTime() {
         const fechaEntregaVal = $('#modal_fecha_entrega').val();
-        const feedback = $('#puntualidad_feedback');
+        const feedback = $('#f_puntualidad_feedback');
 
         if (!fechaEntregaVal || !fechaLimiteActual) {
             feedback.html('');
             return;
         }
 
-        // Parse de fechas
-        const entrega = new Date(fechaEntregaVal + 'T00:00:00');
-        const limite = new Date(fechaLimiteActual + 'T00:00:00');
+        // NORMALIZACIÓN: Extraemos solo la parte de la fecha (YYYY-MM-DD) 
+        // para que la hora no afecte el cálculo de días de puntualidad
+        const soloFechaEntrega = fechaEntregaVal.split('T')[0];
+        const soloFechaLimite = fechaLimiteActual.split(' ')[0];
 
-        // Diferencia en días
+        const entrega = new Date(soloFechaEntrega + 'T12:00:00'); // Usamos mediodía para evitar errores de zona horaria
+        const limite = new Date(soloFechaLimite + 'T12:00:00');
+
+        // Diferencia en milisegundos a días
         const diffTime = limite - entrega;
-        const diferencia = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const diferencia = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
         let mensaje = "";
         let icono = "";
         let claseCSS = "";
 
-        // Lógica por lugar
+        // Lógica por Lugar
         if (lugarIglesiaActual === 'EL ALTO') {
             if (diferencia >= 0) {
-                mensaje = "PUNTUALIDAD: Obtendrá 1 estrella (Puntual)";
+                mensaje = "PUNTUALIDAD: 2 estrellas (Puntual)";
                 claseCSS = "text-success";
-                icono = "bi-star-fill";
+                icono = "bi-star-fill text-warning";
             } else if (Math.abs(diferencia) <= 2) {
-                mensaje = "PUNTUALIDAD: Obtendrá 1/2 estrella (Retraso leve)";
+                mensaje = "PUNTUALIDAD: 1 estrella (Retraso leve)";
                 claseCSS = "text-warning";
-                icono = "bi-star-half";
+                icono = "bi-star-half text-warning";
             } else {
-                mensaje = " No obtendrá estrellas (Fuera de plazo)";
+                mensaje = "Sin estrellas (Fuera de plazo)";
                 claseCSS = "text-danger";
-                icono = "bi-star";
+                icono = "bi-star text-muted";
             }
         } 
         else if (lugarIglesiaActual === 'ALTIPLANO') {
-            // Altiplano: Puntual o hasta 5 días de retraso
-            if (diferencia >= 0 || Math.abs(diferencia) <= 5) {
-                mensaje = "PUNTUALIDAD: Obtendrá 1 estrella (Puntual)";
+            // Altiplano tiene 5 días de gracia
+            if (diferencia >= -5) {
+                mensaje = "PUNTUALIDAD: 2 estrellas (A tiempo)";
                 claseCSS = "text-success";
-                icono = "bi-star-fill";
+                icono = "bi-star-fill text-warning";
             } else {
-                mensaje = "No obtendrá estrellas (Fuera de plazo)";
+                mensaje = "Sin estrellas (Fuera de plazo)";
                 claseCSS = "text-danger";
-                icono = "bi-star";
+                icono = "bi-star text-muted";
             }
-        } else {
-            mensaje = "Lugar no identificado para cálculo.";
-            claseCSS = "text-muted";
         }
 
-        // Inyectar en el HTML
-        feedback.removeClass('text-success text-warning text-danger text-muted pt-1').addClass(claseCSS);
-        feedback.html(`<i class="bi ${icono}"></i> ${mensaje}`);
+        feedback.removeClass('text-success text-warning text-danger text-muted')
+                .addClass(claseCSS)
+                .html(`<i class="bi ${icono}"></i> ${mensaje} <small class="d-block text-muted">Días de diferencia: ${diferencia}</small>`);
     }
     //BOTON DE RESET
 

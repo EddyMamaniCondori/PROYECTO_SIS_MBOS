@@ -254,7 +254,7 @@
                                     <div class="row g-3 mb-4">
                                         <div class="col-6">
                                             <label class="modern-label text-dark opacity-75">Fecha Entrega</label>
-                                            <input type="date" name="fecha_entrega" class="form-control border-0 bg-light fw-bold" value="{{ date('Y-m-d') }}" style="border-radius: 10px;">
+                                            <input type="datetime-local" name="fecha_entrega" class="form-control border-0 bg-light fw-bold" value="{{ old('fecha_entrega', isset($remesa->fecha_entrega) ? \Carbon\Carbon::parse($remesa->fecha_entrega)->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i')) }}" style="border-radius: 10px;">
                                         </div>
                                         <div class="col-6">
                                             @if($iglesia->tipo === 'Filial')

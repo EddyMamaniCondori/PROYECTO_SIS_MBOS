@@ -558,13 +558,22 @@ class RemesaController extends Controller
             $remesa->deposito = $request->deposito === 'true';
             $remesa->documentacion = $request->documentacion === 'true';
             $remesa->escaneado = $request->escaneado === 'true'; // El nuevo campo que agregamos
+            $remesa->arqueo = $request->arqueo === 'true'; 
             $remesa->fecha_entrega = $request->fecha_entrega;
             $remesa->observacion = $request->observacion;
             $remesa->estado = 'ENTREGADO';
             //CALCULO DE ESTADO DE DIAS
             $fechaEntrega = Carbon::parse($request->fecha_entrega);
             $fechaLimite = Carbon::parse($remesa->fecha_limite);
-            $diferencia = $fechaEntrega->diffInDays($fechaLimite, false);
+
+            // 2. CREAMOS COPIAS para el cálculo de puntualidad (reseteando la hora)
+            // Usamos ->copy() para no afectar la fecha original que guardaremos en la DB
+            $entregaSoloFecha = $fechaEntrega->copy()->startOfDay();
+            $limiteSoloFecha = $fechaLimite->copy()->startOfDay();
+
+            // 3. Calculamos la diferencia en días (ahora será SIEMPRE un entero)
+            // El segundo parámetro 'false' permite que sea negativo si se pasó de la fecha
+            $diferencia = $entregaSoloFecha->diffInDays($limiteSoloFecha, false);
 
             if ($diferencia === 0) {
                 $remesa->estado_dias = 'Completado con 0 días de retraso (entrega puntual)';
@@ -870,7 +879,11 @@ class RemesaController extends Controller
             // 🔹 Calcular diferencia de días
             $fechaEntrega = Carbon::parse($request->fecha_entrega);
             $fechaLimite = Carbon::parse($remesa->fecha_limite);
-            $diferencia = $fechaEntrega->diffInDays($fechaLimite, false); 
+
+            $entregaSoloFecha = $fechaEntrega->copy()->startOfDay();
+            $limiteSoloFecha = $fechaLimite->copy()->startOfDay();
+
+            $diferencia = $entregaSoloFecha->diffInDays($limiteSoloFecha, false);
 
             if ($diferencia === 0) {
                 $remesa->estado_dias = 'Completado con 0 días de retraso (entrega puntual)';
@@ -1037,7 +1050,7 @@ class RemesaController extends Controller
 
      /**********************************************************************************/
 
-    public function registrar_remesa_iglesia(Request $request, $id){ //permision 'registra remesas filiales- remesas',
+    /*public function registrar_remesa_iglesia(Request $request, $id){ //permision 'registra remesas filiales- remesas',
         //dd($id, $request);
         DB::beginTransaction();
         $mes = $request->input('mes');
@@ -1055,13 +1068,35 @@ class RemesaController extends Controller
             $remesa->estado = 'ENTREGADO';
             $remesa->observacion = $request->observacion;
 
-            // 🔹 Calcular diferencia de días
+
+
             $fechaEntrega = Carbon::parse($request->fecha_entrega);
             $fechaLimite = Carbon::parse($remesa->fecha_limite);
 
-            $diferencia = $fechaEntrega->diffInDays($fechaLimite, false); 
-            // false = diferencia negativa si entrega después de la fecha límite
+            // Forzamos tres métodos distintos para comparar
+            $diff1 = $fechaEntrega->diffInDays($fechaLimite, false);
+            $diff2 = $fechaEntrega->diffInCalendarDays($fechaLimite, false);
+            $diff3 = (int) $fechaEntrega->copy()->startOfDay()->diffInDays($fechaLimite->copy()->startOfDay(), false);
 
+            return response()->json([
+                'success' => true,
+                'debug' => [
+                    'con_diffInDays' => $diff1,
+                    'con_diffInCalendarDays' => $diff2,
+                    'forzado_entero' => $diff3,
+                    'tipo_de_dato' => gettype($diff1)
+                ]
+            ]);
+
+
+            // 🔹 Calcular diferencia de días
+            $soloFechaEntrega = Carbon::parse($request->fecha_entrega)->toDateString(); // "2026-04-22"
+            $soloFechaLimite = Carbon::parse($remesa->fecha_limite)->toDateString();   // "2026-04-20"
+
+            $diferencia = (int) Carbon::parse($soloFechaEntrega->toDateString())
+                ->diffInDays($soloFechaLimite->toDateString(), false);
+            
+            dump($diferencia, $soloFechaEntrega, $soloFechaLimite);
             if ($diferencia === 0) {
                 $remesa->estado_dias = 'Completado con 0 días de retraso (entrega puntual)';
             } elseif ($diferencia > 0) {
@@ -1131,7 +1166,7 @@ class RemesaController extends Controller
                 'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
-    }
+    }*/
     
     public function asignar_puntualidad(){
 
