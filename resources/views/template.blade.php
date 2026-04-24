@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <!--begin::Head-->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -62,6 +62,25 @@
       .main-sidebar {
           transition: width 0.3s ease-in-out !important;
       }
+
+      /* Corregir visibilidad de iconos de calendario y hora en Modo Claro */
+    [data-bs-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator,
+    [data-bs-theme="light"] input[type="time"]::-webkit-calendar-picker-indicator,
+    [data-bs-theme="light"] input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(0.2) sepia(1) saturate(5) hue-rotate(175deg); /* Esto los pone en un tono azulado/oscuro */
+        cursor: pointer;
+    }
+
+    /* Si prefieres que simplemente sean negros en modo claro: */
+    [data-bs-theme="light"] input::-webkit-calendar-picker-indicator {
+        filter: invert(0); /* Fuerza el color original oscuro */
+    }
+
+    /* En modo oscuro, nos aseguramos de que sigan siendo blancos */
+    [data-bs-theme="dark"] input::-webkit-calendar-picker-indicator {
+        filter: invert(1); 
+    }
+
     </style>
     @stack('css')
   </head>

@@ -650,6 +650,12 @@
                         <p> Puntualidad</p>
                       </a>
                     </li>
+                    <li class="nav-item">
+                      <a href="{{ route('remesas.puntualidad_filtro_general')  }}" class="nav-link">
+                        <i class="fa-solid fa-business-time"></i>
+                        <p>Filtro Puntualidad</p>
+                      </a>
+                    </li>
                 @endcan
 
                 @can('ver-puntualidad')

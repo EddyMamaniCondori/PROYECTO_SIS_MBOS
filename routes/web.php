@@ -209,6 +209,15 @@ Route::middleware(['auth'])->group(function () {
     */
 
 
+
+    Route::get('remesas/puntualidad/filtro_general', [PuntualidadController::class, 'filtro_general_puntualidad'])
+        ->name('remesas.puntualidad_filtro_general');
+
+    Route::post('remesas/puntualidad/filtro_general/pdf', [PuntualidadController::class, 'pdf_filtro_general_puntualidad'])
+        ->name('remesas.puntualidad_filtro_general.pdf');
+
+
+
     Route::get('remesas/distrital/dash', [RemesasDashboardController::class, 'index_distrital'])
         ->name('remesas.distrital.dash');
 
