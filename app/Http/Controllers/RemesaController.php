@@ -1308,7 +1308,7 @@ class RemesaController extends Controller
     public function procesarHistoricoPuntualidad() //
     {
         $anioTarget = 2026;
-        $mesesTarget = [1, 2, 3]; // Enero a Abril
+        $mesesTarget = [1, 2, 3, 4]; // Enero a Abril
         $actualizados = 0;
 
         // Usamos un chunk para no saturar la memoria si hay muchos registros

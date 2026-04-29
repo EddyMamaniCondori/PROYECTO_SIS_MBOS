@@ -419,7 +419,7 @@
                                 <div id="f_puntualidad_feedback" class="small mt-1 fw-bold"></div>
                             </div>
 
-                            <div class="d-flex gap-3 mb-4">
+                            <div class="d-flex gap-3 mb-2">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" id="f_cierre" name="cierre">
                                     <label class="form-check-label small" for="f_cierre">CIE</label>
@@ -436,11 +436,14 @@
                                     <input class="form-check-input" type="checkbox" role="switch" id="f_escaneado" name="escaneado">
                                     <label class="form-check-label small" for="f_escaneado">SCAN</label>
                                 </div>
+                            </div>
+                            <div class="d-flex gap-3 mb-2">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" id="f_registrado" name="registrado">
-                                    <label class="form-check-label small" for="f_registrado">REG</label>
+                                    <label class="form-check-label small fw-bold text-primary" for="f_registrado">REG (REGISTRADO)</label>
                                 </div>
                             </div>
+
 
                             <div class="row g-2">
                                 <div class="col-6 mb-3">
