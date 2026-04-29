@@ -291,9 +291,10 @@
                                             <th>REG</th>
                                             <th>Fecha entrega</th> <!--end::4-->
                                             <th>Fecha limite</th>
-                                            <th>estado dias</th>
-                                            <th>estado</th>
-                                            <th>observaciones</th>
+                                            <th>Estado dias</th>
+                                            <th>Punt</th>
+                                            <th>Estado</th>
+                                            <th>Observaciones</th>
                                             <th>Ofrenda</th><!--end::9-->
                                             <th>Diezmo</th>
                                             <th>Pro Templo</th><!--end::11-->
@@ -620,27 +621,54 @@
 
                 { data: 'fecha_entrega' },
                 { data: 'fecha_limite' },
-                { data: 'estado_dias', // Nombre de la columna que viene del JSON
+                { 
+                    data: 'estado_dias',
                     render: function(data, type, row) {
-                        // 1. Si el dato es nulo, vacío o exactamente "0" (no entregado)
+                        // 1. Si no hay dato o es exactamente "0"
                         if (!data || data == "0") {
                             return `<span class="badge bg-secondary badge-wrap">Sin entregar</span>`;
                         }
 
-                        // 2. Definimos el color por defecto (Gris)
-                        let colorClass = 'bg-secondary';
+                        let colorClass = 'bg-secondary'; // Color por defecto
 
-                        // 3. Lógica de colores basada en el texto
-                        // Si contiene "adelanto" o "0 día(s) de retraso" -> Verde (success)
-                        if (data.includes('adelanto') || data.includes(' 0 día(s) de retraso')) {
+                        // 2. Lógica de colores basada en el texto que viene del controlador
+                        // VERDE: Adelanto, 0 días de retraso o "dentro del plazo" (gracia)
+                        if (data.includes('adelanto') || 
+                            data.includes('0 días de retraso') || 
+                            data.includes('dentro del plazo')) {
                             colorClass = 'bg-success';
                         } 
-                        // Si contiene "retraso" (y no es el caso del 0 anterior) -> Rojo (danger)
+                        // ROJO: Si dice retraso y NO es el caso de 0 días o dentro del plazo
                         else if (data.includes('retraso')) {
                             colorClass = 'bg-danger';
                         }
-                        // 4. Retornamos el badge con el color decidido
+
                         return `<span class="badge ${colorClass} badge-wrap">${data}</span>`;
+                    }
+                },
+                { 
+                    data: 'puntualidad',
+                    width: '8px', // Ajuste solicitado
+                    className: 'text-center',
+                    render: function(data, type, row) {
+                        // Caso especial: Si no ha entregado aún (fecha_entrega nula)
+                        if (!row.fecha_entrega) {
+                            return '<i class="bi bi-star text-secondary" title="Pendiente"></i>';
+                        }
+
+                        // Convertir a número por seguridad
+                        let estrellas = parseInt(data);
+
+                        if (estrellas === 2) {
+                            // 2 Estrellas: Excelente (Amarillo total)
+                            return '<i class="bi bi-star-fill text-warning" title="Puntualidad de Oro"></i>';
+                        } else if (estrellas === 1) {
+                            // 1 Estrella: Dentro del plazo o retraso leve (Media estrella)
+                            return '<i class="bi bi-star-half text-warning" title="Plazo de gracia"></i>';
+                        } else {
+                            // 0 Estrellas: Fuera de plazo (Estrella vacía pero amarilla)
+                            return '<i class="bi bi-star text-warning" title="Fuera de plazo"></i>';
+                        }
                     }
                 },
                 { 

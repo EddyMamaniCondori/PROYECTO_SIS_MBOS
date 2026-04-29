@@ -550,8 +550,6 @@ class RemesaController extends Controller
         DB::beginTransaction();  
         try {
             // Validación
-            
-
             // Actualización
             // 2. Asignar valores del formulario (Switches y otros)
             $remesa->cierre = $request->cierre === 'true';
@@ -576,41 +574,60 @@ class RemesaController extends Controller
             // 3. Calculamos la diferencia en días (ahora será SIEMPRE un entero)
             // El segundo parámetro 'false' permite que sea negativo si se pasó de la fecha
             $diferencia = $entregaSoloFecha->diffInDays($limiteSoloFecha, false);
+            $absDiff = abs($diferencia);
 
-            if ($diferencia === 0) {
-                $remesa->estado_dias = 'Completado con 0 días de retraso (entrega puntual)';
-            } elseif ($diferencia > 0) {
-                $remesa->estado_dias = "Completado con {$diferencia} día(s) de adelanto";
-            } else {
-                $remesa->estado_dias = "Entregado con " . abs($diferencia) . " día(s) de retraso";
-            }
-            //
-            // 4. 🔹 CALCULAR ESTRELLAS (Según lugar)
             // Buscamos la iglesia relacionada
             $iglesia = Genera::where('id_remesa', $remesa->id_remesa)
                         ->with('iglesia')
                         ->first()?->iglesia;
-            if ($iglesia) {
-                $lugar = strtoupper($iglesia->lugar ?? ''); 
-                $estrella = "0"; // Valor por defecto
 
-                if ($lugar === 'EL ALTO') {
-                    if ($diferencia >= 0) {
-                        $estrella = "2";
-                    } elseif ($diferencia < 0 && abs($diferencia) <= 2) {
-                        $estrella = "1";
-                    } else {
+            if ($iglesia) {
+                $lugar = strtoupper($iglesia->lugar ?? 'DESCONOCIDO'); 
+                $estrella = "0"; 
+                $mensaje = "";
+
+                if ($diferencia >= 0) {
+                    // CASO GENERAL: Puntual o Adelantado
+                    $estrella = "2";
+                    $mensaje = ($diferencia == 0) 
+                        ? "Completado con 0 días de retraso (entrega puntual)" 
+                        : "Completado con {$diferencia} día(s) de adelanto";
+                } else {
+                    // CASO: Retraso (Diferencia negativa)
+                    if ($lugar === 'EL ALTO') {
+                        if ($absDiff <= 2) {
+                            $mensaje = "Completado con {$absDiff} día(s) dentro del plazo";
+                            $estrella = "2"; // Plazo de gracia (1 estrella)
+                        } else if($absDiff == 3){
+                            $mensaje = "Entregado con {$absDiff} día(s) de retraso";
+                            $estrella = "1"; // Plazo de gracia (1 estrella)
+                        } else{
+                            $mensaje = "Entregado con {$absDiff} día(s) de retraso";
+                            $estrella = "0";
+                        }
+                    } 
+                    elseif ($lugar === 'ALTIPLANO') {
+                        if ($absDiff <= 8) {
+                            $mensaje = "Completado con {$absDiff} día(s) dentro del plazo";
+                            $estrella = "2"; // En Altiplano se perdona hasta 8 días con nota máxima
+                        } else {
+                            $mensaje = "Entregado con {$absDiff} día(s) de retraso";
+                            $estrella = "0";
+                        }
+                    } 
+                    else {
+                        // Otros lugares sin regla específica
+                        $mensaje = "Entregado con {$absDiff} día(s) de retraso";
                         $estrella = "0";
                     }
-                } 
-                elseif ($lugar === 'ALTIPLANO') {
-                    // Hasta 5 días de retraso → 2, sino → 0
-                    if ($diferencia >= 0 || abs($diferencia) <= 5) {
-                        $estrella = "2";
-                    } else {
-                        $estrella = "0";
-                    }
-                }  
+                }
+            }
+
+            $remesa->estado_dias = $mensaje;
+            $remesa->puntualidad = $estrella;
+
+
+             
                 // 5. 🔹 GUARDAR EN TABLA PUNTUALIDAD
                 $puntualidad = Puntualidad::where('id_iglesia', $iglesia->id_iglesia)
                                         ->where('anio', $anio) // Usamos el año que viene del request
@@ -623,10 +640,6 @@ class RemesaController extends Controller
                         ->where('mes', $mes)
                         ->update(['tipo' => $estrella]);
                 }
-                
-                // Guardamos la estrella calculada también en la remesa para tenerlo a mano
-                
-            }     
             $remesa->save();
             DB::commit();     
             // Retornamos respuesta JSON exitosa
@@ -887,14 +900,8 @@ class RemesaController extends Controller
             $limiteSoloFecha = $fechaLimite->copy()->startOfDay();
 
             $diferencia = $entregaSoloFecha->diffInDays($limiteSoloFecha, false);
-
-            if ($diferencia === 0) {
-                $remesa->estado_dias = 'Completado con 0 días de retraso (entrega puntual)';
-            } elseif ($diferencia > 0) {
-                $remesa->estado_dias = "Completado con {$diferencia} día(s) de adelanto";
-            } else {
-                $remesa->estado_dias = "Entregado con " . abs($diferencia) . " día(s) de retraso";
-            }
+            $absDiff = abs($diferencia);
+            
             $remesa->save();   
 
             //guardar datos de remesa_filial
@@ -913,47 +920,67 @@ class RemesaController extends Controller
             //  LLENAMOS LA PUNTUALIDAD
             /******************************************/
             $iglesia = Genera::where('id_remesa', $remesa->id_remesa)
-                 ->with('iglesia')
-                 ->first()?->iglesia;
+                        ->with('iglesia')
+                        ->first()?->iglesia;
 
-                if ($iglesia) {
-                    $lugar = strtoupper($iglesia->lugar ?? ''); // Normalizar el texto por seguridad
-                    $estrella = "0"; // Valor por defecto
+            if ($iglesia) {
+                $lugar = strtoupper($iglesia->lugar ?? 'DESCONOCIDO'); 
+                $estrella = "0"; 
+                $mensaje = "";
 
-                    // Calcular la estrella según el tipo de iglesia
+                if ($diferencia >= 0) {
+                    // CASO GENERAL: Puntual o Adelantado
+                    $estrella = "2";
+                    $mensaje = ($diferencia == 0) 
+                        ? "Completado con 0 días de retraso (entrega puntual)" 
+                        : "Completado con {$diferencia} día(s) de adelanto";
+                } else {
+                    // CASO: Retraso (Diferencia negativa)
                     if ($lugar === 'EL ALTO') {
-                        // Si entregó antes o el mismo día → 2
-                        if ($diferencia >= 0) {
-                            $estrella = "2";
-                        }
-                        // Si entregó con hasta 2 días de retraso → 1
-                        elseif ($diferencia < 0 && abs($diferencia) <= 2) {
-                            $estrella = "1";
-                        }
-                        // Más de 2 días de retraso → 0
-                        else {
+                        if ($absDiff <= 2) {
+                            $mensaje = "Completado con {$absDiff} día(s) dentro del plazo";
+                            $estrella = "2"; // Plazo de gracia (1 estrella)
+                        }else if($absDiff == 3){
+                            $mensaje = "Entregado con {$absDiff} día(s) de retraso";
+                            $estrella = "1"; // Plazo de gracia (1 estrella)
+                        } else {
+                            $mensaje = "Entregado con {$absDiff} día(s) de retraso";
                             $estrella = "0";
                         }
                     } 
                     elseif ($lugar === 'ALTIPLANO') {
-                        // Hasta 5 días de retraso → 2, sino → 0
-                        if ($diferencia >= 0 || abs($diferencia) <= 5) {
-                            $estrella = "2";
+                        if ($absDiff <= 8) {
+                            $mensaje = "Completado con {$absDiff} día(s) dentro del plazo";
+                            $estrella = "2"; // En Altiplano se perdona hasta 8 días con nota máxima
                         } else {
+                            $mensaje = "Entregado con {$absDiff} día(s) de retraso";
                             $estrella = "0";
                         }
+                    } 
+                    else {
+                        // Otros lugares sin regla específica
+                        $mensaje = "Entregado con {$absDiff} día(s) de retraso";
+                        $estrella = "0";
                     }
-                    // buscamos la puntualidad
-                    $puntualidad = Puntualidad::where('id_iglesia', $iglesia->id_iglesia)
-                          ->where('anio', now()->year)
-                          ->first();
+                }
+            }
 
-                    // 🔹 Guardar estrella en la remesa
-                    Mes::where('id_puntualidad', $puntualidad->id_puntualidad)
+            $remesa->estado_dias = $mensaje;
+            $remesa->puntualidad = $estrella;
+            // 5. 🔹 GUARDAR EN TABLA PUNTUALIDAD
+            $puntualidad = Puntualidad::where('id_iglesia', $iglesia->id_iglesia)
+                ->where('anio', $anio) // Usamos el año que viene del request
+                ->first();
+
+            if ($puntualidad) {
+                    // Actualizamos el mes correspondiente en la tabla de puntos/estrellas
+                DB::table('mes') // Ajusta el nombre de la tabla si es 'meses' o 'mes'
+                    ->where('id_puntualidad', $puntualidad->id_puntualidad)
                     ->where('mes', $mes)
                     ->update(['tipo' => $estrella]);
+            }
 
-                }
+            $remesa->save();
             
             DB::commit();
             // Crear un nuevo request con los datos que llenar_filial necesita
@@ -1274,5 +1301,102 @@ class RemesaController extends Controller
 
         return $pdf->stream("Reporte_Remesas_{$mesNombre}_{$anio}.pdf");
     }
+
+
+
+
+    public function procesarHistoricoPuntualidad() //
+    {
+        $anioTarget = 2026;
+        $mesesTarget = [1, 2, 3]; // Enero a Abril
+        $actualizados = 0;
+
+        // Usamos un chunk para no saturar la memoria si hay muchos registros
+        $registrosGenera = DB::table('generas')
+            ->where('anio', $anioTarget)
+            ->whereIn('mes', $mesesTarget)
+            ->get();
+
+        DB::beginTransaction();
+        try {
+            foreach ($registrosGenera as $reg) {
+                $remesa = Remesa::find($reg->id_remesa);
+                $iglesia = DB::table('iglesias')->where('id_iglesia', $reg->id_iglesia)->first();
+
+                if ($remesa && $remesa->estado === 'ENTREGADO' && $remesa->fecha_entrega) {
+                    
+                    $fechaEntrega = \Carbon\Carbon::parse($remesa->fecha_entrega);
+                    $fechaLimite = \Carbon\Carbon::parse($remesa->fecha_limite);
+
+                    $entregaSoloFecha = $fechaEntrega->copy()->startOfDay();
+                    $limiteSoloFecha = $fechaLimite->copy()->startOfDay();
+
+                    $diferencia = $entregaSoloFecha->diffInDays($limiteSoloFecha, false);
+                    $absDiff = abs($diferencia);
+                    
+                    $lugar = strtoupper($iglesia->lugar ?? 'DESCONOCIDO');
+                    $estrella = "0";
+                    $mensaje = "";
+
+                    // --- LÓGICA DE NEGOCIO IDENTICA A TU UPDATE ---
+                    if ($diferencia >= 0) {
+                        $estrella = "2";
+                        $mensaje = ($diferencia == 0) 
+                            ? "Completado con 0 días de retraso (entrega puntual)" 
+                            : "Completado con {$diferencia} día(s) de adelanto";
+                    } else {
+                        if ($lugar === 'EL ALTO') {
+                            if ($absDiff <= 2) {
+                                $mensaje = "Completado con {$absDiff} día(s) dentro del plazo";
+                                $estrella = "2";
+                            } else if ($absDiff == 3) {
+                                $mensaje = "Entregado con {$absDiff} día(s) de retraso";
+                                $estrella = "1";
+                            } else {
+                                $mensaje = "Entregado con {$absDiff} día(s) de retraso";
+                                $estrella = "0";
+                            }
+                        } elseif ($lugar === 'ALTIPLANO') {
+                            if ($absDiff <= 8) {
+                                $mensaje = "Completado con {$absDiff} día(s) dentro del plazo";
+                                $estrella = "2";
+                            } else {
+                                $mensaje = "Entregado con {$absDiff} día(s) de retraso";
+                                $estrella = "0";
+                            }
+                        } else {
+                            $mensaje = "Entregado con {$absDiff} día(s) de retraso";
+                            $estrella = "0";
+                        }
+                    }
+
+                    // A. Actualizar Remesa
+                    $remesa->estado_dias = $mensaje;
+                    $remesa->puntualidad = $estrella;
+                    $remesa->save();
+
+                    // B. Actualizar Tabla de Estrellas (mes)
+                    $puntualidad = DB::table('puntualidades')
+                        ->where('id_iglesia', $reg->id_iglesia)
+                        ->where('anio', $anioTarget)
+                        ->first();
+
+                    if ($puntualidad) {
+                        DB::table('mes')
+                            ->where('id_puntualidad', $puntualidad->id_puntualidad)
+                            ->where('mes', $reg->mes)
+                            ->update(['tipo' => $estrella]);
+                    }
+                    $actualizados++;
+                }
+            }
+            DB::commit();
+            return "Éxito: Se actualizaron {$actualizados} remesas del periodo histórico.";
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return "Error en el proceso: " . $e->getMessage();
+        }
+    }
+
 
 }
