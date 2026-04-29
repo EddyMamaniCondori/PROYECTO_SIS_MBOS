@@ -47,6 +47,14 @@
     .custom-scroll-container::-webkit-scrollbar-thumb:hover {
         background: #6c757d;
     }
+    .badge-wrap {
+        white-space: normal !important; /* Permite que el texto baje */
+        max-width: 110px;               /* Ajusta este valor según lo ancho que lo quieras */
+        display: inline-block;
+        line-height: 1.2;
+        padding: 5px 8px;
+    }
+    
 </style>
 
 @endpush
@@ -190,31 +198,38 @@
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="6" id="col6" checked>
-                                                <label class="form-check-label" for="col6">Remesa</label>
+                                                <label class="form-check-label" for="col6">REG</label>
                                             </div>
                                         </li>
+
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="7" id="col7" checked>
-                                                <label class="form-check-label" for="col7">Fecha entrega</label>
+                                                <label class="form-check-label" for="col7">Remesa</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="8" id="col8" checked>
-                                                <label class="form-check-label" for="col8">Fecha limite</label>
+                                                <label class="form-check-label" for="col8">Fecha entrega</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="9" id="col9" checked>
-                                                <label class="form-check-label" for="col9">Estado de dias</label>
+                                                <label class="form-check-label" for="col9">Fecha limite</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="11" id="col11" checked>
-                                                <label class="form-check-label" for="col11">Observaciones</label>
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="10" id="col10" checked>
+                                                <label class="form-check-label" for="col10">Estado de dias</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="12" id="col12" checked>
+                                                <label class="form-check-label" for="col12">Observaciones</label>
                                             </div>
                                         </li>
                                     </ul>
@@ -231,6 +246,7 @@
                                             <th>DOC</th>
                                             <th>SCAN</th>
                                             <th>ARQ</th>
+                                            <th>REG</th>
                                             <th>Remesa</th>
                                             <th>Fecha entrega</th>
                                             <th>Fecha limite</th>
@@ -392,6 +408,11 @@
                             <input class="form-check-input" type="checkbox" role="switch" id="modal_check_arqueo" name="arqueo" value="true">
                             <label class="form-check-label small fw-bold " for="modal_check_arqueo">ARQ</label>
                         </div>
+                        <div class="form-check form-switch">
+                            <input type="hidden" name="registrado" value="false">
+                            <input class="form-check-input" type="checkbox" role="switch" id="modal_check_registrado" name="registrado" value="true">
+                            <label class="form-check-label small fw-bold " for="modal_check_registrado">REG</label>
+                        </div>
                     </div>
 
                     <div class="mb-0">
@@ -500,6 +521,12 @@
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
+                { 
+                    data: 'registrado',
+                    render: function(data) {
+                        return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
+                    }
+                },
                 { data: 'monto' },
                 { data: 'fecha_entrega' },
                 { data: 'fecha_limite' },
@@ -507,7 +534,7 @@
                     render: function(data, type, row) {
                         // 1. Si el dato es nulo, vacío o exactamente "0" (no entregado)
                         if (!data || data == "0") {
-                            return `<span class="badge bg-secondary">Sin entregar</span>`;
+                            return `<span class="badge bg-secondary badge-wrap">Sin entregar</span>`;
                         }
 
                         // 2. Definimos el color por defecto (Gris)
@@ -523,7 +550,7 @@
                             colorClass = 'bg-danger';
                         }
                         // 4. Retornamos el badge con el color decidido
-                        return `<span class="badge ${colorClass}">${data}</span>`;
+                        return `<span class="badge ${colorClass} badge-wrap">${data}</span>`;
                     }
                 },
                 { 
@@ -957,6 +984,7 @@
         $('#modal_check_documentacion').prop('checked', !!data.documentacion);
         $('#modal_check_escaneado').prop('checked', !!data.escaneado);
         $('#modal_check_arqueo').prop('checked', !!data.arqueo);
+        $('#modal_check_registrado').prop('checked', !!data.registrado);
 
         setTimeout(() => {
             calcularPuntualidadRealTime();

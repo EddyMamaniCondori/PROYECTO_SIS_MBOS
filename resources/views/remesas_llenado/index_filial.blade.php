@@ -226,48 +226,53 @@
                                     <ul class="dropdown-menu dropdown-menu-end p-3 shadow border-0" aria-labelledby="dropdownConfig" style="min-width: 250px;">
                                         <li class="dropdown-header text-uppercase small fw-bold">Mostrar/Ocultar Columnas</li>
                                         <li><hr class="dropdown-divider"></li>
-                                        
-                                        
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="5" id="col5" checked>
-                                                <label class="form-check-label" for="col5">Fecha entrega</label>
+                                                <label class="form-check-label" for="col5">REG</label>
                                             </div>
                                         </li>
+                                        
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="6" id="col6" checked>
-                                                <label class="form-check-label" for="col6">Fecha limite</label>
+                                                <label class="form-check-label" for="col6">Fecha entrega</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="7" id="col7" checked>
-                                                <label class="form-check-label" for="col7">Estado de dias</label>
+                                                <label class="form-check-label" for="col7">Fecha limite</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="9" id="col9" checked>
-                                                <label class="form-check-label" for="col9">Observaciones</label>
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="8" id="col8" checked>
+                                                <label class="form-check-label" for="col8">Estado de dias</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="10" id="col10" checked>
-                                                <label class="form-check-label" for="col10">Ofrenda</label>
+                                                <label class="form-check-label" for="col10">Observaciones</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="11" id="col11" checked>
-                                                <label class="form-check-label" for="col11">Diezmo</label>
+                                                <label class="form-check-label" for="col11">Ofrenda</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="12" id="col12" checked>
-                                                <label class="form-check-label" for="col12">Pro Templo</label>
+                                                <label class="form-check-label" for="col12">Diezmo</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="13" id="col13" checked>
+                                                <label class="form-check-label" for="col13">Pro Templo</label>
                                             </div>
                                         </li>
                                     </ul>
@@ -283,6 +288,7 @@
                                             <th>DEP</th>
                                             <th>DOC</th>
                                             <th>SCAN</th>
+                                            <th>REG</th>
                                             <th>Fecha entrega</th> <!--end::4-->
                                             <th>Fecha limite</th>
                                             <th>estado dias</th>
@@ -428,6 +434,10 @@
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" role="switch" id="f_escaneado" name="escaneado">
                                     <label class="form-check-label small" for="f_escaneado">SCAN</label>
+                                </div>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="f_registrado" name="registrado">
+                                    <label class="form-check-label small" for="f_registrado">REG</label>
                                 </div>
                             </div>
 
@@ -600,6 +610,14 @@
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
+                { 
+                    data: 'registrado',
+                    width: '10px',
+                    render: function(data) {
+                        return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
+                    }
+                },
+
                 { data: 'fecha_entrega' },
                 { data: 'fecha_limite' },
                 { data: 'estado_dias', // Nombre de la columna que viene del JSON
@@ -1053,7 +1071,7 @@
         $('#f_deposito').prop('checked', !!data.deposito);
         $('#f_documentacion').prop('checked', !!data.documentacion);
         $('#f_escaneado').prop('checked', !!data.escaneado);
-
+        $('#f_registrado').prop('checked', !!data.registrado);
         // Valores numéricos
         $('#f_ofrenda').val(data.ofrenda || 0);
         $('#f_diezmo').val(data.diezmo || 0);

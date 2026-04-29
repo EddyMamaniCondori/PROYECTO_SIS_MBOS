@@ -559,6 +559,8 @@ class RemesaController extends Controller
             $remesa->documentacion = $request->documentacion === 'true';
             $remesa->escaneado = $request->escaneado === 'true'; // El nuevo campo que agregamos
             $remesa->arqueo = $request->arqueo === 'true'; 
+            $remesa->registrado = $request->registrado === 'true';
+
             $remesa->fecha_entrega = $request->fecha_entrega;
             $remesa->observacion = $request->observacion;
             $remesa->estado = 'ENTREGADO';
@@ -871,6 +873,7 @@ class RemesaController extends Controller
             $remesa->deposito       = $request->boolean('deposito');
             $remesa->documentacion  = $request->boolean('documentacion');
             $remesa->escaneado      = $request->boolean('escaneado');
+            $remesa->registrado      = $request->boolean('registrado');
             $remesa->fecha_entrega  = $request->fecha_entrega;
             $remesa->estado         = 'ENTREGADO';
             $remesa->observacion    = $request->observacion;

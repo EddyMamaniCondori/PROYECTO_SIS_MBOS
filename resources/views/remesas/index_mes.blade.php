@@ -229,20 +229,20 @@
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="10" id="col10" checked>
-                                                <label class="form-check-label" for="col10">Fecha entrega</label>
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="12" id="col12" checked>
+                                                <label class="form-check-label" for="col12">Fecha entrega</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="11" id="col11" checked>
-                                                <label class="form-check-label" for="col11">Fecha limite</label>
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="13" id="col13" checked>
+                                                <label class="form-check-label" for="col13">Fecha limite</label>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="14" id="col14" checked>
-                                                <label class="form-check-label" for="col14">Observaciones</label>
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="16" id="col16" checked>
+                                                <label class="form-check-label" for="col16">Observaciones</label>
                                             </div>
                                         </li>
                                     </ul>
@@ -263,6 +263,7 @@
                                             <th>DEP</th>
                                             <th>DOC</th>
                                             <th>SCAN</th>
+                                            <th>REG</th>
                                             <th>Fecha entrega</th>
                                             <th>Fecha limite</th>
                                             <th>estado dias</th>
@@ -286,64 +287,7 @@
         </div>
 
 
-<!-- Modal único reutilizable -->
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="formRemesa" method="POST">
-        @csrf
-        <input type="hidden" name="id_remesa" id="modal_id_remesa">
-        <input type="hidden" name="mes" id="mes" value="{{$mes}}">
-        <input type="hidden" name="anio" id="value" value="{{$anio}}">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="confirmModalLabel">Complete los datos</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <center><strong style="color: green;">Verifique los datos</strong></center><br>
-            <p><strong>id_iglesia:</strong> <span id="modal_id_iglesia"></span><br>
-          <strong>Distrito:</strong> <span id="modal_distrito"></span><br>
-          <strong>Iglesia:</strong> <span id="modal_iglesia"></span><br>
-          <strong>Pastor:</strong> <span id="modal_pastor"></span></p>
-          <hr>
 
-          <label for="fecha_entrega" class="form-label">Fecha de entrega:</label>
-          <input type="date" name="fecha_entrega" id="modal_fecha_entrega" class="form-control" value="{{ date('Y-m-d') }}" required>
-
-          <br>
-
-          <div class="form-check form-switch">
-            <input type="hidden" name="cierre" value="false">
-            <input class="form-check-input" type="checkbox" role="switch" id="modal_switchCierre" name="cierre" value="true">
-            <label class="form-check-label" for="modal_switchCierre">Cierre:</label>
-          </div>
-
-          <div class="form-check form-switch">
-            <input type="hidden" name="deposito" value="false">
-            <input class="form-check-input" type="checkbox" role="switch" id="modal_switchDeposito" name="deposito" value="true">
-            <label class="form-check-label" for="modal_switchDeposito">Depósito:</label>
-          </div>
-
-          <div class="form-check form-switch">
-            <input type="hidden" name="documentacion" value="false">
-            <input class="form-check-input" type="checkbox" role="switch" id="modal_switchDocumentacion" name="documentacion" value="true">
-            <label class="form-check-label" for="modal_switchDocumentacion">Documentación:</label>
-          </div>
-
-          <div class="mt-3">
-            <label for="observacion" class="form-label">Observación:</label>
-            <input type="text" name="observacion" id="modal_observacion" class="form-control">
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-success">Confirmar</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
 
 
         @endsection
@@ -424,6 +368,12 @@
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
+                { 
+                    data: 'registrado',
+                    render: function(data) {
+                        return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
+                    }
+                },
                 { data: 'fecha_entrega' },
                 { data: 'fecha_limite' },
                 { data: 'estado_dias' },
@@ -466,22 +416,6 @@
                                     title="Ver Remesas Filiales">
                                     <i class="bi bi-eye"></i>
                                 </a>   
-                                <button type="button" class="btn btn-outline-primary btn-sm btn-abrir-modal" 
-                                    data-id_remesa="${data.id_remesa}" 
-                                    data-distrito="${data.nombre_distrito}"
-                                    data-iglesia="${data.nombre_igle}"
-                                    data-id_iglesia="${data.id_iglesia}"
-                                    data-pastor="${data.nombre_pas} ${data.ape_paterno}"
-                                    data-tipo="${data.tipo_igle}"
-                                    data-fecha_entrega="${data.fecha_entrega}"
-                                    data-cierre="${data.cierre}"
-                                    data-deposito="${data.deposito}"
-                                    data-documentacion="${data.documentacion}"
-                                    data-observacion="${data.observacion}"
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#confirmModal">
-                                    <i class="bi bi-pencil-square"></i> Registrar
-                                </button>
                         </div>`;
                     }
                 }
