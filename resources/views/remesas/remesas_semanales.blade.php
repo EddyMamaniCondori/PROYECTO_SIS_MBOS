@@ -55,10 +55,10 @@
                     <div class="col-sm-6">
                         <h3 class="mb-0">Registro Semanal</h3>
                     </div>
-                    
+
                     <div class="col-sm-6 d-flex justify-content-end align-items-center gap-3">
 
-                        <a href="{{ route('remesas.iglesia.index', ['id' => $iglesia->id_iglesia, 'mes' => $mes, 'anio' => $anio]) }}" 
+                        <a href="{{ route('remesas.iglesia.index', ['id' => $iglesia->id_iglesia, 'mes' => $mes, 'anio' => $anio]) }}"
                         class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-left"></i> Volver
                         </a>
@@ -99,28 +99,28 @@
                                                 <div class="p-2 bg-white bg-opacity-10 rounded-3 mb-1">
                                                     <i class="bi bi-calendar3 fs-5 text-white"></i>
                                                 </div>
-                                                
+
                                                 <div>
                                                     <h6 class="mb-0 fw-bold text-white text-uppercase" style="letter-spacing: 0.5px; font-size: 0.65rem;">SEM</h6>
                                                     <span class="fs-4 fw-black text-white" style="line-height: 1;">{{ $s }}</span>
                                                 </div>
                                             </div>
                                         </div>
-                                        @php 
-                                            $semData = $semanasExistentes[$s] ?? null; 
+                                        @php
+                                            $semData = $semanasExistentes[$s] ?? null;
                                         @endphp
 
                                         <div class="col-xl-11 col-lg-12">
                                             <div class="row g-2 justify-content-end text-center">
                                                 <div class="col">
                                                     <label class="modern-label">Diezmo</label>
-                                                    <input type="number" name="resumen_diezmo[{{ $s }}]" class="form-control form-control-sm modern-input text-center fw-bold res-diezmo excel-input" 
+                                                    <input type="number" name="resumen_diezmo[{{ $s }}]" class="form-control form-control-sm modern-input text-center fw-bold res-diezmo excel-input"
                                                     step="0.01" value="{{ $semData ? $semData->diezmo_total : 0 }}" min="0">
                                                 </div>
-                                                
+
                                                 <div class="col">
                                                     <label class="modern-label">Pro-Templo</label>
-                                                    <input type="number" name="resumen_pro[{{ $s }}]" class="form-control form-control-sm modern-input text-center fw-bold res-pro excel-input" 
+                                                    <input type="number" name="resumen_pro[{{ $s }}]" class="form-control form-control-sm modern-input text-center fw-bold res-pro excel-input"
                                                     step="0.01" value="{{ $semData ? $semData->pro_templo_total : 0 }}" min="0">
                                                 </div>
 
@@ -128,9 +128,9 @@
                                                     <label class="modern-label">Ofrenda (Gral)</label>
                                                     <input type="number" name="resumen_ofrenda[{{ $s }}]" class="form-control form-control-sm modern-input text-center fw-bold res-ofrenda excel-input"
                                                      step="0.01" value="{{ $semData ? $semData->ofrenda_total : 0 }}" min="0">
-                                                   
+
                                                 </div>
-                                                
+
                                                 <div class="col border-end border-white border-opacity-10">
                                                     <label class="modern-label text-white-20">Distribución</label>
                                                     <div class="d-flex flex-column justify-content-center align-items-center" >
@@ -142,7 +142,7 @@
                                                             <span class="text-white" style="font-size: 0.8rem;">40%</span>
                                                             <b class="text-warning res-ofrenda-40" style="font-size: 0.9rem;">0.00</b>
                                                         </div>
-                                                        
+
                                                     </div>
                                                 </div>
 
@@ -154,7 +154,7 @@
                                                     <label class="modern-label" style="color: #ffd700;">Remesa MBOS</label>
                                                     <input type="text" class="form-control form-control-sm res-remesa-mbos text-center fw-bold border-0 shadow-sm" style="background-color: #fefce8; color: #854d0e; border-radius: 8px;" readonly value="0.00">
                                                 </div>
-                                                
+
                                                 <div class="col">
                                                         <label class="modern-label" style="color: #fca5a5;">Total Semana</label>
                                                         <input type="text" class="form-control form-control-sm res-total text-center fw-bold border-0 shadow-sm" style="background-color: #111827; color: #10b981; border-radius: 8px;" readonly value="0.00">
@@ -179,17 +179,17 @@
                                                 </thead>
                                                 <tbody class="cuerpo-semana" data-semana="{{ $s }}">
                                                     @if($semData && $semData->detalle_filas)
-                                                        @php 
-                                                            $filas = is_array($semData->detalle_filas) || is_object($semData->detalle_filas) 
-                                                                    ? $semData->detalle_filas 
-                                                                    : json_decode($semData->detalle_filas); 
+                                                        @php
+                                                            $filas = is_array($semData->detalle_filas) || is_object($semData->detalle_filas)
+                                                                    ? $semData->detalle_filas
+                                                                    : json_decode($semData->detalle_filas);
                                                         @endphp
                                                             @foreach($filas as $f)
-                                                                @php 
+                                                                @php
                                                                     // Convertimos el array a objeto para que el resto de tu código funcione tal cual
-                                                                    $f = (object) $f; 
+                                                                    $f = (object) $f;
                                                                 @endphp
-                                                                
+
                                                                 <tr class="fila-detalle">
                                                                     {{-- Ahora sí puedes usar $f->diezmo, $f->ofrenda, etc. --}}
                                                                     <td><input type="number" name="semana[{{ $s }}][diezmo][]" class="form-control form-control-sm val-d excel-input" step="0.01" value="{{ $f->diezmo }}"></td>
@@ -197,7 +197,7 @@
                                                                     <td><input type="number" name="semana[{{ $s }}][pacto][]" class="form-control form-control-sm val-p excel-input" step="0.01" value="{{ $f->pacto }}"></td>
                                                                     <td><input type="number" name="semana[{{ $s }}][especiales][]" class="form-control form-control-sm val-e excel-input" step="0.01" value="{{ $f->especiales }}"></td>
                                                                     <td><input type="number" name="semana[{{ $s }}][pro_templo][]" class="form-control form-control-sm val-pt excel-input" step="0.01" value="{{ $f->pro_templo }}"></td>
-                                                                    
+
                                                                     <td class="text-center">
                                                                         <button type="button" class="btn btn-sm text-danger btn-remove">
                                                                             <i class="bi bi-trash-fill"></i>
@@ -207,7 +207,7 @@
                                                             @endforeach
                                                     @endif
                                                 </tbody>
-                                                
+
                                                 <tfoot class="d-none footer-totales" style="background-color: #fef9c3; border-top: 2px solid #facc15;">
                                                     <tr class="fw-bold text-center" style="font-size: 0.9rem; color: #854d0e;">
                                                         <td id="total-d-{{ $s }}">0.00</td>
@@ -271,7 +271,7 @@
                                             <span class="text-muted small fw-bold uppercase">Total Diezmos</span>
                                             <input type="text" class="js-mes-diezmo border-0 bg-transparent text-end fw-bold text-dark" readonly value="0.00" style="width: 120px; outline: none;">
                                         </div>
-                                        
+
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <span class="text-muted small fw-bold uppercase">Total Pro-Templo</span>
                                             <input type="text" class="js-mes-pro border-0 bg-transparent text-end fw-bold text-dark" readonly value="0.00" style="width: 120px; outline: none;">
@@ -357,12 +357,19 @@
                                                     <label class="form-check-label small fw-bold text-dark" for="sw-escaneado">SCAN</label>
                                                 </div>
                                             </div>
+                                            <div class="col-6">
+                                                <div class="form-check form-switch custom-switch">
+                                                    <input type="hidden" name="registrado" value="0">
+                                                    <input class="form-check-input" type="checkbox" name="registrado" id="sw-registrado" value="1" {{ $remesa->registrado ? 'checked' : '' }}>
+                                                    <label class="form-check-label small fw-bold text-dark" for="sw-registrado">REG</label>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="mt-2">
                                             <label class="modern-label text-dark opacity-75" style="font-size: 0.7rem;">Notas / Observaciones</label>
-                                            <textarea name="observaciones" class="form-control border-0 bg-white shadow-sm" rows="2" 
-                                                    placeholder="Escribe detalles relevantes aquí..." 
+                                            <textarea name="observaciones" class="form-control border-0 bg-white shadow-sm" rows="2"
+                                                    placeholder="Escribe detalles relevantes aquí..."
                                                     style="border-radius: 12px; font-size: 0.8rem;">{{ $remesa->observacion }}</textarea>
                                         </div>
                                     </div>
@@ -371,7 +378,7 @@
                                     <button type="submit" class="btn btn-success w-100 py-3 fw-bold shadow-lg border-0 mb-2" style="border-radius: 5px; transition: all 0.3s ease;">
                                         <i class="bi bi-cloud-check-fill me-2"></i>GUARDAR REGISTRO MENSUAL
                                     </button>
-                                    <a href="{{ route('remesas.iglesia.index', ['id' => $iglesia->id_iglesia, 'mes' => $mes, 'anio' => $anio]) }}" 
+                                    <a href="{{ route('remesas.iglesia.index', ['id' => $iglesia->id_iglesia, 'mes' => $mes, 'anio' => $anio]) }}"
                                     class="btn btn-secondary w-100 shadow-sm" style="border-radius: 10px;">
                                         <i class="bi bi-arrow-left me-1"></i> Regresar al historial
                                     </a>
@@ -428,6 +435,7 @@ $(document).ready(function() {
             $('#sw-deposito').prop('checked', !!data.remesa.deposito);
             $('#sw-documentacion').prop('checked', !!data.remesa.documentacion);
             $('#sw-escaneado').prop('checked', !!data.remesa.escaneado);
+            $('#sw-registrado').prop('checked', !!data.remesa.registrado);
 
             // B. Llenar las 5 semanas
             $.each([1, 2, 3, 4, 5], function(i, nroSemana) {
@@ -443,10 +451,10 @@ $(document).ready(function() {
 
                     // Si tiene detalle JSON, inyectar filas
                     if (sem.detalle_filas) {
-                        let filas = (typeof sem.detalle_filas === 'string') 
-                                    ? JSON.parse(sem.detalle_filas) 
+                        let filas = (typeof sem.detalle_filas === 'string')
+                                    ? JSON.parse(sem.detalle_filas)
                                     : sem.detalle_filas;
-                        
+
                         cuerpo.empty(); // Limpiar skeleton
                         $.each(filas, function(idx, f) {
                             cuerpo.append(crearFilaConValores(nroSemana, f));
@@ -458,14 +466,14 @@ $(document).ready(function() {
                         card.find('.btn-agregar-fila').html('<i class="bi bi-plus-lg me-1"></i>Añadir fila');
                     }
                 }
-                
+
                 // Forzamos el recalculo interno de la card (40/60, MBOS, etc)
                 recalcularSemana(card, nroSemana);
             });
 
             // C. Cálculos globales finales
             actualizarResumenMensualGlobal();
-            
+
             // Finalizamos efectos
             NProgress.done();
             $('#loader-overlay').fadeOut('slow');
@@ -511,10 +519,10 @@ $(document).ready(function() {
         if (cuerpo.children().length === 0) {
             // LIMPIAR Y BLOQUEAR (Propiedades de jQuery más fuertes)
             card.find('.res-diezmo, .res-ofrenda, .res-pro').val('0.00').prop('readonly', true).css('opacity', '0.6');
-            
+
             // Mostrar elementos de detalle
             card.find('.footer-totales, .msg-bloqueo').removeClass('d-none');
-            
+
             // Añadir 5 filas iniciales
             for (let i = 0; i < 10; i++) { cuerpo.append(crearFila(s)); }
             $(this).html('<i class="bi bi-plus-lg me-1"></i>Añadir fila');
@@ -540,7 +548,7 @@ $(document).ready(function() {
         if (filas.length > 0) {
             // --- MODO DETALLE: Manda la tabla ---
             let dDet = 0, oDet = 0, pDet = 0, eDet = 0, ptDet = 0;
-            
+
             filas.each(function() {
                 dDet += parseFloat($(this).find('.val-d').val()) || 0;
                 oDet += parseFloat($(this).find('.val-o').val()) || 0;
@@ -550,7 +558,7 @@ $(document).ready(function() {
             });
 
             dFinal = dDet;
-            oFinal = oDet + pDet + eDet; 
+            oFinal = oDet + pDet + eDet;
             ptFinal = ptDet;
 
             // Inyectar valores en los 3 campos de cabecera
@@ -599,7 +607,7 @@ $(document).ready(function() {
         let card = $(this).closest('.semana-card');
         let s = card.data('semana');
         $(this).closest('tr').remove();
-        
+
         if(card.find('.cuerpo-semana tr').length === 0) {
             card.find('.res-diezmo, .res-ofrenda, .res-pro').val('0.00');
 
@@ -618,7 +626,7 @@ $(document).ready(function() {
         let acumuladoProTemplo = 0;
         let acumuladoRemesaMBOS = 0;
         let acumuladoFondoLocal = 0;
-        
+
         // Obtenemos el gasto mensual
         let gastoTotal = parseFloat($('.gasto-input').val()) || 0;
 
@@ -628,7 +636,7 @@ $(document).ready(function() {
             acumuladoDiezmo      += parseFloat($(this).find('.res-diezmo').val()) || 0;
             acumuladoOfrenda     += parseFloat($(this).find('.res-ofrenda').val()) || 0;
             acumuladoProTemplo   += parseFloat($(this).find('.res-pro').val()) || 0;
-            
+
             // También sumamos lo que ya se calculó de MBOS y Local por semana
             acumuladoRemesaMBOS  += parseFloat($(this).find('.res-remesa-mbos').val()) || 0;
             acumuladoFondoLocal  += parseFloat($(this).find('.res-fondo-local').val()) || 0;
@@ -734,20 +742,20 @@ $(document).ready(function() {
                     icon: 'success',
                     title: response.message
                 });
-                
+
                 // Aquí podrías disparar un recalculo final si fuera necesario
             },
             error: function(xhr) {
                 NProgress.done();
                 let mensajeError = 'Hubo un problema en el servidor.';
-    
+
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     // Si es un error de Laravel (como una validación o excepción)
                     mensajeError = xhr.responseJSON.message;
                 } else if (xhr.responseText) {
                     // Si es un error crítico (página de error HTML completa)
                     // Solo para desarrollo: esto te permite ver un pedazo del error en el alert
-                    console.log(xhr.responseText); 
+                    console.log(xhr.responseText);
                 }
 
                 Swal.fire({
@@ -776,13 +784,13 @@ document.addEventListener('keydown', function (e) {
             const currentCell = activeElement.closest('td');
             const currentRow = currentCell.parentElement;
             const table = currentRow.parentElement;
-            
+
             const columnIndex = Array.from(currentRow.children).indexOf(currentCell);
             const rowIndex = Array.from(table.children).indexOf(currentRow);
-            
+
             // Intentamos buscar la celda en la siguiente fila (mismo índice de columna)
             const nextRow = table.children[rowIndex + 1];
-            
+
             if (nextRow) {
                 // Hay otra fila abajo: movemos el foco ahí
                 const nextInput = nextRow.children[columnIndex].querySelector('.excel-input');
@@ -791,7 +799,7 @@ document.addEventListener('keydown', function (e) {
                 // No hay más filas: vamos a la primera fila de la SIGUIENTE columna
                 const firstRow = table.children[0];
                 const nextColumnCell = firstRow.children[columnIndex + 1];
-                
+
                 if (nextColumnCell) {
                     const nextColumnInput = nextColumnCell.querySelector('.excel-input');
                     if (nextColumnInput) nextColumnInput.focus();

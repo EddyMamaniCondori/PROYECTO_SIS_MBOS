@@ -21,7 +21,7 @@
 
     .custom-scroll-container {
         /* Altura fija para que el scroll sea obligatorio si hay más de 3-4 alertas */
-        height: 350px !important; 
+        height: 350px !important;
         max-height: 350px !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
@@ -67,8 +67,8 @@
           <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6 pb-1"><h3 class="mb-0">Remesas </h3></div>
-                <div class="col-sm-3 text-end pb-1"> 
-                    <a href="{{ route('remesas.index_mes', ['mes' => $mes, 'anio' => $anio]) }}" 
+                <div class="col-sm-3 text-end pb-1">
+                    <a href="{{ route('remesas.index_mes', ['mes' => $mes, 'anio' => $anio]) }}"
                         class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Volver
                     </a>
@@ -80,7 +80,7 @@
                         @endforeach
                     </select>
                 </div>
-                
+
 
                 <div class="row">
                     <div class="col-lg-4 col-md-6 ">
@@ -96,7 +96,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="card-body  p-3">
                                 <hr class="text-muted opacity-25 p-0 m-0">
                                 <div class="row g-1">
@@ -121,7 +121,7 @@
                                     <div class="col-6">
                                         <label class="text-muted d-block small uppercase fw-bold">Lugar</label>
                                         <p class="mb-0">
-                                            <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ $iglesia->lugar?? 'Sin lugar' }} 
+                                            <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ $iglesia->lugar?? 'Sin lugar' }}
                                         </p>
                                     </div>
                                     <div class="col-sm-6">
@@ -203,7 +203,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
           </div>
@@ -216,7 +216,7 @@
                             <div class="card-header d-flex justify-content-between align-items-center py-3">
                                 <div class="fw-bold">
                                     <i class="fas fa-table me-2"></i>
-                                    Tabla de Remesas 
+                                    Tabla de Remesas
                                 </div>
 
                                 <div class="dropdown ms-auto">
@@ -232,7 +232,7 @@
                                                 <label class="form-check-label" for="col5">REG</label>
                                             </div>
                                         </li>
-                                        
+
                                         <li>
                                             <div class="form-check form-switch mb-2">
                                                 <input class="form-check-input toggle-vis" type="checkbox" value="6" id="col6" checked>
@@ -324,7 +324,7 @@
             <div class="modal-body">
                 <input type="hidden" id="edit_id_remesa">
                 <input type="hidden" id="edit_index">
-                
+
                 <div class="mb-3">
                     <label class="form-label fw-bold">Periodo</label>
                     <input type="text" id="edit_periodo" class="form-control bg-light" readonly>
@@ -360,7 +360,7 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="new_id_remesa">
-                
+
                 <div class="mb-3">
                     <label class="form-label fw-bold">Periodo Correspondiente</label>
                     <input type="text" id="new_periodo" class="form-control bg-light" readonly>
@@ -402,7 +402,7 @@
 
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">
-                        <i class="bi bi-pencil-square me-2"></i> 
+                        <i class="bi bi-pencil-square me-2"></i>
                         Registro de Remesa: <span id="f_periodo_txt"></span>
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -412,7 +412,7 @@
                     <div class="row g-0">
                         <div class="col-md-6 p-4 border-end">
                             <h6 class="text-uppercase fw-bold text-primary mb-4 border-bottom pb-2">Datos de Registro</h6>
-                            
+
                             <div class="mb-3">
                                 <label class="form-label fw-bold small">Fecha y Hora de entrega:</label>
                                 <input type="datetime-local" name="fecha_entrega" id="f_fecha_entrega" class="form-control" required>
@@ -484,7 +484,7 @@
 
                         <div class="col-md-6 p-4 bg-light">
                             <h6 class="text-uppercase fw-bold text-success mb-4 border-bottom pb-2">Distribución de Fondos</h6>
-                            
+
                             <div class="mb-3">
                                 <label class="small text-muted d-block mb-1">Fondo Local (60% Of + Pro Templo)</label>
                                 <input type="number" name="fondo_local" id="f_fondo_local" class="form-control-plaintext fs-4 fw-bold text-dark p-0" readonly>
@@ -542,7 +542,7 @@
             // Detectar el cambio de selección
             $('#buscadorIglesia').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
                 const idIglesia = $(this).val(); // Obtenemos el ID seleccionado
-                
+
                 if (idIglesia) {
                     // Traemos las variables de PHP a JS
                     const anioActual = "{{ $anio }}";
@@ -558,7 +558,7 @@
             $('.bs-searchbox input').on('keyup', function() {
                 let value = $(this).val();
                 let $container = $(this).closest('.bootstrap-select');
-                
+
                 if (value.length > 0) {
                     $container.addClass('show-search-results');
                 } else {
@@ -580,41 +580,41 @@
                 dataSrc: 'data' // Laravel envía { "data": [...] }
             },
             columns: [
-                { 
-                    data: null, 
+                {
+                    data: null,
                     render: function(data, type, row) {
                         return `${row.nombre_mes} - ${row.anio}`;
                     }
-                },  
-                { 
+                },
+                {
                     data: 'cierre',
                     width: '10px',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
-                { 
+                {
                     data: 'deposito',
                     width: '10px',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
-                { 
+                {
                     data: 'documentacion',
                     width: '10px',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
-                { 
+                {
                     data: 'escaneado',
                     width: '10px',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
-                { 
+                {
                     data: 'registrado',
                     width: '10px',
                     render: function(data) {
@@ -624,7 +624,7 @@
 
                 { data: 'fecha_entrega' },
                 { data: 'fecha_limite' },
-                { 
+                {
                     data: 'estado_dias',
                     render: function(data, type, row) {
                         // 1. Si no hay dato o es exactamente "0"
@@ -636,11 +636,11 @@
 
                         // 2. Lógica de colores basada en el texto que viene del controlador
                         // VERDE: Adelanto, 0 días de retraso o "dentro del plazo" (gracia)
-                        if (data.includes('adelanto') || 
-                            data.includes('0 días de retraso') || 
+                        if (data.includes('adelanto') ||
+                            data.includes('0 días de retraso') ||
                             data.includes('dentro del plazo')) {
                             colorClass = 'bg-success';
-                        } 
+                        }
                         // ROJO: Si dice retraso y NO es el caso de 0 días o dentro del plazo
                         else if (data.includes('retraso')) {
                             colorClass = 'bg-danger';
@@ -649,7 +649,7 @@
                         return `<span class="badge ${colorClass} badge-wrap">${data}</span>`;
                     }
                 },
-                { 
+                {
                     data: 'puntualidad',
                     width: '8px', // Ajuste solicitado
                     className: 'text-center',
@@ -674,7 +674,7 @@
                         }
                     }
                 },
-                { 
+                {
                     data: 'estado',
                     render: function(data) {
                         let color = data === 'PENDIENTE' ? 'red' : (data === 'ENTREGADO' ? 'green' : 'orange');
@@ -694,7 +694,7 @@
                         let urlRegistro = "{{ route('remesas.registro_semanas', ':id') }}";
                         // 2. Reemplazamos el placeholder con el valor real de JS
                         urlRegistro = urlRegistro.replace(':id', data.id_remesa);
-                        let mesVal = "{{ $mes }}"; 
+                        let mesVal = "{{ $mes }}";
                         let anioVal = "{{ $anio }}";
                         let urlReporte = "{{ route('remesas.reporte_pdf', ':id') }}".replace(':id', data.id_remesa);
 
@@ -708,11 +708,11 @@
                         let estadoDet = parseInt(data.sw_det_semana);
                         let estado = data.estado;
                         if(estado === 'ENTREGADO'){
-                            botonPDF = `<button type="button" 
-                                    class="btn btn-secondary btn-sm rounded-circle shadow-sm" 
+                            botonPDF = `<button type="button"
+                                    class="btn btn-secondary btn-sm rounded-circle shadow-sm"
                                     style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                     onclick="prepararReporte(${data.id_remesa})"
-                                    data-bs-toggle="tooltip" 
+                                    data-bs-toggle="tooltip"
                                     title="Generar Reporte PDF">
                                     <i class="bi bi-file-earmark-pdf"></i>
                                 </button>`;
@@ -721,32 +721,40 @@
                         if (estadoDet === 0) {
                             // ESTADO 0: No tiene datos (Botón gris claro o bordeado para invitar a crear)
                             botonSemanas = `
-                                <a href="${urlRegistro}" class="btn btn-outline-warning btn-sm rounded-circle shadow-sm" 
+                                <a href="${urlRegistro}" class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
                                 style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                 data-bs-toggle="tooltip" title="Iniciar Registro de Semanas">
                                     <i class="bi bi-calendar-plus"></i>
                                 </a>
-                                <button type="button" 
-                                    class="btn btn-success btn-sm rounded-circle" 
+                                <button type="button"
+                                    class="btn btn-success btn-sm rounded-circle"
                                     onclick="editarRemesa('${data.id_remesa}')"
                                     title="Editar/Completar Remesa">
                                     <i class="bi bi-check-lg"></i>
-                                </button>  
+                                </button>
                                 `;
                         } else if (estadoDet === 1) {
                             // ESTADO 1: Tiene datos y se puede EDITAR
                             botonSemanas = `
-                                <a href="${urlRegistro}" class="btn btn-warning btn-sm rounded-circle shadow-sm" 
+                                <a href="${urlRegistro}" class="btn btn-warning btn-sm rounded-circle shadow-sm"
                                 style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                 data-bs-toggle="tooltip" title="Editar Semanas Registradas">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                
+                                <button type="button"
+                                    class="btn btn-success btn-sm rounded-circle shadow-sm"
+                                    style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
+                                    onclick="editarRemesa('${data.id_remesa}')"
+                                    data-bs-toggle="tooltip"
+                                    title="Editar Remesa (Parcial)">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </button>
+
                                 `;
                         } else {
                             // ESTADO 2: Tiene datos pero está BLOQUEADO (Solo ver)
                             botonSemanas = `
-                                <a href="${urlRegistro}" class="btn btn-secondary btn-sm rounded-circle shadow-sm opacity-75" 
+                                <a href="${urlRegistro}" class="btn btn-secondary btn-sm rounded-circle shadow-sm opacity-75"
                                 style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                 data-bs-toggle="tooltip" title="Registro Bloqueado (Solo lectura)">
                                     <i class="bi bi-eye"></i>
@@ -757,18 +765,18 @@
                         return `
                             <div class="btn-group gap-2">
                                 ${botonSemanas}
-                                ${botonPDF} 
-                                <button type="button" 
-                                    class="btn btn-primary btn-sm rounded-circle shadow-sm" 
+                                ${botonPDF}
+                                <button type="button"
+                                    class="btn btn-primary btn-sm rounded-circle shadow-sm"
                                     style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                     onclick="abrirModalNuevaAlerta(${data.id_remesa}, '${periodo}')"
-                                    data-bs-toggle="tooltip" 
+                                    data-bs-toggle="tooltip"
                                     title="Añadir Alerta">
                                     <i class="bi bi-bell"></i>
                                 </button>
 
-                                
-                                
+
+
                             </div>
                         `;
                     }
@@ -783,7 +791,7 @@
             scrollX: true,
             stateSave: true,
             ordering: false,
-            pageLength: 12, 
+            pageLength: 12,
             language: {
                 search: "Buscar:",   // Cambia el texto de "Search"
                 lengthMenu: "Mostrar _MENU_ registros por página",
@@ -799,7 +807,7 @@
                 },
             }
         });
-        
+
 
 
         // *********************************************************
@@ -808,7 +816,7 @@
         $('.toggle-vis').on('change', function (e) {
             // Obtenemos el índice de la columna desde el 'value' del check
             var columnIdx = $(this).val();
-            
+
             // Obtenemos la columna de la instancia de DataTable
             var column = table.column(columnIdx);
 
@@ -870,7 +878,7 @@
                 <span>Actualizando...</span>
             </div>
         `);
-        
+
         $.get(`/alertas/${id_iglesia}`, function(alertas) {
             if (!alertas || alertas.length === 0) {
                 contenedor.empty();
@@ -879,7 +887,7 @@
             } else {
                 vistaVacia.addClass('d-none');
                 bodyAlertas.removeClass('d-none');
-                
+
                 let html = '';
                 alertas.forEach(alerta => {
                     let esRojo = alerta.estado === 'IMPORTANTE';
@@ -930,7 +938,7 @@
         $('#edit_periodo').val(periodo);
         $('#edit_estado').val(estado);
         $('#edit_mensaje').val(mensaje);
-        
+
         $('#modalEditarAlerta').modal('show');
     }
 
@@ -1010,13 +1018,13 @@
         $('#new_periodo').val(periodo);
         $('#new_mensaje').val('');
         $('#new_estado').val('AVISO');
-        
+
         $('#modalNuevaAlerta').modal('show');
     }
 
     function guardarNuevaAlerta() {
         const mensaje = $('#new_mensaje').val().trim();
-        
+
         if (mensaje === "") {
             Swal.fire('Atención', 'Por favor escriba un mensaje para la alerta', 'warning');
             return;
@@ -1043,7 +1051,7 @@
 
         $.post("{{ route('alertas.store') }}", data, function(res) {
             $('#modalNuevaAlerta').modal('hide');
-            
+
             Swal.fire({
                 icon: 'success',
                 title: 'Alerta Creada',
@@ -1067,6 +1075,7 @@
         const table = $('#example').DataTable();
         const data = table.rows().data().toArray().find(r => r.id_remesa == idRemesa);
 
+        //console.log(data);
         if (!data) return;
 
         $('#f_puntualidad_feedback').html('');
@@ -1096,7 +1105,7 @@
 
 
         $('#f_observacion').val(data.observacion || '');
-        
+
         // Switches
         $('#f_cierre').prop('checked', !!data.cierre);
         $('#f_deposito').prop('checked', !!data.deposito);
@@ -1109,14 +1118,23 @@
         $('#f_pro_templo').val(data.pro_templo || 0);
         $('#f_gasto').val(data.gasto || 0);
 
+        let estadoDet = parseInt(data.sw_det_semana);
+
+        if (estadoDet === 1) {
+            $('#f_ofrenda, #f_diezmo, #f_pro_templo, #f_gasto').prop('readonly', true);
+        } else {
+            $('#f_ofrenda, #f_diezmo, #f_pro_templo, #f_gasto').prop('readonly', false);
+        }
+        $('#f_cierre, #f_deposito, #f_documentacion, #f_escaneado, #f_registrado').prop('disabled', false);
+
         // Ejecutar cálculos iniciales
         calcularFondosFilial();
-        
+
         // Guardar fecha limite para el feedback de puntualidad (usamos la variable global que ya tienes)
         setTimeout(() => {
             calcularPuntualidadRealTime();
         }, 100);
-        
+
         $('#modalFilial').modal('show');
     }
     $(document).on('input', '.calc-input', function() {
@@ -1140,7 +1158,7 @@
         $('#f_monto_remesa').val(remesaMBOS.toFixed(2));
         $('#f_total_general').val('Bs ' + totalIngresos.toLocaleString('es-BO', {minimumFractionDigits: 2}));
         $('#f_saldo_neto').val('Bs ' + saldoNeto.toLocaleString('es-BO', {minimumFractionDigits: 2}));
-        
+
         // Color del saldo neto
         $('#f_saldo_neto').removeClass('text-danger text-success').addClass(saldoNeto >= 0 ? 'text-success' : 'text-danger');
     }
@@ -1180,7 +1198,7 @@
             error: function(xhr) {
                 let mensaje = "No se pudo procesar el registro.";
                 if(xhr.responseJSON && xhr.responseJSON.message) mensaje = xhr.responseJSON.message;
-                
+
                 Swal.fire('Error de Sistema', mensaje, 'error');
             }
         });
@@ -1199,7 +1217,7 @@
             return;
         }
 
-        // NORMALIZACIÓN: Extraemos solo la parte de la fecha (YYYY-MM-DD) 
+        // NORMALIZACIÓN: Extraemos solo la parte de la fecha (YYYY-MM-DD)
         // para que la hora no afecte el cálculo de días de puntualidad
         const soloFechaEntrega = fechaEntregaVal.split('T')[0];
         const soloFechaLimite = fechaLimiteActual.split(' ')[0];
@@ -1230,7 +1248,7 @@
                 claseCSS = "text-danger";
                 icono = "bi-star text-muted";
             }
-        } 
+        }
         else if (lugarIglesiaActual === 'ALTIPLANO') {
             // Altiplano tiene 5 días de gracia
             if (diferencia >= -5) {
@@ -1250,7 +1268,7 @@
     }
     //BOTON DE RESET
 
-    
+
 
     function actualizarHistorialFondo() {
         const idIglesia = "{{ $iglesia->id_iglesia }}";

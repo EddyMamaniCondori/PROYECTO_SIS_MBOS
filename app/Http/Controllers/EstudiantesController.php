@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request; 
-use App\Models\EstudianteBiblico; 
-use App\Models\Iglesia; 
-use App\Models\Desafio; 
-use App\Models\Mensual; 
-use App\Models\AnualIglesia; 
+use Illuminate\Http\Request;
+use App\Models\EstudianteBiblico;
+use App\Models\Iglesia;
+use App\Models\Desafio;
+use App\Models\Mensual;
+use App\Models\AnualIglesia;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use App\Http\Requests\EstudianteRequest;
 use App\Http\Requests\UpdateEstudianteRequest;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Distrito; 
+use App\Models\Distrito;
 class EstudiantesController extends Controller
 {
     /**
@@ -39,12 +39,12 @@ class EstudiantesController extends Controller
     {
         // 1️⃣ Definir el año actual y el distrito
         $anioActual = now()->year;
-        $persona = Auth::user(); 
+        $persona = Auth::user();
         $anios = EstudianteBiblico::selectRaw('EXTRACT(YEAR FROM fecha_registro) AS anio')
             ->distinct()
             ->orderBy('anio', 'DESC')
             ->pluck('anio');
-        $persona = Auth::user(); 
+        $persona = Auth::user();
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {
@@ -86,8 +86,8 @@ class EstudiantesController extends Controller
     {
         // Si no envía año, usar año actual
         $anio = $request->input('anio', now()->year);
-        
-        $persona = Auth::user(); 
+
+        $persona = Auth::user();
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {
@@ -130,7 +130,7 @@ class EstudiantesController extends Controller
     public function create() // permision crear estudaintes
     {
         // Definimos el distrito actual
-        $persona = Auth::user(); 
+        $persona = Auth::user();
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {
@@ -153,6 +153,7 @@ class EstudiantesController extends Controller
      */
     public function store(EstudianteRequest $request) // permision crear estudaintes
     {
+        //dd($request);
         try {
             DB::beginTransaction();
 
@@ -166,10 +167,11 @@ class EstudiantesController extends Controller
             //dd($estudiante);
             $anioActual = now()->year;
             // Obtener el distrito
-            $persona = Auth::user(); 
+            $persona = Auth::user();
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {
+            DB::rollBack();
             return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
         }
         $id_distrito = $distrito->id_distrito;
@@ -177,12 +179,12 @@ class EstudiantesController extends Controller
             $desafio = Desafio::where('id_distrito', $id_distrito)
                 ->where('anio', $anioActual)
                 ->first();
-            
+
             if (!$desafio) {
                 DB::rollBack();
                 return redirect()->back()->with('error', 'No se encontró el desafío anual para el distrito.');
             }
-
+            //dd($desafio, $estudiante);
             $anual_iglesias = AnualIglesia::where('id_desafio', $desafio->id_desafio)
                 ->where('id_iglesia', $estudiante->id_iglesia)
                 ->first();
@@ -196,9 +198,13 @@ class EstudiantesController extends Controller
             DB::commit();
             return redirect()->route('estudiantes.index')->with('success', 'Estudiante creado correctamente.');
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) { // <-- Cambiado a \Throwable para atrapar CUALQUIER error
             DB::rollBack();
-            return response()->json(['error' => 'Error al crear el estudiante biblico: ' . $e->getMessage()], 500);
+
+            // Retornamos con un redirect web, no JSON, devolviendo los inputs (excepto contraseñas)
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error interno al crear: ' . $e->getMessage());
         }
     }
 
@@ -215,7 +221,7 @@ class EstudiantesController extends Controller
      */
     public function edit(string $id) // permision editar estudaintes
     {
-        $persona = Auth::user(); 
+        $persona = Auth::user();
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {
@@ -240,7 +246,7 @@ class EstudiantesController extends Controller
             DB::beginTransaction();
             $anioActual = now()->year;
             // Obtener el distrito
-            $persona = Auth::user(); 
+            $persona = Auth::user();
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {
@@ -293,7 +299,7 @@ class EstudiantesController extends Controller
             DB::beginTransaction();
             $anioActual = now()->year;
             // Obtener el distrito
-            $persona = Auth::user(); 
+            $persona = Auth::user();
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {
@@ -342,7 +348,7 @@ class EstudiantesController extends Controller
     public function index_desafios_inst() //PERMISION 'ver avance-estudiantes',
     {
         $anioActual = now()->year;
-        $persona = Auth::user(); 
+        $persona = Auth::user();
 
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {

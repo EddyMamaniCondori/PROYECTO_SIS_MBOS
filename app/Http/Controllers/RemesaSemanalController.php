@@ -22,7 +22,7 @@ class RemesaSemanalController extends Controller
     // Cargamos la remesa con sus semanas ya registradas (si las tiene)
         $remesa = Remesa::with('semanas')->findOrFail($id);
         //para boton volver.
-        $mes = $request->query('mes'); 
+        $mes = $request->query('mes');
         $anio = $request->query('anio');
         $datos = Genera::where('id_remesa', $id)->firstOrFail();
 
@@ -45,7 +45,7 @@ class RemesaSemanalController extends Controller
 
         $iglesia = Iglesia::where('id_iglesia', $id_iglesia)->firstOrFail();
 
-        
+
         $semanasExistentes = RemesaSemanal::where('id_remesa', $id)
             ->orderBy('nro_semana', 'asc')
             ->get()
@@ -55,7 +55,7 @@ class RemesaSemanalController extends Controller
         {
             $remesa_filial = RemesaFilial::findOrFail($remesa->id_remesa);
             $gasto = $remesa_filial->gasto;
-            
+
         }
         return view('remesas.remesas_semanales', compact('remesa', 'iglesia', 'semanasExistentes', 'periodo', 'mes', 'anio', 'gasto'));
         //dd($gasto, $mes, $anio, $datos, $nombreMes, $remesa, $id_iglesia, $iglesia, $semanasExistentes);
@@ -63,10 +63,10 @@ class RemesaSemanalController extends Controller
 
     public function getDatosJSON($id) {
         $remesa = Remesa::with('semanas')->findOrFail($id);
-        
+
         // Obtenemos la iglesia y el periodo (reutilizando tu lógica)
         $datosGenera = DB::table('generas')->where('id_remesa', $id)->first();
-        
+
         return response()->json([
             'remesa' => $remesa,
             'semanas' => $remesa->semanas->keyBy('nro_semana'),
@@ -76,7 +76,7 @@ class RemesaSemanalController extends Controller
     }
 
     private function formatearPeriodo($mes, $anio) {
-        $meses = [1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio', 
+        $meses = [1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio',
                 7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'];
         return ($meses[$mes] ?? 'Mes') . ' ' . $anio;
     }
@@ -97,7 +97,7 @@ class RemesaSemanalController extends Controller
 
             // 2. Procesamos las 5 semanas
             for ($s = 1; $s <= 5; $s++) {
-                
+
                 // Recolectamos los totales de la cabecera de la semana
                 $diezmoSemana = $request->input("resumen_diezmo.$s", 0);
                 $ofrendaSemana = $request->input("resumen_ofrenda.$s", 0);
@@ -135,9 +135,9 @@ class RemesaSemanalController extends Controller
                     'diezmo_total'     => $diezmoSemana,
                     'ofrenda_total'    => $ofrendaSemana,
                     'pro_templo_total' => $proSemana,
-                    // Nota: en tu migración faltaba pacto y especiales como columnas, 
+                    // Nota: en tu migración faltaba pacto y especiales como columnas,
                     // pero si los tienes en la migración agrégalos aquí:
-                    'pacto_total'      => $request->input("total_panto_$s", 0), 
+                    'pacto_total'      => $request->input("total_panto_$s", 0),
                     'detalle_filas'    => $detalleJson,
                     'created_at'       => now(),
                     'updated_at'       => now(),
@@ -161,6 +161,7 @@ class RemesaSemanalController extends Controller
             $remesa->deposito       = $request->deposito;
             $remesa->documentacion  = $request->documentacion;
             $remesa->escaneado      = $request->escaneado;
+            $remesa->registrado     = $request->registrado;
             $remesa->observacion    = $request->observaciones;
             $remesa->fecha_entrega  = $request->fecha_entrega;
             $remesa->sw_det_semana  = 1;
@@ -179,7 +180,7 @@ class RemesaSemanalController extends Controller
 
             $diferencia = $entregaSoloFecha->diffInDays($limiteSoloFecha, false);
 
-            
+
             if ($diferencia === 0) {
                 $remesa->estado_dias = 'Completado con 0 días de retraso (entrega puntual)';
             } elseif ($diferencia > 0) {
@@ -222,7 +223,7 @@ class RemesaSemanalController extends Controller
             }
 
             return redirect()->route('remesas.registro_semanas', [
-                    'id'   => $id, 
+                    'id'   => $id,
                     'mes'  => $request->input('mes'), // Asegúrate de tener estos nombres en tu form
                     'anio' => $request->input('anio')
                 ])->with('success', 'Registro Semanal guardado correctamente.');
@@ -241,7 +242,7 @@ class RemesaSemanalController extends Controller
         $cantidad = $request->query('cantidad_meses', 1);
         //obtnemos la remesa
         $remesa = Remesa::findOrFail($id);
-        
+
         // Obtenemos info de la iglesia y periodo base
         $datosGenera = DB::table('generas')->where('id_remesa', $id)->first();
         $id_iglesia = $datosGenera->id_iglesia;
@@ -251,7 +252,7 @@ class RemesaSemanalController extends Controller
             ->select('iglesias.*', 'distritos.nombre as nombre_distrito')
             ->firstOrFail();
 
-        $mesesNombres = [1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio', 
+        $mesesNombres = [1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril', 5 => 'Mayo', 6 => 'Junio',
                         7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'];
 
         $periodoBase = $mesesNombres[$datosGenera->mes] . " " . $datosGenera->anio;
@@ -268,7 +269,7 @@ class RemesaSemanalController extends Controller
                 }else{
                     // 1. Reporte Mensual Único para Filial
                     $reporteMensual = DB::table('remesas_filiales')
-                        
+
                         ->join('generas', 'remesas_filiales.id_remesa', '=', 'generas.id_remesa')
                         ->where('remesas_filiales.id_remesa', $id)
                         ->select(

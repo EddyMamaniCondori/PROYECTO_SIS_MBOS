@@ -14,6 +14,7 @@
 @endpush
 
 @section('content')
+        <x-alerts/>
         <!-- CONTENIDO DEL Header-->
         <div class="app-content-header">
           <div class="container-fluid">
@@ -32,10 +33,20 @@
         <!--contenido-->
         <div class="app-content">
           <div class="container-fluid">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!--begin::TABLA-->
             <form action="{{ route('estudiantes.store')}}" method="POST" > <!--en actiion va que accion vamos ha acer con este formulario una ves de click en guardar-->
                     @csrf
-                
+
                     <div class="row g-3">
                         <h5 class="mb-0"><strong>Datos Generales</strong></h5>
                         <hr>
@@ -167,13 +178,13 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        
+
                         <div class="col-md-6 mt-3" id="selectIglesia">
                             <label for="id_iglesia" class="form-label">Iglesia: <span class="text-danger">*</span> </label>
-                            <select data-size="9" title="-- Seleccione un Iglesia --" data-live-search="true" name="id_iglesia" id="id_iglesia" class="form-control selectpicker show-tick" >                         
+                            <select data-size="9" title="-- Seleccione un Iglesia --" data-live-search="true" name="id_iglesia" id="id_iglesia" class="form-control selectpicker show-tick" >
                                 <option value="">-- Seleccione una iglesia --</option>
                                 @foreach($iglesias as $iglesia)
-                                    <option value="{{ $iglesia->id_iglesia }}" 
+                                    <option value="{{ $iglesia->id_iglesia }}"
                                         {{ old('id_iglesia') == $iglesia->id_iglesia ? 'selected' : '' }}>
                                         {{ $iglesia->nombre }}
                                     </option>
@@ -185,7 +196,7 @@
                             @enderror
                         </div>
 
-                    
+
                         <div>
                             <a href="{{route('estudiantes.index')}}"><button type="button" class="btn btn-secondary"> <i class="bi bi-x"></i> Cancelar </button></a>
                             <button type="submit" class="btn btn-primary">  <i class="bi bi-bookmark"></i> Guardar </button>
@@ -206,7 +217,7 @@
 
         <!--bootstrap select-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
-  
+
 
 
 @endpush

@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Distrito; 
-use App\Models\Iglesia; 
-use App\Models\Persona; 
+use App\Models\Distrito;
+use App\Models\Iglesia;
+use App\Models\Persona;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -16,7 +16,7 @@ use App\Exports\PendientesExport;
 class PendientesController extends Controller
 {
     /**
-     * 
+     *
      * 'ver anual-pendientes',
       *      'ver distrital-pendientes',
       *      'ver mensual-pendientes',
@@ -26,7 +26,7 @@ class PendientesController extends Controller
     {
         // index(): permision ver anual-pendientes
         // Nota: Esta función es un reporte anual general.
-        $this->middleware('permission:ver anual-pendientes', ['only' => ['index', 'filtro_anual']]); 
+        $this->middleware('permission:ver anual-pendientes', ['only' => ['index', 'filtro_anual']]);
 
         // index_distrital(): permision ver distrital-pendientes
         $this->middleware('permission:ver distrital-pendientes', ['only' => ['index_distrital','filtro_anual']]);
@@ -35,10 +35,10 @@ class PendientesController extends Controller
         $this->middleware('permission:ver mensual-pendientes', ['only' => ['index_mensual','filtro_anual']]);
 
         // La función 'filtro_anual' es el procesamiento del formulario de 'index', por lo que se agrupa con 'index'.
-        
+
     }
 
-    public function index() 
+    public function index()
     {
         $datos = DB::select("
             select 	xd.nombre as nombre_distrito,
@@ -47,20 +47,20 @@ class PendientesController extends Controller
                     xi.tipo, xi.lugar, xg.*,
                     xr.estado
             from generas xg
-            join remesas xr on xg.id_remesa = xr.id_remesa 
+            join remesas xr on xg.id_remesa = xr.id_remesa
             join iglesias xi on xg.id_iglesia = xi.id_iglesia
             left join distritos xd on xi.distrito_id = xd.id_distrito
             left join personas xp on xd.id_pastor = xp.id_persona
             where xr.estado = 'PENDIENTE'
             and anio = 2026
-            order by nombre_distrito 
+            order by nombre_distrito
         ");  // Trae todos los registros de la tabla asociada a RemesaImport
         $datos_totales = DB::select("
-            SELECT 
+            SELECT
                 xi.tipo,
                 COUNT(*) AS total
             FROM generas xg
-            JOIN remesas xr ON xg.id_remesa = xr.id_remesa 
+            JOIN remesas xr ON xg.id_remesa = xr.id_remesa
             JOIN iglesias xi ON xg.id_iglesia = xi.id_iglesia
             WHERE xg.anio = 2026
             AND xr.estado = 'PENDIENTE'
@@ -71,7 +71,7 @@ class PendientesController extends Controller
         $c_iglesias = 0;
         $c_grupo = 0;
         $c_filiales = 0;
-        
+
 
         foreach ($datos_totales as $dato) {
             $tipo = strtolower(trim($dato->tipo)); // Minusculas y sin espacios extras
@@ -91,7 +91,7 @@ class PendientesController extends Controller
             SELECT xp.id_persona, xp.nombre, xp.ape_paterno, xr.name
             FROM personas xp
             JOIN personales xpp ON xp.id_persona = xpp.id_personal
-            JOIN model_has_roles xm ON xp.id_persona = xm.model_id 
+            JOIN model_has_roles xm ON xp.id_persona = xm.model_id
             JOIN roles xr ON xm.role_id = xr.id
             WHERE xr.name LIKE 'Tesorero'
         ");
@@ -102,7 +102,7 @@ class PendientesController extends Controller
     }
 
     public function filtro_anual(Request $request)
-    {   
+    {
          $validated = $request->validate([
             'periodoInicio' => 'required|string',
             'periodoFinal' => 'required|string',
@@ -114,7 +114,7 @@ class PendientesController extends Controller
         $periodoInicio = $request->input('periodoInicio'); // e.g. "03-2025"
         $periodoFinal = $request->input('periodoFinal');   // e.g. "12-2025"
         $tipos = $request->input('tipo', []);              // e.g. [1,2,3
-        
+
         if (!$periodoInicio || !$periodoFinal) {
             return back()->with('error', 'Debe seleccionar ambos periodos');
         }
@@ -126,26 +126,26 @@ class PendientesController extends Controller
         if (count($tipos) === 0) {
             return back()->with('error', 'Debe seleccionar al menos un tipo');
         }
-            
+
         // Para pasar el array de tipos a cadena para SQL, escapando bien:
         $placeholders = implode(',', array_fill(0, count($tipos), '?'));
 
         //dd($mesInicio, $mesFinal, $anioFinal, $anioInicio, $placeholders, $tipos);
         // Validar los datos si quieres
         $sql = "
-        select  
+        select
             xd.nombre as nombre_distrito,
-            xp.nombre as nombre_p, 
-            xp.ape_paterno, 
+            xp.nombre as nombre_p,
+            xp.ape_paterno,
             xp.ape_materno,
-            xi.codigo, 
+            xi.codigo,
             xi.nombre,
-            xi.tipo, 
-            xi.lugar, 
+            xi.tipo,
+            xi.lugar,
             xg.*,
             xr.estado
         from generas xg
-        join remesas xr on xg.id_remesa = xr.id_remesa 
+        join remesas xr on xg.id_remesa = xr.id_remesa
         join iglesias xi on xg.id_iglesia = xi.id_iglesia
         left join distritos xd on xi.distrito_id = xd.id_distrito
         left join personas xp on xd.id_pastor = xp.id_persona
@@ -168,11 +168,11 @@ class PendientesController extends Controller
 
 
         $datos_totales = DB::select("
-            SELECT 
+            SELECT
                 xi.tipo,
                 COUNT(*) AS total
             FROM generas xg
-            JOIN remesas xr ON xg.id_remesa = xr.id_remesa 
+            JOIN remesas xr ON xg.id_remesa = xr.id_remesa
             JOIN iglesias xi ON xg.id_iglesia = xi.id_iglesia
             WHERE xr.estado = 'PENDIENTE'
             AND (
@@ -208,7 +208,7 @@ class PendientesController extends Controller
     }
 
 
-    public function index_mensual() 
+    public function index_mensual()
     {
         $datos = DB::select("
             SELECT
@@ -224,13 +224,13 @@ class PendientesController extends Controller
             WHERE xr.estado = 'PENDIENTE'
             GROUP BY xg.anio, xg.mes
             ORDER BY xg.anio, xg.mes;
-        ");  
-        return view('pendientes.index_mensual', compact('datos')); 
+        ");
+        return view('pendientes.index_mensual', compact('datos'));
     }
 
-    public function index_distrital() 
+    public function index_distrital()
     {
-        $persona = Auth::user(); 
+        $persona = Auth::user();
         $distrito = Distrito::where('id_pastor', $persona->id_persona)->first();
         if (!$distrito) {
             return redirect()->route('panel')->with('error', 'No tienes un distrito asignado.');
@@ -240,7 +240,7 @@ class PendientesController extends Controller
         $anio = 2025;
 
         $datos = DB::select("
-                    SELECT 
+                    SELECT
                     xi.id_iglesia,
                     xi.codigo,
                     xi.nombre,
@@ -263,24 +263,23 @@ class PendientesController extends Controller
                 AND xg.anio = ?
                 GROUP BY xi.id_iglesia, xi.codigo, xi.nombre
                 ORDER BY xi.nombre;
-        ",[$id_distrito, $anio]);  
+        ",[$id_distrito, $anio]);
 
-        return view('pendientes.vista_distrital', compact('datos')); 
+        return view('pendientes.vista_distrital', compact('datos'));
     }
 
-    public function filtro_general_pendientes() //este es el filtro general de pendientes por diferentes tipos 
+    public function filtro_general_pendientes() //este es el filtro general de pendientes por diferentes tipos
     {
         //dd($request);
-        
         $iglesias = Iglesia::all();
-        $distritos = Distrito::all(); 
+        $distritos = Distrito::all();
         $encargados = DB::select('select xpp.id_persona, xpp.nombre, xpp.ape_paterno, xpp.ape_materno
                             from personales xp
                             join personas xpp on xp.id_personal = xpp.id_persona
                             join model_has_roles xm on xm.model_id = xpp.id_persona
                             join roles xr on xm.role_id = xr.id
                             where xr.name like ?', ['%Tesorero%']);
-                            
+
         $periodos = DB::table('generas')
             ->selectRaw("TO_CHAR(mes, 'FM00') || ' - ' || anio as label")
             ->selectRaw("anio, mes")
@@ -289,10 +288,10 @@ class PendientesController extends Controller
             ->orderBy('anio', 'desc')
             ->orderBy('mes', 'desc')
             ->get();
-        return view('pendientes.filtro_general_pendientes', compact('periodos','iglesias', 'distritos', 'encargados')); 
+        return view('pendientes.filtro_general_pendientes', compact('periodos','iglesias', 'distritos', 'encargados'));
     }
 
-    public function pdf_filtro_general_pendientes(Request $request) //este es el filtro general de pendientes por diferentes tipos 
+    public function pdf_filtro_general_pendientes(Request $request) //este es el filtro general de pendientes por diferentes tipos
     {
         //dd($request);
         // Supongamos que recibes el array desde el request
@@ -304,20 +303,21 @@ class PendientesController extends Controller
             ->leftJoin('personas as xpas', 'xd.id_pastor', '=', 'xpas.id_persona')
             ->leftJoin('personas as xres', 'xd.id_responsable_remesa', '=', 'xres.id_persona')
             ->select(
-                'xi.distrito_id', 
-                'xd.nombre as distrito', 
-                'xi.codigo', 
-                'xi.nombre as nombre_igle', 
-                'xi.tipo', 
+                'xi.distrito_id',
+                'xd.nombre as distrito',
+                'xi.codigo',
+                'xi.nombre as nombre_igle',
+                'xi.tipo',
                 'xg.id_remesa',
-                'xg.id_iglesia', 
-                'xg.mes', 
-                'xg.anio', 
+                'xg.id_iglesia',
+                'xg.mes',
+                'xg.anio',
                 'xr.estado',
                 DB::raw("xpas.nombre || ' ' || COALESCE(xpas.ape_paterno, '') || ' ' || COALESCE(xpas.ape_materno, '') as nombre_pas"),
                 DB::raw("xres.nombre || ' ' || COALESCE(xres.ape_paterno, '') || ' ' || COALESCE(xres.ape_materno, '') as nombre_res")
             )
-            ->where('xr.estado', 'PENDIENTE');
+            ->where('xr.estado', 'PENDIENTE')
+            ->where('xi.estado', true);
 
         // --- LÓGICA DE FILTRADO POR TIPO ---
 
@@ -367,14 +367,14 @@ class PendientesController extends Controller
                 $query->where('xi.lugar', $request->zona);
             }
         }
-        
+
         $resultados = $query->orderBy('xd.nombre')
                         ->orderBy('xi.nombre')
                         ->orderBy('xg.mes')
                         ->get();
 
-        
-       
+
+
 
 
         //dd($resultados);
@@ -386,7 +386,7 @@ class PendientesController extends Controller
         })->unique()->sort()->values();
 
 
-         
+
             if ($request->action === 'excel') {
                 $mesesNom = [
                     1 => 'Ene', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr', 5 => 'May', 6 => 'Jun',
@@ -396,7 +396,7 @@ class PendientesController extends Controller
                 $datosAgrupados = $resultados->groupBy('distrito')->map(function ($itemsDistrito, $distrito) use ($periodos) {
                     return $itemsDistrito->groupBy('id_iglesia')->map(function ($itemsIglesia) use ($periodos, $distrito) {
                         $primero = $itemsIglesia->first();
-                        
+
                         $estados = $itemsIglesia->mapWithKeys(function ($item) {
                             $key = $item->anio . '-' . str_pad($item->mes, 2, '0', STR_PAD_LEFT);
                             return [$key => $item->estado];
@@ -416,9 +416,9 @@ class PendientesController extends Controller
                 $fechaHora = now()->format('Y-m-d_H-i');
 
                 $nombreArchivo = "Reporte_remesas_pendientes_{$fechaHora}.xlsx";
-                
+
                 return Excel::download(
-                    new PendientesExport($datosAgrupados, $periodos, $mesesNom), 
+                    new PendientesExport($datosAgrupados, $periodos, $mesesNom),
                     $nombreArchivo
                 );
             }
@@ -432,7 +432,7 @@ class PendientesController extends Controller
             $datosAgrupados = $resultados->groupBy('distrito')->map(function ($itemsDistrito) use ($periodos) {
                 return $itemsDistrito->groupBy('id_iglesia')->map(function ($itemsIglesia) use ($periodos) {
                     $primero = $itemsIglesia->first();
-                    
+
                     // Creamos un mapa de estados: "2026-02" => "ENTREGADO"
                     $estados = $itemsIglesia->mapWithKeys(function ($item) {
                                     // Creamos la llave "2026-02" (Año-Mes con dos dígitos)
@@ -440,7 +440,7 @@ class PendientesController extends Controller
                                     return [$key => $item->estado];
                                 });
                     // Nota: debes agregar 'concat(anio, "-", lpad(mes, 2, "0")) as mes_anio_key' en tu SELECT SQL
-                    
+
                     return (object)[
                         'codigo' => $primero->codigo,
                         'nombre' => $primero->nombre_igle,
@@ -468,7 +468,7 @@ class PendientesController extends Controller
             $nombrePdf = "Rep_Pendientes_{$fechaHora}.pdf";
             return $pdf->stream($nombrePdf);
         }else{ //por si es solo 1 mes
-            $datosAgrupados = $resultados->groupBy('distrito'); 
+            $datosAgrupados = $resultados->groupBy('distrito');
             $pdf = Pdf::loadView('pdf.pdf_reporte_pendientes', [
                 'datos' => $datosAgrupados,
                 'total'         => $totalGeneral,
@@ -480,12 +480,12 @@ class PendientesController extends Controller
 
             $fechaHora = now()->format('d-m-Y_H-i');
             $nombrePdf = "Rep_Pendientes_{$fechaHora}.pdf";
-        
+
             return $pdf->stream($nombrePdf);
         }
-        
 
-        
+
+
     }
 
 
