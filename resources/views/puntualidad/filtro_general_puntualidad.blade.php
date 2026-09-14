@@ -8,7 +8,7 @@
 
    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
-    
+
     <style>
         /* Variables de estilo premium */
         :root {
@@ -122,7 +122,7 @@
             animation: fadeIn 0.4s ease-out;
         }
 
-       
+
 
         /* Botones de acción */
         .btn-action {
@@ -201,7 +201,7 @@
         <div class="card card-filter">
             <form id="filterForm" action="{{ route('remesas.puntualidad_filtro_general.pdf')}}" method="POST" class="card-body pt-4 pb-4 px-4" target="_blank">
                 @csrf
-                
+
                 <div class="section-title justify-content-center">Seleccione el Método de Evaluación</div>
                 <div class="row mb-2">
                     <div class="col-md-8 col-lg-6 mx-auto">
@@ -214,6 +214,11 @@
                             <input type="radio" class="btn-check" name="modo_filtro" id="modo_rango" value="rango">
                             <label class="btn btn-outline-primary py-2 fw-bold small" for="modo_rango">
                                 <i class="fas fa-calendar-day me-1"></i> POR RANGO
+                            </label>
+
+                            <input type="radio" class="btn-check" name="modo_filtro" id="modo_dia" value="dia">
+                            <label class="btn btn-outline-primary py-2 fw-bold small" for="modo_dia">
+                                <i class="fas fa-clock me-1"></i> POR DÍA Y HORA
                             </label>
                         </div>
                     </div>
@@ -247,6 +252,31 @@
                     </div>
                 </div>
 
+                <!-- PANEL 3: POR DÍA Y HORA (NUEVO) -->
+                <div id="panel_modo_dia" class="row g-4 mb-5 d-none animate__animated animate__fadeIn">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Día Específico:</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-2 border-end-0" style="border-radius: 12px 0 0 12px; border-color: #f1f5f9;"><i class="fas fa-calendar-day text-info"></i></span>
+                            <input type="date" name="fecha_unica" id="fecha_unica" class="form-control form-select-custom border-start-0" style="border-radius: 0 12px 12px 0;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Hora Inicio:</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-2 border-end-0" style="border-radius: 12px 0 0 12px; border-color: #f1f5f9;"><i class="fas fa-clock text-primary"></i></span>
+                            <input type="time" name="hora_desde" id="hora_desde" class="form-control form-select-custom border-start-0" style="border-radius: 0 12px 12px 0;">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold small text-secondary">Hora Fin:</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-2 border-end-0" style="border-radius: 12px 0 0 12px; border-color: #f1f5f9;"><i class="fas fa-stopwatch text-danger"></i></span>
+                            <input type="time" name="hora_hasta" id="hora_hasta" class="form-control form-select-custom border-start-0" style="border-radius: 0 12px 12px 0;">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="section-title">Categorías a Incluir</div>
                 <div class="row g-3 mb-2">
                     <div class="col-6 col-md-3">
@@ -267,7 +297,7 @@
                             <i class="fas fa-place-of-worship d-block mb-2 fa-lg text-warning"></i> FILIALES
                         </label>
                     </div>
-                    
+
                     <div class="col-6 col-md-3">
                         <input class="tipo-selector" type="checkbox" name="tipos[]" value="todos" id="t_todos">
                         <label class="tipo-label border-primary border-opacity-25" for="t_todos">
@@ -275,47 +305,48 @@
                         </label>
                     </div>
                 </div>
+                <div id="contenedor_alcance" style="transition: all 0.3s ease;">
+                    <div class="section-title">Alcance del Reporte</div>
+                    <div class="row mb-2 align-items-end">
+                        <div class="col-md-7">
+                            <label class="form-label fw-bold small text-secondary mb-3">Nivel de agrupación:</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check main-trigger" name="nivel_principal" id="n_mbos" value="capa_mbos">
+                                <label class="btn btn-outline-primary py-2" for="n_mbos"><i class="fas fa-globe me-2"></i>TODO EL MBOS</label>
 
-                <div class="section-title">Alcance del Reporte</div>
-                <div class="row mb-2 align-items-end">
-                    <div class="col-md-7">
-                        <label class="form-label fw-bold small text-secondary mb-3">Nivel de agrupación:</label>
-                        <div class="btn-group w-100" role="group">
-                            <input type="radio" class="btn-check main-trigger" name="nivel_principal" id="n_mbos" value="capa_mbos">
-                            <label class="btn btn-outline-primary py-2" for="n_mbos"><i class="fas fa-globe me-2"></i>TODO EL MBOS</label>
-
-                            <input type="radio" class="btn-check main-trigger" name="nivel_principal" id="n_encargado_root" value="capa_encargado">
-                            <label class="btn btn-outline-primary py-2" for="n_encargado_root"><i class="fas fa-user-tie me-2"></i>POR ENCARGADO</label>
-                        </div>
-                    </div>
-                    <div id="capa_encargado" class="col-md-5 main-layer d-none mt-3 mt-md-0">
-                        <div class="p-3 bg-light rounded-3 border">
-                            <label class="form-label fw-bold small text-primary"><i class="fas fa-search me-1"></i> Seleccionar Encargado:</label>
-                            <select class="form-select" name="encargado_id" id="select_encargado">
-                                <option value="">-- Buscar Responsable --</option>
-                                @foreach($encargados as $e)
-                                    <option value="{{ $e->id_persona }}">{{ $e->nombre }} {{ $e->ape_paterno }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="sub_opciones_container" class="d-none mb-5 animate__animated animate__fadeIn">
-                    <div class="section-title" id="titulo_sub_opcion">Criterios Adicionales</div>
-                    <div class="btn-group w-100" role="group" id="group_sub_opciones"></div>
-                </div>
-
-                <div id="paneles_finales" class="p-4 rounded-4 mb-5 border d-none bg-light shadow-inner">
-                   
-
-                    <div id="panel_zona" class="final-panel d-none d-flex justify-content-center gap-5 py-2">
-                        @foreach(['ALTIPLANO', 'EL ALTO', 'TODOS'] as $z)
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="zona" value="{{ $z }}" id="z_{{ $z }}">
-                                <label class="form-check-label fw-bold text-dark" for="z_{{ $z }}">{{ $z }}</label>
+                                <input type="radio" class="btn-check main-trigger" name="nivel_principal" id="n_encargado_root" value="capa_encargado">
+                                <label class="btn btn-outline-primary py-2" for="n_encargado_root"><i class="fas fa-user-tie me-2"></i>POR ENCARGADO</label>
                             </div>
-                        @endforeach
+                        </div>
+                        <div id="capa_encargado" class="col-md-5 main-layer d-none mt-3 mt-md-0">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <label class="form-label fw-bold small text-primary"><i class="fas fa-search me-1"></i> Seleccionar Encargado:</label>
+                                <select class="form-select" name="encargado_id" id="select_encargado">
+                                    <option value="">-- Buscar Responsable --</option>
+                                    @foreach($encargados as $e)
+                                        <option value="{{ $e->id_persona }}">{{ $e->nombre }} {{ $e->ape_paterno }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="sub_opciones_container" class="d-none mb-5 animate__animated animate__fadeIn">
+                        <div class="section-title" id="titulo_sub_opcion">Criterios Adicionales</div>
+                        <div class="btn-group w-100" role="group" id="group_sub_opciones"></div>
+                    </div>
+
+                    <div id="paneles_finales" class="p-4 rounded-4 mb-5 border d-none bg-light shadow-inner">
+
+
+                        <div id="panel_zona" class="final-panel d-none d-flex justify-content-center gap-5 py-2">
+                            @foreach(['ALTIPLANO', 'EL ALTO', 'TODOS'] as $z)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="zona" value="{{ $z }}" id="z_{{ $z }}">
+                                    <label class="form-check-label fw-bold text-dark" for="z_{{ $z }}">{{ $z }}</label>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
 
@@ -339,51 +370,105 @@
         @push('js')
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
-  
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
 
     const radioPeriodo = document.getElementById('modo_periodo');
     const radioRango = document.getElementById('modo_rango');
+    const radioDia = document.getElementById('modo_dia');
+
     const panelPeriodo = document.getElementById('panel_modo_periodo');
     const panelRango = document.getElementById('panel_modo_rango');
+    const panelDia = document.getElementById('panel_modo_dia');
 
     const inputDesde = document.getElementById('fecha_desde');
     const inputHasta = document.getElementById('fecha_hasta');
 
+    const inputFechaUnica = document.getElementById('fecha_unica');
+    const inputHoraDesde = document.getElementById('hora_desde');
+    const inputHoraHasta = document.getElementById('hora_hasta');
+
+    // --- VARIABLES DE ALCANCE ---
+    const contenedorAlcance = document.getElementById('contenedor_alcance');
+    const radioNivelMbos = document.getElementById('n_mbos');
+
     function alternarModos() {
+        const hoy = new Date().toISOString().split('T')[0];
+
         if (radioPeriodo.checked) {
             panelPeriodo.classList.remove('d-none');
             panelRango.classList.add('d-none');
+            panelDia.classList.add('d-none');
             toggleInputs(panelPeriodo, true);
             toggleInputs(panelRango, false);
-        } else {
+            toggleInputs(panelDia, false);
+
+            habilitarAlcance();
+        } else if (radioRango.checked) {
             panelPeriodo.classList.add('d-none');
             panelRango.classList.remove('d-none');
+            panelDia.classList.add('d-none');
             toggleInputs(panelPeriodo, false);
             toggleInputs(panelRango, true);
+            toggleInputs(panelDia, false);
 
             // 1. VALIDACIÓN: Colocar fecha de hoy automáticamente si están vacíos
-            const hoy = new Date().toISOString().split('T')[0];
             if (!inputDesde.value) inputDesde.value = hoy;
             if (!inputHasta.value) inputHasta.value = hoy;
-            
             // Sincronizar el mínimo permitido
             inputHasta.min = inputDesde.value;
+
+            habilitarAlcance();
+        } else if (radioDia.checked) {
+
+            panelPeriodo.classList.add('d-none');
+            panelRango.classList.add('d-none');
+            panelDia.classList.remove('d-none');
+
+            toggleInputs(panelPeriodo, false);
+            toggleInputs(panelRango, false);
+            toggleInputs(panelDia, true);
+
+            // Valores por defecto para el nuevo panel
+            if (!inputFechaUnica.value) inputFechaUnica.value = hoy;
+            if (!inputHoraDesde.value) inputHoraDesde.value = "07:00"; // Hora por defecto
+            if (!inputHoraHasta.value) inputHoraHasta.value = "18:00"; // Hora por defecto
+
+            deshabilitarAlcance();
         }
     }
 
+    function habilitarAlcance() {
+        contenedorAlcance.style.pointerEvents = 'auto';
+        contenedorAlcance.style.opacity = '1';
+    }
+
+    function deshabilitarAlcance() {
+        radioNivelMbos.checked = true;
+        radioNivelMbos.dispatchEvent(new Event('change'));
+        contenedorAlcance.style.pointerEvents = 'none';
+        contenedorAlcance.style.opacity = '0.5';
+    }
+
+    // Eventos para el panel RANGO
     inputDesde.addEventListener('change', function() {
         // Al cambiar la fecha inicial, actualizamos el mínimo de la final
         inputHasta.min = this.value;
-        
+
         // Si la fecha final actual es menor a la nueva fecha inicial, la igualamos
         if (inputHasta.value < this.value) {
             inputHasta.value = this.value;
         }
     });
 
+    // Eventos para el panel DÍA/HORA
+    inputHoraDesde.addEventListener('change', function() {
+        if(inputHoraHasta.value && inputHoraHasta.value < this.value) {
+            inputHoraHasta.value = this.value;
+        }
+    });
 
     // Función auxiliar para habilitar/deshabilitar campos y que no se envíen vacíos
     function toggleInputs(container, enabled) {
@@ -397,6 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     radioPeriodo.addEventListener('change', alternarModos);
     radioRango.addEventListener('change', alternarModos);
+    radioDia.addEventListener('change', alternarModos);
 
     // Ejecutar al cargar para asegurar el estado inicial
     alternarModos();
@@ -410,15 +496,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function popularPeriodos() {
         // Limpiar selects por si acaso
         periodoInicio.innerHTML = '';
-        
+
         listaPeriodos.forEach((p) => {
             let opt = document.createElement('option');
             // El valor será sin espacios para el POST (ej: 02-2026)
-            opt.value = p.label.replace(/\s/g, ''); 
+            opt.value = p.label.replace(/\s/g, '');
             opt.text = p.label;
             periodoInicio.add(opt);
         });
-        
+
         // Ejecutar la sincronización inicial
         updatePeriodoFin();
     }
@@ -435,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Si selectedIndex es 0 (el mes más reciente), no hay más opciones hacia adelante.
       if (selectedIndex === 0) {
           periodoFin.disabled = true; // Bloquear el select
-          
+
           let opt = document.createElement('option');
           opt.value = listaPeriodos[0].label.replace(/\s/g, '');
           opt.text = listaPeriodos[0].label;
@@ -467,7 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inicializar la carga de datos
     popularPeriodos();
-    
+
     // ... (aquí va el resto de tu lógica de paneles que ya hicimos)
 });
 </script>
@@ -544,7 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderSubOpciones(tipo) {
         subContainer.classList.remove('d-none');
         groupSubOpciones.innerHTML = '';
-        
+
         config[tipo].forEach(opt => {
             const radio = document.createElement('input');
             radio.type = 'radio';
@@ -574,7 +660,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function mostrarPanelFinal(panelId) {
         // Ocultar todos
         document.querySelectorAll('.final-panel').forEach(p => p.classList.add('d-none'));
-        
+
         if (panelId === 'iglesia') {
             panelesFinales.classList.add('d-none');
         } else {

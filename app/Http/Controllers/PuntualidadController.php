@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Distrito; 
-use App\Models\Iglesia; 
-use App\Models\Persona; 
+use App\Models\Distrito;
+use App\Models\Iglesia;
+use App\Models\Persona;
 
 use App\Exports\PuntualidadExport;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -50,7 +50,7 @@ class PuntualidadController extends Controller
                     MAX(xm.tipo) FILTER (WHERE xm.mes = 10) AS puntualidad_octubre,
                     MAX(xm.tipo) FILTER (WHERE xm.mes = 11) AS puntualidad_noviembre,
                     MAX(xm.tipo) FILTER (WHERE xm.mes = 12) AS puntualidad_diciembre
-                FROM iglesias xi 
+                FROM iglesias xi
                 LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
                 JOIN puntualidades xp ON xp.id_iglesia = xi.id_iglesia
                 JOIN mes xm ON xm.id_puntualidad = xp.id_puntualidad
@@ -75,9 +75,9 @@ class PuntualidadController extends Controller
     public function exportPdf()
     {
         $iglesias = DB::select("
-            SELECT 
+            SELECT
                 xd.nombre as nombre_distrito,
-                xi.codigo, 
+                xi.codigo,
                 xi.nombre,
                 xi.tipo,
                 xi.lugar,
@@ -111,15 +111,15 @@ class PuntualidadController extends Controller
                     COALESCE(CAST(MAX(xm.tipo) FILTER (WHERE xm.mes = 12) AS INTEGER), 0)
                 ) AS total_puntaje
 
-            FROM iglesias xi 
+            FROM iglesias xi
             LEFT JOIN distritos xd ON xi.distrito_id = xd.id_distrito
             JOIN puntualidades xp ON xp.id_iglesia = xi.id_iglesia
             JOIN mes xm ON xm.id_puntualidad = xp.id_puntualidad
             WHERE xp.anio = 2026
             AND xi.estado = true
-            GROUP BY 
+            GROUP BY
                 xd.nombre,
-                xi.codigo, 
+                xi.codigo,
                 xi.nombre,
                 xi.tipo,
                 xi.lugar,
@@ -138,19 +138,19 @@ class PuntualidadController extends Controller
         //return $pdf->download('puntualidad.pdf');
     }
 
-    public function filtro_general_puntualidad() //este es el filtro general de pendientes por diferentes tipos 
+    public function filtro_general_puntualidad() //este es el filtro general de pendientes por diferentes tipos
     {
         //dd($request);
-        
+
         $iglesias = Iglesia::all();
-        $distritos = Distrito::all(); 
+        $distritos = Distrito::all();
         $encargados = DB::select('select xpp.id_persona, xpp.nombre, xpp.ape_paterno, xpp.ape_materno
                             from personales xp
                             join personas xpp on xp.id_personal = xpp.id_persona
                             join model_has_roles xm on xm.model_id = xpp.id_persona
                             join roles xr on xm.role_id = xr.id
                             where xr.name like ?', ['%Tesorero%']);
-                            
+
         $periodos = DB::table('generas')
             ->selectRaw("TO_CHAR(mes, 'FM00') || ' - ' || anio as label")
             ->selectRaw("anio, mes")
@@ -159,14 +159,14 @@ class PuntualidadController extends Controller
             ->orderBy('anio', 'desc')
             ->orderBy('mes', 'desc')
             ->get();
-        return view('puntualidad.filtro_general_puntualidad', compact('periodos','iglesias', 'distritos', 'encargados')); 
+        return view('puntualidad.filtro_general_puntualidad', compact('periodos','iglesias', 'distritos', 'encargados'));
     }
 
     public function pdf_filtro_general_puntualidad(Request $request)
     {
         //dd($request);
-        $tiposSeleccionados = $request->input('tipos');
-        
+        $tiposSeleccionados = $request->input('tipos', []);
+
         // 1. Base de la Consulta (Cambiamos PENDIENTE por ENTREGADO para el Ranking)
         $query = DB::table('generas as xg')
             ->leftJoin('remesas as xr', 'xg.id_remesa', '=', 'xr.id_remesa')
@@ -175,15 +175,15 @@ class PuntualidadController extends Controller
             ->leftJoin('personas as xpas', 'xd.id_pastor', '=', 'xpas.id_persona')
             ->leftJoin('personas as xres', 'xd.id_responsable_remesa', '=', 'xres.id_persona')
             ->select(
-                'xi.distrito_id', 
-                'xd.nombre as distrito', 
-                'xi.codigo', 
-                'xi.nombre as nombre_igle', 
-                'xi.tipo', 
+                'xi.distrito_id',
+                'xd.nombre as distrito',
+                'xi.codigo',
+                'xi.nombre as nombre_igle',
+                'xi.tipo',
                 'xg.id_remesa',
-                'xg.id_iglesia', 
-                'xg.mes', 
-                'xg.anio', 
+                'xg.id_iglesia',
+                'xg.mes',
+                'xg.anio',
                 'xr.estado',
                 'xr.fecha_entrega', // Crucial para el desempate
                 DB::raw("xpas.nombre || ' ' || COALESCE(xpas.ape_paterno, '') as nombre_pas"),
@@ -200,13 +200,19 @@ class PuntualidadController extends Controller
         if ($request->modo_filtro === 'rango') {
             // Filtro por Rango de Fechas exacto (Usa el Datetime de la remesa)
             $query->whereBetween('xr.fecha_entrega', [
-                $request->fecha_desde . ' 00:00:00', 
+                $request->fecha_desde . ' 00:00:00',
                 $request->fecha_hasta . ' 23:59:59'
             ]);
-        } else {
+        } elseif ($request->modo_filtro === 'dia') {
+            $query->whereBetween('xr.fecha_entrega', [
+                $request->fecha_unica . ' ' . $request->hora_desde . ':00',
+                $request->fecha_unica . ' ' . $request->hora_hasta . ':59'
+            ]);
+
+        }else {
             // Filtro por Periodo (Mes/Año) - Tu lógica original optimizada
             $inicio = explode('-', $request->periodo_inicio);
-            $mesInicio = (int)$inicio[0]; 
+            $mesInicio = (int)$inicio[0];
             $anioInicio = (int)$inicio[1];
             $esRangoPeriodo = $request->has('periodo_fin') && $request->periodo_fin !== $request->periodo_inicio;
 
@@ -233,20 +239,16 @@ class PuntualidadController extends Controller
             $query->where('xi.lugar', $request->zona);
         }
         //ordenamos
-        $resultados = $query->orderBy('xr.fecha_entrega', 'asc') // El que entregó más temprano va PRIMERO
-                    ->get();
-
-        // Obtenemos los resultados base
-        $resultados = $query->get();
+        $resultados = $query->orderBy('xr.fecha_entrega', 'asc')->get();
 
         // 5. LA LÓGICA DIFÍCIL: Ranking de Distritos de Oro
         // Agrupamos por distrito para verificar cumplimiento total
         $rankingDistritos = $resultados->groupBy('distrito_id')->map(function ($iglesiasEntregadas, $distritoId) use ($tiposSeleccionados) {
-            
+
             // A. Contar cuántas iglesias TIENE realmente este distrito en la DB (según tipos seleccionados)
             $totalDeberiaTener = DB::table('iglesias')
                 ->where('distrito_id', $distritoId)
-                ->when(!in_array('todos', $tiposSeleccionados), function($q) use ($tiposSeleccionados) {
+                ->when(!empty($tiposSeleccionados) && !in_array('todos', $tiposSeleccionados), function($q) use ($tiposSeleccionados) {
                     $q->whereIn('tipo', $tiposSeleccionados);
                 })
                 ->count();
@@ -256,7 +258,7 @@ class PuntualidadController extends Controller
 
             // C. REGLA DE ORO: Si falta una sola iglesia, el distrito queda fuera del Ranking
             if ($totalEntregadas < $totalDeberiaTener) {
-                return null; 
+                return null;
             }
 
             // D. DETERMINAR HORA DE FINALIZACIÓN: La hora de la remesa más tardía
@@ -281,15 +283,22 @@ class PuntualidadController extends Controller
 
         // 6. Preparar datos para la vista PDF
         $fechaHora = now()->format('d-m-Y_H-i');
-        
+
+        $textoRango = '';
+        if ($request->modo_filtro === 'rango') {
+            $textoRango = "Del $request->fecha_desde al $request->fecha_hasta";
+        } elseif ($request->modo_filtro === 'dia') {
+            $textoRango = "Día $request->fecha_unica (De $request->hora_desde a $request->hora_hasta)";
+        } else {
+            $textoRango = "Periodo $request->periodo_inicio a " . ($request->periodo_fin ?? $request->periodo_inicio);
+        }
+
         // Si el filtro es por Distrito (Sub-nivel)
         if ($request->sub_nivel_tipo === 'panel_distrito' || $request->nivel_principal === 'capa_encargado') {
             $pdf = Pdf::loadView('pdf.pdf_ranking_puntualidad_distritos', [
                 'ranking' => $rankingDistritos,
                 'modo' => $request->modo_filtro,
-                'rango' => ($request->modo_filtro === 'rango') ? 
-                            "$request->fecha_desde al $request->fecha_hasta" : 
-                            "$request->periodo_inicio a $request->periodo_fin"
+                'rango' => $textoRango
             ])->setPaper('letter', 'portrait');
 
             return $pdf->stream("Ranking_Oro_Distritos_{$fechaHora}.pdf");
@@ -297,9 +306,10 @@ class PuntualidadController extends Controller
 
         // Si es solo por Iglesias (Ranking individual por hora de entrega)
         $resultadosIglesias = $resultados->sortBy('fecha_entrega');
-        
+
         $pdf = Pdf::loadView('pdf.pdf_ranking_puntualidad_iglesias', [
-            'resultados' => $resultadosIglesias
+            'resultados' => $resultadosIglesias,
+            'rango'      => $textoRango
         ])->setPaper('letter', 'portrait');
 
         return $pdf->stream("Ranking_Individual_{$fechaHora}.pdf");
