@@ -49,14 +49,16 @@
                     $sig_mes_nombre = $meses_array[$sig_mes_num];
                 @endphp
 <x-alerts />
-            
+
               <div class="row">
                     <!-- Button trigger modal -->
+                    @can('Contador Master - Habilitar Mes')
                     <div class="col-4">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         <i class="fa-solid fa-plus"></i> &nbsp; Habilitar Mes de {{ $sig_mes_nombre }} - {{ $anio }}
                     </button>
                     </div>
+                    @endcan
                     <!-- Modal -->
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -70,10 +72,10 @@
                                 <div class="modal-body">
                                         <div class="col-md-4">
                                             <label for="fecha_limite" class="form-label">Fecha límite: <span class="text-danger">*</span></label>
-                                            <input 
-                                                type="date" 
-                                                name="fecha_limite" 
-                                                id="fecha_limite" 
+                                            <input
+                                                type="date"
+                                                name="fecha_limite"
+                                                id="fecha_limite"
                                                 class="form-control"
                                                 min="{{ $anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-01"
                                                value="{{ $anio }}-{{ str_pad($sig_mes_num, 2, '0', STR_PAD_LEFT) }}-{{ cal_days_in_month(CAL_GREGORIAN, $sig_mes_num, $anio) }}"
@@ -118,7 +120,7 @@
                                         @foreach ($meses as $mes)
                                         <tr>
                                             <td>
-                                            {{$mes->nombre_mes}} 
+                                            {{$mes->nombre_mes}}
                                             <td>
                                                 {{$mes->anio}}
                                             </td>
@@ -127,10 +129,10 @@
                                                 {{$mes->fecha_limite}}
                                             </td>
                                             <td>
-                                                
+
                                                 <div class="btn-group  justify-content-center" role="group" >
-                                                    
-                                                    
+
+
                                                     <!-- Ver -->
                                                     <form action="{{ route('remesas.index_mes', ['mes' => $mes->mes, 'anio' => $mes->anio]) }}" method="GET" class="d-inline">
                                                         <button type="submit" class="btn btn-primary" title="Ver detalles">
@@ -170,15 +172,15 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <p>Vas a cambiar la fecha límite para todas las iglesias en <strong>{{ $mes->nombre_mes }} / {{ $mes->anio }}</strong>.</p>
-                                                            
+
                                                             <input type="hidden" name="mes" value="{{ $mes->mes }}">
                                                             <input type="hidden" name="anio" value="{{ $mes->anio }}">
 
                                                             <div class="form-group">
                                                                 <label for="fecha_limite">Nueva Fecha Límite:</label>
-                                                                <input 
-                                                                    type="date" 
-                                                                    name="fecha_limite" 
+                                                                <input
+                                                                    type="date"
+                                                                    name="fecha_limite"
                                                                     class="form-control"
                                                                     required
                                                                     value="{{ $mes->fecha_limite }}"
@@ -228,7 +230,7 @@
         $('#example').DataTable({
             scrollX: true,
             ordering: false,
-            pageLength: 12, 
+            pageLength: 12,
             language: {
                 search: "Buscar:",   // Cambia el texto de "Search"
                 lengthMenu: "Mostrar _MENU_ registros por página",

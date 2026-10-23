@@ -149,10 +149,13 @@
 
                     <div class="col-lg-4 col-md-6 p-0">
                         <div class="card shadow-sm border rounded-3  border-primary border-opacity-10">
-                            <div class="card-header border-0">
-                                <h5 class="card-title fw-bold text-primary mb-0">
+                            <div class="card-header border-0 pt-3 pb-2 d-flex align-items-center">
+                                <h5 class="fw-bold text-primary mb-0">
                                     <i class="fas fa-wallet me-2"></i>Fondo Local
                                 </h5>
+                                <button class="btn btn-primary btn-sm shadow-sm ms-auto" onclick="abrirModalReporteFondo('Reporte de Gasto y Fondo Local')">
+                                    <i class="bi bi-printer"></i> Imprimir
+                                </button>
                             </div>
                             <div class="card-body p-3 pt-0">
                                 <div class="text-center p-1 mb-1 rounded-3" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1px dashed #cbd5e1;">
@@ -218,66 +221,69 @@
                                     <i class="fas fa-table me-2"></i>
                                     Tabla de Remesas
                                 </div>
-
-                                <div class="dropdown ms-auto">
-                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle shadow-sm" type="button" id="dropdownConfig" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-gear-fill me-1"></i> Configurar Vista
+                                <div class="d-flex gap-2 ms-auto">
+                                    <button class="btn btn-primary btn-sm shadow-sm ms-auto" type="button" onclick="abrirModalReporteGeneral()">
+                                        <i class="bi bi-printer"></i> Imprimir
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end p-3 shadow border-0" aria-labelledby="dropdownConfig" style="min-width: 250px;">
-                                        <li class="dropdown-header text-uppercase small fw-bold">Mostrar/Ocultar Columnas</li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="5" id="col5" checked>
-                                                <label class="form-check-label" for="col5">REG</label>
-                                            </div>
-                                        </li>
+                                    <div class="dropdown ms-auto">
+                                        <button class="btn btn-outline-secondary btn-sm dropdown-toggle shadow-sm" type="button" id="dropdownConfig" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-gear-fill me-1"></i> Configurar Vista
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end p-3 shadow border-0" aria-labelledby="dropdownConfig" style="min-width: 250px;">
+                                            <li class="dropdown-header text-uppercase small fw-bold">Mostrar/Ocultar Columnas</li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="5" id="col5" checked>
+                                                    <label class="form-check-label" for="col5">REG</label>
+                                                </div>
+                                            </li>
 
-                                        <li>
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="6" id="col6" checked>
-                                                <label class="form-check-label" for="col6">Fecha entrega</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="7" id="col7" checked>
-                                                <label class="form-check-label" for="col7">Fecha limite</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="8" id="col8" checked>
-                                                <label class="form-check-label" for="col8">Estado de dias</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="10" id="col10" checked>
-                                                <label class="form-check-label" for="col10">Observaciones</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="11" id="col11" checked>
-                                                <label class="form-check-label" for="col11">Ofrenda</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="12" id="col12" checked>
-                                                <label class="form-check-label" for="col12">Diezmo</label>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="form-check form-switch mb-2">
-                                                <input class="form-check-input toggle-vis" type="checkbox" value="13" id="col13" checked>
-                                                <label class="form-check-label" for="col13">Pro Templo</label>
-                                            </div>
-                                        </li>
-                                    </ul>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="6" id="col6" checked>
+                                                    <label class="form-check-label" for="col6">Fecha entrega</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="7" id="col7" checked>
+                                                    <label class="form-check-label" for="col7">Fecha limite</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="8" id="col8" checked>
+                                                    <label class="form-check-label" for="col8">Estado de dias</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="10" id="col10" checked>
+                                                    <label class="form-check-label" for="col10">Observaciones</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="11" id="col11" checked>
+                                                    <label class="form-check-label" for="col11">Ofrenda</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="12" id="col12" checked>
+                                                    <label class="form-check-label" for="col12">Diezmo</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="13" id="col13" checked>
+                                                    <label class="form-check-label" for="col13">Pro Templo</label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
-
                             </div>
                                 <div class="card-body">
                                 <table id="example" class="display">
@@ -524,8 +530,8 @@
     </div>
 </div>
 
-
-        @endsection
+@include('remesas_llenado._modal_rango_fechas')
+@endsection
 
 
 @push('js')
@@ -1310,6 +1316,174 @@
             });
         });
     }
+
+// =========================================================
+// LOGICA PARA EL MODAL DE REPORTES (DESDE - HASTA)
+// =========================================================
+
+function abrirModalReporteFondo(titulo) {
+    // 1. Configurar el título dinámico
+    $('#textoTituloRango').text(titulo);
+    $('#rep_desde, #rep_hasta').html('<option value="">Cargando...</option>').prop('disabled', true);
+
+    // 2. Mostrar el cargador de SweetAlert
+    Swal.fire({
+        title: 'Cargando historial...',
+        text: 'Por favor espere',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    // 3. Llamada al Backend
+    $.ajax({
+        url: `/api/iglesias/{{ $iglesia->id_iglesia ?? 0 }}/meses-historial`,
+        type: 'GET',
+        success: function(response) {
+            // Cerramos el cargador de SweetAlert
+            Swal.close();
+
+            // Poblamos los datos y mostramos el modal
+            poblarSelectsReporte(response);
+
+            $('.modal-footer .btn-danger').attr('onclick', "generarReporteModal('pdf')");
+            $('.modal-footer .btn-success').attr('onclick', "generarReporteModal('excel')");
+
+            $('#modalRangoFechas').modal('show');
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de carga',
+                text: 'No se pudo obtener el historial de meses. Intente nuevamente.'
+            });
+        }
+    });
+}
+
+function poblarSelectsReporte(meses) {
+    let options = '<option value="">Seleccione un mes...</option>';
+    meses.forEach(m => {
+        options += `<option value="${m.id}">${m.texto}</option>`;
+    });
+
+    $('#rep_desde').html(options).prop('disabled', false);
+    $('#rep_hasta').html(options).prop('disabled', false);
+}
+
+// LÓGICA: El "Hasta" no puede ser menor al "Desde" (DESAPARECE LAS OPCIONES)
+$('#rep_desde').on('change', function() {
+    let desdeVal = $(this).val();
+
+    if (!desdeVal) {
+        // Si no hay "Desde", mostramos todas las opciones en "Hasta"
+        $('#rep_hasta option').show();
+        return;
+    }
+
+    // Recorremos las opciones del "Hasta"
+    $('#rep_hasta option').each(function() {
+        let hastaVal = $(this).val();
+
+        // Ignoramos la opción por defecto ("Seleccione un mes...")
+        if (!hastaVal) return;
+
+        // Si la opción es menor al desde, la ocultamos (desaparece visualmente)
+        if (hastaVal < desdeVal) {
+            $(this).hide();
+        } else {
+            // Si es mayor o igual, la mostramos
+            $(this).show();
+        }
+    });
+
+    // Si el usuario ya había seleccionado un "Hasta" que ahora está oculto, lo reseteamos
+    if ($('#rep_hasta').val() && $('#rep_hasta').val() < desdeVal) {
+        $('#rep_hasta').val('');
+    }
+});
+
+// Enviar datos al Backend para generar PDF/Excel
+function generarReporteModal(tipo) {
+    let desde = $('#rep_desde').val();
+    let hasta = $('#rep_hasta').val();
+
+    if (!desde || !hasta) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos incompletos',
+            text: 'Debe seleccionar el rango "Desde" y "Hasta" para continuar.'
+        });
+        return;
+    }
+
+    // Rutas actualizadas apuntando a los nuevos endpoints
+    let url = "";
+    if (tipo === 'pdf') {
+        url = `/reportes/gasto-fondo-local/pdf?iglesia={{ $iglesia->id_iglesia ?? 0 }}&desde=${desde}&hasta=${hasta}`;
+        window.open(url, '_blank');
+    } else {
+        url = `/reportes/gasto-fondo-local/excel?iglesia={{ $iglesia->id_iglesia ?? 0 }}&desde=${desde}&hasta=${hasta}`;
+        window.location.href = url;
+    }
+}
+
+function abrirModalReporteGeneral() {
+    $('#textoTituloRango').text('Planilla de Remesa Mensual');
+    $('#rep_desde, #rep_hasta').html('<option value="">Cargando...</option>').prop('disabled', true);
+
+    Swal.fire({
+        title: 'Cargando historial...',
+        text: 'Por favor espere',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    $.ajax({
+        url: `/api/iglesias/{{ $iglesia->id_iglesia ?? 0 }}/meses-historial`,
+        type: 'GET',
+        success: function(response) {
+            Swal.close();
+            poblarSelectsReporte(response);
+
+            // Redirigimos la acción de los botones del modal hacia el nuevo reporte
+            $('.modal-footer .btn-danger').attr('onclick', "ejecutarReporteGeneral('pdf')");
+            $('.modal-footer .btn-success').attr('onclick', "ejecutarReporteGeneral('excel')");
+
+            $('#modalRangoFechas').modal('show');
+        },
+        error: function(xhr) {
+            Swal.fire('Error', 'No se pudo obtener el historial.', 'error');
+        }
+    });
+}
+
+function ejecutarReporteGeneral(formato) {
+    let desde = $('#rep_desde').val();
+    let hasta = $('#rep_hasta').val();
+
+    if (!desde || !hasta) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos incompletos',
+            text: 'Debe seleccionar el rango "Desde" y "Hasta" para continuar.'
+        });
+        return;
+    }
+
+    let idIglesia = "{{ $iglesia->id_iglesia ?? 0 }}";
+    let url = "";
+
+    if (formato === 'pdf') {
+        url = `/reportes/general/pdf?iglesia=${idIglesia}&desde=${desde}&hasta=${hasta}`;
+        window.open(url, '_blank');
+    } else {
+        url = `/reportes/general/excel?iglesia=${idIglesia}&desde=${desde}&hasta=${hasta}`;
+        window.location.href = url;
+    }
+}
+
 </script>
 
 

@@ -73,7 +73,7 @@ Route::get('/', function () {
     }
     return redirect()->route('panel');
 });
- 
+
 
 Route::redirect('/', '/login');
 
@@ -94,12 +94,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/perfil/foto', [PerfilController::class, 'updatePhoto'])->name('profile.updatePhoto');
     /**
      *_________________DASHBOARDS PRINCIPALES
-    * 
+    *
     */
     Route::get('/estudiantes/filtrar', [EstudiantesController::class, 'filtrarPorAnio'])
      ->name('estudiantes.filtrar');
 
-     
+
     Route::get('/auditorias', [AuditoriaController::class, 'index'])
      ->name('auditorias.index');
     //pastor
@@ -108,7 +108,7 @@ Route::middleware(['auth'])->group(function () {
     //ASEA - capellan
     Route::get('/dashboard/capellan/', [PanelController::class, 'dashboard_capellan'])
         ->name('dashboard.capellan');
-    //ASEA - director y secretaria  
+    //ASEA - director y secretaria
     Route::get('/dashboard/asea/', [PanelController::class, 'dashboard_asea_direc_secre'])
         ->name('dashboard.asea');
 
@@ -123,29 +123,29 @@ Route::middleware(['auth'])->group(function () {
 
     /**
      *_________________BANCOS
-    * 
+    *
     */
     Route::get('/blancos/index/', [BlancoController::class, 'index'])
         ->name('blancos.index');
     Route::post('/blanco/filtrar', [blancoController::class, 'index_filtro'])->name('blanco.filtro');
-    
+
     /**
      *_________________Bautisos
-    * 
+    *
     */
     Route::get('/bautizos/dashboard/', [BautisosController::class, 'dashboard_general'])
         ->name('bautizos.dashboard');
 
     /**
      *_________________PUNTUALIDADES
-    * 
+    *
     */
     Route::get('/remesas/puntualidades/', [PuntualidadController::class, 'index'])
         ->name('remesas.puntualidades');
-    
+
     /**
      *_________________PENDIENTES
-    * 
+    *
     */
     Route::get('remesas/pendientes', [PendientesController::class, 'index'])
         ->name('remesas.pendientes');
@@ -157,10 +157,10 @@ Route::middleware(['auth'])->group(function () {
      */
     Route::get('/remesas/iglesia/{id}', [RemesaController::class, 'index_remesa_iglesia'])
         ->name('remesas.iglesia.index'); //ruta para ver una iglesia y sus remesas
-    
+
     /**
      * *******************************************************************************
-     *                          ALERTAS EN 
+     *                          ALERTAS EN
      * *********************************************************************************
      */
 
@@ -177,7 +177,7 @@ Route::middleware(['auth'])->group(function () {
 
     /**
      *_________________REMESAS SEMANALES
-    * 
+    *
     */
     Route::get('/remesas/{id}/registro', [RemesaSemanalController::class, 'registroSemanas'])
         ->name('remesas.registro_semanas');
@@ -189,8 +189,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/remesas/{id}/reporte-pdf', [RemesaSemanalController::class, 'generarReportePDF']) //reporte pdf
         ->name('remesas.reporte_pdf');
+
+    //=================================================================
+    //      PANTALLA REMESAS_FILIALES - Repor de General de Remesas
+    Route::get('/reportes/general/pdf', [App\Http\Controllers\RemesaController::class, 'reporteGeneralRemesasPdf'])
+        ->name('reporte.general.pdf');
+    Route::get('/reportes/general/excel', [App\Http\Controllers\RemesaController::class, 'reporteGeneralRemesasExcel'])
+        ->name('reporte.general.excel');
+
+
     //****************************************** */
-        
+
     Route::post('/remesas/pendientes/anual/filtro', [PendientesController::class, 'filtro_anual'])->name('remesas.pendiente.anual.filtro');
     Route::get('remesas/pendientes/mensual', [PendientesController::class, 'index_mensual'])
         ->name('remesas.pendientes.mensual');
@@ -205,7 +214,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('remesas.pendientes_filtro_general.pdf');
     /**
      *_______________GRAFICOS DE REMESAS
-    * 
+    *
     */
 
 
@@ -224,7 +233,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/filiales', [RemesasDashboardController::class, 'dashboardFiliales'])
         ->name('remesas.dashboard.filiales');
     Route::get('/api/historial-filial/{id}', [RemesasDashboardController::class, 'getHistorialFilial'])->name('api.historial.filial');
-      
+
     //muestra la grafica  de remesas balnco de 1 distrito
     Route::get('remesas/distrital/dash_general', [RemesasDashboardController::class, 'dashboard_finanzas_distrito'])
         ->name('remesas.distrital.dash_general');
@@ -241,7 +250,7 @@ Route::middleware(['auth'])->group(function () {
 
     /**
      *_______________DESAFIOS BAUTISOS POR DISTRITO
-    * 
+    *
     */
     Route::get('desafios/bautizos/distrital/', [DesafioController::class, 'index_desafio_bautizos'])
         ->name('desafios.bautizos');
@@ -250,7 +259,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('desafios.update_2');
     /**
      *_______________DESAFIOS IGLESIAS ANUALES ESTUDIANTES Y INSTRUCTORES
-    * 
+    *
     */
     Route::get('instructores/dashboard', [InstructoresController::class, 'index_desafios_inst'])
         ->name('instructores.dashboard');
@@ -275,7 +284,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('instructores/mbos/distrital/ver', [InstructoresController::class, 'index_mbos_dashboard'])
         ->name('instructores.mbos.distrital.ver');
-    
+
     Route::get('instructores/mbos/distrital/{id}/{anio}', [InstructoresController::class, 'index_instructores_mbos'])
         ->name('instructores.x.distrital'); //para ver los instructores de 1 distrito
 
@@ -286,8 +295,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('mbos.x.distrital');
 
     /**
-     *_________________IMPORTACION Y EXPOTACION DE ARCHIVOS EXCEL 
-    * 
+     *_________________IMPORTACION Y EXPOTACION DE ARCHIVOS EXCEL
+    *
     */
     Route::post('/remesas/importar', [RemesaExcelController::class, 'import'])->name('remesas.import');
 
@@ -301,13 +310,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/remesas/procesar/{anio}', [RemesaExcelController::class, 'procesarRemesas'])->name('remesas.procesar');
 
     /**
-     * 
+     *
      */
     // Ruta para procesar la edición masiva de la fecha límite
     Route::post('/remesas/editar-fecha-mes', [RemesaController::class, 'editarFechMes'])->name('remesas.editar_fecha_mes');
 
 
-    
+
     Route::get('/remesas/mes/{mes}/{anio}', [RemesaController::class, 'index_mes'])
         ->name('remesas.index_mes');
 
@@ -329,13 +338,17 @@ Route::middleware(['auth'])->group(function () {
         ->name('remesas.get_json');
 
 
+    // Endpoint para obtener reporte de filiales de remesas y gastos y fondo local
+    Route::get('/api/iglesias/{id}/meses-historial', [App\Http\Controllers\RemesaController::class, 'obtenerMesesHistorial']);
+    Route::get('/reportes/gasto-fondo-local/pdf', [App\Http\Controllers\RemesaController::class, 'reporteFondoLocalPdf'])->name('reportes.fondo.pdf');
+    Route::get('/reportes/gasto-fondo-local/excel', [App\Http\Controllers\RemesaController::class, 'reporteFondoLocalExcel'])->name('reportes.fondo.excel');
 
 
     // Ruta para procesar el formulario (POST)
     Route::post('remesas/crear', [RemesaController::class, 'crear'])->name('remesas.crear');
 
 
-    /*ruta extra para Pastores*/ 
+    /*ruta extra para Pastores*/
     Route::get('pastores/indexdelete', [PastorController::class, 'indexdelete'])
         ->name('pastores.indexdelete');
     Route::post('pastores/reactive/{id}', [PastorController::class, 'reactive'])
@@ -346,14 +359,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('personales/indexdelete', [PersonalController::class, 'indexdelete'])
         ->name('personales.indexdelete');
 
-    /*______________*/ 
+    /*______________*/
 
     Route::get('bautisos/dashboard/pastoral', [BautisosController::class, 'dashboard_general_pastores'])
         ->name('bautiso.dashboard.pastoral');
     Route::get('bautisos/x/pastor', [BautisosController::class, 'bautisos_distrital'])
         ->name('bautiso.pastor');
 
-    /*ruta extra para Distritos*/ 
+    /*ruta extra para Distritos*/
     Route::get('distritos/asignaciones', [DistritoController::class, 'index_asignaciones'])
         ->name('distritos.asignaciones');
 
@@ -374,7 +387,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('distritos/indexdelete', [DistritoController::class, 'index_eliminado'])
         ->name('distritos.indexdelete');
-        
+
     Route::post('distritos/reactive/{id}', [DistritoController::class, 'reactive'])
         ->name('distritos.reactive');
 
@@ -387,7 +400,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/distritos/asignaciones/liberar_anual/{id_distrito}', [DistritoController::class, 'liberarAsignacionAnual'])->name('distritos.liberar_anual');
     Route::post('/distritos/asignar/cambiar/{id_distrito}', [DistritoController::class, 'cambiarAsignacion'])->name('distritos.cambiar');
-    Route::post('/distritos/asignar/cambiaranual/{id_distrito}', [DistritoController::class, 'cambiarAsignacionAnual'])->name('distritos.cambiaranual');   
+    Route::post('/distritos/asignar/cambiaranual/{id_distrito}', [DistritoController::class, 'cambiarAsignacionAnual'])->name('distritos.cambiaranual');
 
     /*ruta para visitas */
     Route::get('visitas/dashboard', [VisitasController::class, 'dashboard'])
@@ -415,13 +428,13 @@ Route::middleware(['auth'])->group(function () {
         ->name('visitas.capellan');
     /*ruta para signaciones */
 
-    
+
     Route::get('iglesias/dashboard_general', [IglesiaController::class, 'dashboard_general'])
         ->name('iglesias.dashboard_general');
     Route::post('iglesias/reactive/{id}', [IglesiaController::class, 'reactive'])
         ->name('iglesias.reactive');
 
-        /*ruta extra para iglesias*/ 
+        /*ruta extra para iglesias*/
     Route::get('iglesias/indexdelete', [IglesiaController::class, 'index_eliminado'])
         ->name('iglesias.indexdelete');
     Route::get('iglesias/asignaciones', [IglesiaController::class, 'index_asignaciones'])
@@ -432,7 +445,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('iglesias/index_pastores/asignacion_lideres', [IglesiaController::class, 'index_lideres_locales_pastores'])
         ->name('iglesias.index_pastores/asignacion_lideres');
-        
+
     Route::put('/lideres/masivo', [IglesiaController::class, 'updateMasivo'])
         ->name('lideres.update.masivo');
 
@@ -465,8 +478,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('pastor.perfil');
 
         /**
-         * _____________________DESAFIOS DE DISTRITO 
-         * 
+         * _____________________DESAFIOS DE DISTRITO
+         *
          */
     Route::get('/desafios/{id}/distrital', [DesafioController::class, 'index_distrital'])
         ->name('desafios.index_distrital');
@@ -488,7 +501,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::put('desafio_eventos/asignaciones/{id}', [DesafioEventoController::class, 'update_asignacion_desafio'])
         ->name('desafio_eventos.update_asignacion_desafio');
-    
+
     Route::get('desafio_eventos/dashboard_asignaciones', [DesafioEventoController::class, 'index_dasboards_eventos'])
         ->name('desafio_eventos.dashboard_asignaciones');
 
@@ -496,19 +509,19 @@ Route::middleware(['auth'])->group(function () {
         ->name('desafio_evento.dashboard.bautizos');
 
         /**
-         * _____________________DESAFIOS MENSUALES DE LOS DISTRITOS 
-         * 
+         * _____________________DESAFIOS MENSUALES DE LOS DISTRITOS
+         *
          */
 
     Route::put('/mensuales_desafios/{id}', [DesafioMensualController::class, 'update_desafios'])
-        ->name('mensuales_desafios.update'); 
+        ->name('mensuales_desafios.update');
 
     Route::get('mensuales/asignar_desafio/{mes}/{anio}', [DesafioMensualController::class, 'index_mes'])
         ->name('mensuales.asignar_desafio');
 
     Route::get('mensuales/asignar_desafio/masivo/{mes}/{anio}', [DesafioMensualController::class, 'index_mes_masivo'])
         ->name('mensuales.asignar_desafio.masivo');
-    
+
     Route::put('/mensuales-desafios/masivo/update', [DesafioMensualController::class, 'updateMasivo'])
         ->name('mensuales_desafios.update.masivo');
 
@@ -543,30 +556,30 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/remesas/filiales-mensual', [RemesasDashboardController::class, 'tablaFilialesPivot'])
         ->name('remesas.filiales.pivot');
 
-    Route::get('/remesas/filiales-mensual/excel', 
+    Route::get('/remesas/filiales-mensual/excel',
     [RemesasDashboardController::class, 'exportFilialesExcel'])
     ->name('remesas.filiales.excel');
-    Route::get('/remesas/filiales-mensual/pdf', 
+    Route::get('/remesas/filiales-mensual/pdf',
     [RemesasDashboardController::class, 'exportFilialesPDF'])
     ->name('remesas.filiales.pdf');
 
 
     /**
      * *******************************************************************************
-     *                          ASEA - 
+     *                          ASEA -
      * *********************************************************************************
      */
     Route::POST('asea/addcape', [UnidadEducativaController::class, 'add_cape'])
         ->name('asea.addcape');
-    
+
     Route::get('asea/indexdelete', [UnidadEducativaController::class, 'index_eliminados'])
         ->name('asea.indexdelete');
     Route::post('asea/reactive/{id}', [UnidadEducativaController::class, 'reactive'])
         ->name('asea.reactive');
     Route::post('asea/asignarcape/{id}', [UnidadEducativaController::class, 'asignar_cape'])
         ->name('asea.asignarcape');
-    
-        
+
+
     Route::post('asea/liberarcape/{id_ue}/{id_pastor}/{anio}', [UnidadEducativaController::class, 'liberarAsignacion'])
         ->name('asea.liberarcape');
     // Ruta para habilitar desafíos

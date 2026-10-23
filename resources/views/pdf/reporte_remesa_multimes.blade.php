@@ -5,7 +5,6 @@
     <style>
         @page { margin: 0.8cm 1.2cm; }
         body { font-family: 'Helvetica', sans-serif; color: #1a1a1a; line-height: 1.4; }
-        
         /* Encabezado Institucional */
         .header-table { width: 100%; border-bottom: 2.5px solid #0d47a1; padding-bottom: 8px; margin-bottom: 20px; }
         .col-logo { width: 10%; text-align: left; }
@@ -15,7 +14,6 @@
         .col-reporte { width: 35%; text-align: right; }
         .reporte-titulo { font-size: 14px; font-weight: bold; margin-bottom: 3px; color: #333; }
         .badge-periodo { display: inline-block; background-color: #e3f2fd; color: #0d47a1; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
-
         /* Bloque de Información de la Iglesia */
         .info-iglesia {
             background: #f8fafc;
@@ -24,7 +22,6 @@
             margin-bottom: 20px;
             border: 1px solid #e2e8f0;
         }
-
         .label-pill {
             display: inline-block;
             font-size: 12px;
@@ -37,7 +34,6 @@
             margin-left: 5px;
             vertical-align: middle;
         }
-
         .codigo-valor {
             font-family: 'Courier', monospace; /* Estilo de sistema para el código */
             font-size: 20px;
@@ -45,7 +41,6 @@
             letter-spacing: 0px;
             font-weight: bold;
         }
-
         /* CAJA DE COBRO - PARA LA CAJERA */
         /* Contenedor del Resumen Profesional */
         .resumen-container {
@@ -54,7 +49,6 @@
             border-collapse: separate;
             border-spacing: 10px 0; /* Espacio entre las tarjetas */
         }
-
         .card-resumen {
             width: 33.33%;
             background-color: #ffffff;
@@ -64,7 +58,6 @@
             padding: 0;
             overflow: hidden;
         }
-
         .card-header-blue {
             background-color: #0d47a1;
             color: #ffffff;
@@ -74,14 +67,12 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .card-body-amount {
             padding: 8px 5px;
             color: #1e3a8a;
             font-size: 20px;
             font-weight: 900;
         }
-
         .card-footer-sub {
             font-size: 8px;
             color: #64748b;
@@ -93,8 +84,6 @@
             background-color: #d7e9f0; /* Un azul muy tenue para diferenciarlo */
         }
         /* Resalte especial para la Remesa MBOS (El dato que cobra la cajera) */
-        
-
         /* Tablas de Detalles */
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         th { background-color: #f1f5f9; color: #475569; font-size: 9px; text-transform: uppercase; padding: 8px; border-bottom: 2px solid #cbd5e1; }
@@ -131,9 +120,9 @@
                 <div class="mision-sub">Unión Boliviana - Iglesia Adventista del Séptimo Día</div>
             </td>
             <td class="col-reporte">
-                <div class="reporte-titulo">PLANILLA DE REMESA MENSUAL</div>
+                <div class="reporte-titulo">REMESAS MENSUALES</div>
                 <div class="badge-periodo">Periodo: {{ $periodo }}</div>
-                <div style="font-size: 8px; color: #94a3b8; margin-top: 5px;">Cod: {{ $remesa->id_remesa }} | {{ date('d/m/Y H:i') }}</div>
+                <div style="font-size: 8px; color: #94a3b8; margin-top: 5px;">Generado: {{ date('d/m/Y H:i') }}</div>
             </td>
         </tr>
     </table>
@@ -144,7 +133,7 @@
                 <td style="text-align: left; border: none; padding: 0; width: 60%; vertical-align: top;">
                     <span class="info-label">Cod ACMS/ Nombre de Iglesia / Tipo</span><br>
                     <span class="fw-bold codigo-valor">{{ $iglesia->codigo }}</span>&nbsp;/ &nbsp;
-                    <span class="info-value" style="font-size: 15px;">{{ $iglesia->nombre }}</span>&nbsp;/ 
+                    <span class="info-value" style="font-size: 15px;">{{ $iglesia->nombre }}</span>&nbsp;/
                     <span class="label-pill">{{ $iglesia->tipo }}</span> </td>
 
                 <td style="text-align: left; border: none; padding: 0; width: 40%; vertical-align: top;">
@@ -161,7 +150,7 @@
             <td class="card-resumen">
                 <div class="card-header-blue" style="background-color: #475569;">Total Acumulado</div>
                 <div class="card-body-amount">Bs {{ number_format($totalGeneralBruto, 2) }}</div>
-                <div class="card-footer-sub">Ingresos Brutos del Rango</div>
+                <div class="card-footer-sub">Ingreso Total en el Rango</div>
             </td>
             <td class="card-resumen">
                 <div class="card-header-blue">Fondo Local Total</div>
@@ -176,7 +165,7 @@
         </tr>
     </table>
 
-    <div class="info-label" style="margin-left: 5px; margin-bottom: 5px;">Desglose por Meses Seleccionados</div>
+    <div class="info-label" style="margin-left: 3px; margin-bottom: 3px;">Desglose por Meses</div>
     <table>
         <thead>
             <tr>
@@ -223,15 +212,15 @@
             <td style="width: 45%; vertical-align: top; border: none;">
                 <table style="width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
                     <tr>
-                        <td class="text-right info-label" style="padding: 8px; background: #ffffff;">Total Ingresos Iglesia:</td>
+                        <td class="text-right info-label" style="padding: 8px; background: #ffffff;">Total Ingresos:</td>
                         <td class="text-right fw-bold" style="padding: 8px; background: #ffffff;">Bs {{ number_format($totalGeneralBruto, 2) }}</td>
                     </tr>
                     <tr>
-                        <td class="text-right info-label" style="padding: 8px; color: #ef4444; background: #ffffff;">(-) Gastos del Mes:</td>
+                        <td class="text-right info-label" style="padding: 8px; color: #ef4444; background: #ffffff;">(-) Gastos:</td>
                         <td class="text-right fw-bold" style="padding: 8px; color: #ef4444; background: #ffffff;">Bs {{ number_format($remesa->gasto_mensual, 2) }}</td>
                     </tr>
                     <tr style="background: #f1f5f9;">
-                        <td class="text-right fw-bold" style="padding: 10px; font-size: 12px;">SALDO NETO REAL:</td>
+                        <td class="text-right fw-bold" style="padding: 10px; font-size: 12px;">SALDO TOTAL:</td>
                         <td class="text-right fw-bold" style="padding: 10px; font-size: 12px; color: #0d47a1;">Bs {{ number_format($totalGeneralBruto - $remesa->gasto_mensual, 2) }}</td>
                     </tr>
                 </table>
@@ -243,17 +232,11 @@
 
     <table class="firmas-table" style="width: 100%; border: none;">
         <tr>
+            <td style="text-align: center; border: none; width: 33.3%;"></td>
+            <td style="text-align: center; border: none; width: 33.3%;"></td>
             <td style="text-align: center; border: none; width: 33.3%;">
                 <div class="linea-firma" style="border-top: 1px solid #333; width: 160px; margin: 0 auto 5px auto;"></div>
-                <div class="firma-label">Tesorero(a) Iglesia</div>
-            </td>
-            <td style="text-align: center; border: none; width: 33.3%;">
-                <div class="linea-firma" style="border-top: 1px solid #333; width: 160px; margin: 0 auto 5px auto;"></div>
-                <div class="firma-label">Pastor de Distrito</div>
-            </td>
-            <td style="text-align: center; border: none; width: 33.3%;">
-                <div class="linea-firma" style="border-top: 1px solid #333; width: 160px; margin: 0 auto 5px auto;"></div>
-                <div class="firma-label">Sello Iglesia</div>
+                <div class="firma-label">Analista Tesoreria</div>
             </td>
         </tr>
     </table>

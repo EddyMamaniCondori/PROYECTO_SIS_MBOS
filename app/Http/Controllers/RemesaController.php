@@ -15,13 +15,16 @@ use App\Models\Mes;
 use Carbon\Carbon;
 use App\Traits\CalculaSaldoTrait;
 use App\Http\Controllers\RemesaController;
+use App\Exports\Report_FondoLocal_GastosExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ReporteGeneralRemesasExport;
 
 
 class RemesaController extends Controller
 {
     use CalculaSaldoTrait;
     /**
-     * 
+     *
      * // 🔹 Remesas// SATISFECHOS
      *       'ver meses-remesas',
      *       'crear meses-remesas',
@@ -43,7 +46,7 @@ class RemesaController extends Controller
         $this->middleware('permission:crear meses-remesas', ['only' => ['crear']]);
 
         // index_mes(): 'ver remesas mes - remesas'
-        $this->middleware('permission:ver remesas mes-remesas', ['only' => ['index_mes', 'registrar_remesa_iglesia']]); 
+        $this->middleware('permission:ver remesas mes-remesas', ['only' => ['index_mes', 'registrar_remesa_iglesia']]);
         // Nota: Agrupé registrar_remesa_iglesia con la vista, asumo que al registrar la remesa de iglesia regresa al index_mes.
 
         // llenar_filial(): 'ver remesas filiales - remesas'
@@ -55,7 +58,7 @@ class RemesaController extends Controller
         // registrar_remesa_iglesia() (ya cubierta arriba, pero le aplica el permiso de registro de filiales por la lista que proporcionaste)
         // Usamos el permiso que parece más aplicable a la acción de registro, aunque el nombre dice 'filiales'.
         $this->middleware('permission:registra remesas filiales-remesas', ['only' => ['registrar_remesa_iglesia']]);
-        
+
         // El método 'registrar_remesa_iglesia' tiene dos permisos aplicados en la lista, priorizaremos la más específica (registro).
 
         // Los métodos store, show, edit, update, destroy y asignar_puntualidad() se dejan sin protección por no tener etiqueta.
@@ -75,7 +78,7 @@ class RemesaController extends Controller
             4 => 'Abril', 5 => 'Mayo', 6 => 'Junio',
             7 => 'Julio', 8 => 'Agosto', 9 => 'Septiembre',
             10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
-            
+
         ];
 
         foreach ($meses as $m) {
@@ -89,7 +92,7 @@ class RemesaController extends Controller
     public function index_mes($mes, $anio) //permission 'ver remesas mes - remesas',
     {
         $resultados = DB::select("
-        SELECT 
+        SELECT
                 xd.nombre AS nombre_distrito,
                 xi.codigo,
                 xi.id_iglesia,
@@ -120,7 +123,7 @@ class RemesaController extends Controller
         $personal = DB::select("select xp.id_persona, xp.nombre, xp.ape_paterno, xr.name
                             from personas xp
                             join personales xpp on xp.id_persona = xpp.id_personal
-                            join model_has_roles xm on xp.id_persona = xm.model_id 
+                            join model_has_roles xm on xp.id_persona = xm.model_id
                             join roles xr on xm.role_id = xr.id
                             where xr.name like 'Tesorero'
                     ");
@@ -163,11 +166,11 @@ class RemesaController extends Controller
         $personal = DB::select("select xp.id_persona, xp.nombre, xp.ape_paterno, xr.name
                             from personas xp
                             join personales xpp on xp.id_persona = xpp.id_personal
-                            join model_has_roles xm on xp.id_persona = xm.model_id 
+                            join model_has_roles xm on xp.id_persona = xm.model_id
                             join roles xr on xm.role_id = xr.id
                             where xr.name like 'Tesorero'
                     ");
-        
+
         // Filtro: Personal Responsable
         if ($request->filled('id_personal') && $request->id_personal != -1) {
             $query->where('xd.id_responsable_remesa', $request->id_personal);
@@ -210,7 +213,7 @@ class RemesaController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    
+
     //habilita un mes y crea para todas las igelsias activas su remesa del correspondientes mes y año
     public function crear(Request $request)  //permission 'crear meses - remesas',
     {
@@ -222,7 +225,7 @@ class RemesaController extends Controller
         try {
             // Solo iglesias activas (estado = true)
             $iglesias = DB::table('iglesias')->where('estado', true)->get();
-            
+
             foreach ($iglesias as $iglesia) {
                 /*ESTA PARTE CREA PUNTUALIDAD SI NO LA TIENE*/
                 $puntualidad = Puntualidad::where('id_iglesia', $iglesia->id_iglesia)
@@ -302,7 +305,7 @@ class RemesaController extends Controller
     }
 
     //edita la fecha limite de un mes
-    public function editarFechMes(Request $request) 
+    public function editarFechMes(Request $request)
     {
         $mes = $request->mes;
         $anio = $request->anio;
@@ -363,7 +366,7 @@ class RemesaController extends Controller
 
             foreach ($iglesiasFaltantes as $iglesia) {
                 // --- LÓGICA DE CREACIÓN (Igual a tu método crear) ---
-                
+
                  /*ESTA PARTE CREA PUNTUALIDAD SI NO LA TIENE*/
                 $puntualidad = Puntualidad::where('id_iglesia', $iglesia->id_iglesia)
                     ->where('anio', $anio)
@@ -445,7 +448,7 @@ class RemesaController extends Controller
     public function getAlertas($id_iglesia)
     {
         $resultados = DB::select("
-            select xr.id_remesa, xr.alerta 
+            select xr.id_remesa, xr.alerta
             from generas xg
             join remesas xr on xg.id_remesa = xr.id_remesa
             where xg.id_iglesia = ?
@@ -459,7 +462,7 @@ class RemesaController extends Controller
             $alertasDeEstaRemesa = json_decode($fila->alerta, true) ?? [];
 
             // ¡OJO AQUÍ! Agregamos $key => para que no de error
-            foreach ($alertasDeEstaRemesa as $key => $alerta) { 
+            foreach ($alertasDeEstaRemesa as $key => $alerta) {
                 if (isset($alerta['estado']) && $alerta['estado'] !== 'ANULADO') {
                     $alerta['id_remesa'] = $fila->id_remesa;
                     $alerta['index'] = $key; // Ahora $key ya existe
@@ -497,15 +500,15 @@ class RemesaController extends Controller
         // y lo guardamos. Si queda vacío, ponemos NULL.
         $nuevoArray = array_values($alertas);
         $remesa->alerta = empty($nuevoArray) ? null : json_encode($nuevoArray);
-        
+
         $remesa->save();
 
         return response()->json(['success' => true]);
-    } 
-    public function storeAlerta(Request $request) 
+    }
+    public function storeAlerta(Request $request)
     {
         $remesa = DB::table('remesas')->where('id_remesa', $request->id_remesa)->first();
-        
+
         // Decodificar alertas existentes o crear un array vacío si no hay
         $alertas = json_decode($remesa->alerta, true) ?? [];
 
@@ -546,8 +549,8 @@ class RemesaController extends Controller
         }
         $fechaEntrega = Carbon::parse($request->fecha_entrega);
         $fechaLimite = Carbon::parse($remesa->fecha_limite);
-        
-        DB::beginTransaction();  
+
+        DB::beginTransaction();
         try {
             // Validación
             // Actualización
@@ -556,7 +559,7 @@ class RemesaController extends Controller
             $remesa->deposito = $request->deposito === 'true';
             $remesa->documentacion = $request->documentacion === 'true';
             $remesa->escaneado = $request->escaneado === 'true'; // El nuevo campo que agregamos
-            $remesa->arqueo = $request->arqueo === 'true'; 
+            $remesa->arqueo = $request->arqueo === 'true';
             $remesa->registrado = $request->registrado === 'true';
 
             $remesa->fecha_entrega = $request->fecha_entrega;
@@ -582,15 +585,15 @@ class RemesaController extends Controller
                         ->first()?->iglesia;
 
             if ($iglesia) {
-                $lugar = strtoupper($iglesia->lugar ?? 'DESCONOCIDO'); 
-                $estrella = "0"; 
+                $lugar = strtoupper($iglesia->lugar ?? 'DESCONOCIDO');
+                $estrella = "0";
                 $mensaje = "";
 
                 if ($diferencia >= 0) {
                     // CASO GENERAL: Puntual o Adelantado
                     $estrella = "2";
-                    $mensaje = ($diferencia == 0) 
-                        ? "Completado con 0 días de retraso (entrega puntual)" 
+                    $mensaje = ($diferencia == 0)
+                        ? "Completado con 0 días de retraso (entrega puntual)"
                         : "Completado con {$diferencia} día(s) de adelanto";
                 } else {
                     // CASO: Retraso (Diferencia negativa)
@@ -605,7 +608,7 @@ class RemesaController extends Controller
                             $mensaje = "Entregado con {$absDiff} día(s) de retraso";
                             $estrella = "0";
                         }
-                    } 
+                    }
                     elseif ($lugar === 'ALTIPLANO') {
                         if ($absDiff <= 8) {
                             $mensaje = "Completado con {$absDiff} día(s) dentro del plazo";
@@ -614,7 +617,7 @@ class RemesaController extends Controller
                             $mensaje = "Entregado con {$absDiff} día(s) de retraso";
                             $estrella = "0";
                         }
-                    } 
+                    }
                     else {
                         // Otros lugares sin regla específica
                         $mensaje = "Entregado con {$absDiff} día(s) de retraso";
@@ -627,7 +630,7 @@ class RemesaController extends Controller
             $remesa->puntualidad = $estrella;
 
 
-             
+
                 // 5. 🔹 GUARDAR EN TABLA PUNTUALIDAD
                 $puntualidad = Puntualidad::where('id_iglesia', $iglesia->id_iglesia)
                                         ->where('anio', $anio) // Usamos el año que viene del request
@@ -641,10 +644,10 @@ class RemesaController extends Controller
                         ->update(['tipo' => $estrella]);
                 }
             $remesa->save();
-            DB::commit();     
+            DB::commit();
             // Retornamos respuesta JSON exitosa
             return response()->json([
-                
+
                 'status' => 'success',
                 'message' => 'Remesa actualizada correctamente'
             ], 200);
@@ -664,7 +667,7 @@ class RemesaController extends Controller
     public function revertirRegistro(Request $request)
     {
         $id = $request->input('id_remesa');
-        
+
         DB::beginTransaction();
         try {
             $remesa = Remesa::find($id);
@@ -675,7 +678,7 @@ class RemesaController extends Controller
 
             if ($remesa->sw_det_semana == 1 || $remesa->sw_det_semana == 2) {
                 return response()->json([
-                    'success' => false, 
+                    'success' => false,
                     'message' => 'Acción denegada: La remesa ya tiene semanas registradas. Debe eliminar el detalle de semanas antes de revertir el estado principal.'
                 ], 403); // Usamos 403 (Prohibido) o 422 para errores de lógica de negocio
             }
@@ -702,7 +705,7 @@ class RemesaController extends Controller
                 if ($montoIglesia > 0) {
                     $nuevoEstado = "REGISTRADO EN ACMS";
                 }
-            } else { 
+            } else {
                 // Caso Filial
                 $filialInfo = DB::table('remesas_filiales')
                     ->where('id_remesa', $id)
@@ -712,7 +715,7 @@ class RemesaController extends Controller
                 if ($filialInfo) {
                     if ($filialInfo->fondo_local > 0 || $filialInfo->monto_remesa > 0 || $filialInfo->gasto > 0) {
                         return response()->json([
-                            'success' => false, 
+                            'success' => false,
                             'message' => 'No se puede revertir: Existen montos (Fondo/Remesa/Gasto) registrados para esta filial.'
                         ], 200); // Usamos 200 con success false para manejarlo como aviso
                     }
@@ -737,7 +740,7 @@ class RemesaController extends Controller
 
             DB::commit();
             return response()->json([
-                'success' => true, 
+                'success' => true,
                 'message' => 'El registro ha sido restablecido a ' . $nuevoEstado
             ]);
 
@@ -749,7 +752,7 @@ class RemesaController extends Controller
 
 
     //muestra los datos de la iglesia y las remesas estados de los ultimos 12 remesas
-    public function index_remesa_iglesia(Request $request, $id_iglesia) 
+    public function index_remesa_iglesia(Request $request, $id_iglesia)
     {
         $anio = $request->query('anio'); // o $request->anio
         $mes = $request->query('mes');
@@ -757,7 +760,7 @@ class RemesaController extends Controller
                 ->where('estado', true)
                 ->select('id_iglesia','codigo', 'nombre')
                 ->get();
-        
+
         // 1. Validar la iglesia (esto se mantiene igual)
         $iglesia = Iglesia::where('id_iglesia', $id_iglesia)->where('estado', true)->first();
         if (!$iglesia) {
@@ -786,7 +789,6 @@ class RemesaController extends Controller
                     join remesas_filiales xri on xg.id_remesa = xri.id_remesa
                     where xg.id_iglesia = ?
                     order by xg.anio DESC, xg.mes DESC
-                    limit 12
                 ", [$id_iglesia]);
             }else{
                 $resultados = DB::select("
@@ -796,7 +798,6 @@ class RemesaController extends Controller
                     join remesas_iglesias xri on xg.id_remesa = xri.id_remesa
                     where xg.id_iglesia = ?
                     order by xg.anio DESC, xg.mes DESC
-                    limit 12
                 ", [$id_iglesia]);
             }
 
@@ -809,16 +810,14 @@ class RemesaController extends Controller
             foreach ($resultados as $r) {
                 $r->nombre_mes = $nombreMes[$r->mes] ?? 'Desconocido';
             }
-            //dd($resultados);
-
             return response()->json(['data' => $resultados]);
         }
 
         if (trim(strtoupper($iglesia->tipo)) === 'FILIAL') {
-            return view('remesas_llenado.index_filial', compact('iglesia', 'dato', 'mes', 'anio', 'iglesias'));    
+            return view('remesas_llenado.index_filial', compact('iglesia', 'dato', 'mes', 'anio', 'iglesias'));
         }else{
             return view('remesas_llenado.index_iglesia', compact('iglesia', 'dato', 'mes', 'anio', 'iglesias'));
-        }  
+        }
     }
      /**********************************************************************************
      * FUNCIONES DE FILIALES
@@ -890,7 +889,7 @@ class RemesaController extends Controller
             $remesa->fecha_entrega  = $request->fecha_entrega;
             $remesa->estado         = 'ENTREGADO';
             $remesa->observacion    = $request->observacion;
-            
+
 
             // 🔹 Calcular diferencia de días
             $fechaEntrega = Carbon::parse($request->fecha_entrega);
@@ -901,8 +900,8 @@ class RemesaController extends Controller
 
             $diferencia = $entregaSoloFecha->diffInDays($limiteSoloFecha, false);
             $absDiff = abs($diferencia);
-            
-            $remesa->save();   
+
+            $remesa->save();
 
             //guardar datos de remesa_filial
             $remesa_filial->ofrenda         = $request->ofrenda;
@@ -913,7 +912,7 @@ class RemesaController extends Controller
             $remesa_filial->gasto           = $request->gasto;
 
             $remesa_filial->save();
-            
+
             // 4. LOGICA DE SALDOS (Efecto Dominó)
             $this->recalcularSaldosDesde($request->id_iglesia, $request->anio, $request->mes);
             /******************************************/
@@ -924,15 +923,15 @@ class RemesaController extends Controller
                         ->first()?->iglesia;
 
             if ($iglesia) {
-                $lugar = strtoupper($iglesia->lugar ?? 'DESCONOCIDO'); 
-                $estrella = "0"; 
+                $lugar = strtoupper($iglesia->lugar ?? 'DESCONOCIDO');
+                $estrella = "0";
                 $mensaje = "";
 
                 if ($diferencia >= 0) {
                     // CASO GENERAL: Puntual o Adelantado
                     $estrella = "2";
-                    $mensaje = ($diferencia == 0) 
-                        ? "Completado con 0 días de retraso (entrega puntual)" 
+                    $mensaje = ($diferencia == 0)
+                        ? "Completado con 0 días de retraso (entrega puntual)"
                         : "Completado con {$diferencia} día(s) de adelanto";
                 } else {
                     // CASO: Retraso (Diferencia negativa)
@@ -947,7 +946,7 @@ class RemesaController extends Controller
                             $mensaje = "Entregado con {$absDiff} día(s) de retraso";
                             $estrella = "0";
                         }
-                    } 
+                    }
                     elseif ($lugar === 'ALTIPLANO') {
                         if ($absDiff <= 8) {
                             $mensaje = "Completado con {$absDiff} día(s) dentro del plazo";
@@ -956,7 +955,7 @@ class RemesaController extends Controller
                             $mensaje = "Entregado con {$absDiff} día(s) de retraso";
                             $estrella = "0";
                         }
-                    } 
+                    }
                     else {
                         // Otros lugares sin regla específica
                         $mensaje = "Entregado con {$absDiff} día(s) de retraso";
@@ -981,7 +980,7 @@ class RemesaController extends Controller
             }
 
             $remesa->save();
-            
+
             DB::commit();
             // Crear un nuevo request con los datos que llenar_filial necesita
             if ($request->ajax()) {
@@ -1000,7 +999,7 @@ class RemesaController extends Controller
         }
     }
 
-    
+
     public function obtenerHistorialFondo($id)
     {
         $iglesia = DB::table('iglesias')->where('id_iglesia', $id)->first();
@@ -1037,7 +1036,7 @@ class RemesaController extends Controller
             'raw_saldo'    => $saldoTotalActual,
             'historial'    => $formateado
         ]);
-        
+
     }
 
     public function recalcularTodo2026()
@@ -1125,7 +1124,7 @@ class RemesaController extends Controller
 
             $diferencia = (int) Carbon::parse($soloFechaEntrega->toDateString())
                 ->diffInDays($soloFechaLimite->toDateString(), false);
-            
+
             dump($diferencia, $soloFechaEntrega, $soloFechaLimite);
             if ($diferencia === 0) {
                 $remesa->estado_dias = 'Completado con 0 días de retraso (entrega puntual)';
@@ -1159,7 +1158,7 @@ class RemesaController extends Controller
                         else {
                             $estrella = "0";
                         }
-                    } 
+                    }
                     elseif ($lugar === 'ALTIPLANO') {
                         // Hasta 5 días de retraso → 2, sino → 0
                         if ($diferencia >= 0 || abs($diferencia) <= 5) {
@@ -1181,10 +1180,10 @@ class RemesaController extends Controller
                 }
 
 
-            
+
             DB::commit();
             return response()->json([
-                'success' => true, 
+                'success' => true,
                 'message' => 'Remesa registrada correctamente en el sistema.'
             ]);
 
@@ -1192,12 +1191,12 @@ class RemesaController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'success' => false, 
+                'success' => false,
                 'message' => 'Error: ' . $e->getMessage()
             ], 500);
         }
     }*/
-    
+
     public function asignar_puntualidad(){
 
         // 🔹 Buscar la iglesia asociada a la remesa --- PARA ASIGNAR PUNTUAIDAD
@@ -1221,7 +1220,7 @@ class RemesaController extends Controller
                         else {
                             $estrella = 0;
                         }
-                    } 
+                    }
                     elseif ($lugar === 'ALTIPLANO') {
                         // Hasta 5 días de retraso → 2, sino → 0
                         if ($diferencia >= 0 || abs($diferencia) <= 5) {
@@ -1259,7 +1258,7 @@ class RemesaController extends Controller
 
         // CONSULTA SQL
         $result = DB::select("
-            SELECT 
+            SELECT
                 xi.codigo,
                 xi.nombre,
                 xi.tipo,
@@ -1324,7 +1323,7 @@ class RemesaController extends Controller
                 $iglesia = DB::table('iglesias')->where('id_iglesia', $reg->id_iglesia)->first();
 
                 if ($remesa && $remesa->estado === 'ENTREGADO' && $remesa->fecha_entrega) {
-                    
+
                     $fechaEntrega = \Carbon\Carbon::parse($remesa->fecha_entrega);
                     $fechaLimite = \Carbon\Carbon::parse($remesa->fecha_limite);
 
@@ -1333,7 +1332,7 @@ class RemesaController extends Controller
 
                     $diferencia = $entregaSoloFecha->diffInDays($limiteSoloFecha, false);
                     $absDiff = abs($diferencia);
-                    
+
                     $lugar = strtoupper($iglesia->lugar ?? 'DESCONOCIDO');
                     $estrella = "0";
                     $mensaje = "";
@@ -1341,8 +1340,8 @@ class RemesaController extends Controller
                     // --- LÓGICA DE NEGOCIO IDENTICA A TU UPDATE ---
                     if ($diferencia >= 0) {
                         $estrella = "2";
-                        $mensaje = ($diferencia == 0) 
-                            ? "Completado con 0 días de retraso (entrega puntual)" 
+                        $mensaje = ($diferencia == 0)
+                            ? "Completado con 0 días de retraso (entrega puntual)"
                             : "Completado con {$diferencia} día(s) de adelanto";
                     } else {
                         if ($lugar === 'EL ALTO') {
@@ -1398,5 +1397,206 @@ class RemesaController extends Controller
         }
     }
 
+    public function obtenerMesesHistorial($id_iglesia) // VERIFICADO
+    {
+        // Obtenemos los años y meses únicos ordenados del más reciente al más antiguo
+        $periodos = DB::table('generas')
+            ->where('id_iglesia', $id_iglesia)
+            ->select('anio', 'mes')
+            ->distinct()
+            ->orderBy('anio', 'desc')
+            ->orderBy('mes', 'desc')
+            ->get();
+
+        $nombresMeses = [
+            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
+            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
+            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+        ];
+
+        $resultado = [];
+
+        foreach ($periodos as $p) {
+
+            $mesFormateado = str_pad($p->mes, 2, '0', STR_PAD_LEFT);
+            $idStr = $p->anio . '-' . $mesFormateado;
+            $nombreMes = $nombresMeses[$p->mes] ?? 'Mes';
+            $resultado[] = [
+                'id' => $idStr,
+                'texto' => $nombreMes . ' - ' . $p->anio
+            ];
+        }
+        //dd($resultados);
+        return response()->json($resultado);
+    }
+
+    public function reporteFondoLocalPdf(Request $request) //EXPORTA EN PDF
+    {
+        $id_iglesia = $request->query('iglesia');
+        $desde = $request->query('desde'); // "2025-10"
+        $hasta = $request->query('hasta'); // "2026-02"
+
+        // Convertir a enteros (ej: 202510) para el filtrado rápido en la BD
+        $desdeInt = (int) str_replace('-', '', $desde);
+        $hastaInt = (int) str_replace('-', '', $hasta);
+
+        // 1. Obtener info de la Iglesia (Filial)
+        $iglesia = Iglesia::leftJoin('distritos', 'iglesias.distrito_id', '=', 'distritos.id_distrito')
+            ->where('iglesias.id_iglesia', $id_iglesia)
+            ->select('iglesias.*', 'distritos.nombre as nombre_distrito')
+            ->firstOrFail();
+
+        $mesesNombres = [
+            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
+            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
+            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+        ];
+
+        // 2. Consulta a remesas_filiales respetando el rango "Desde - Hasta"
+        $reporteMensual = DB::table('remesas_filiales as xf')
+            ->join('generas as xg', 'xf.id_remesa', '=', 'xg.id_remesa')
+            ->where('xg.id_iglesia', $id_iglesia)
+            ->whereRaw("(xg.anio * 100 + xg.mes) >= ?", [$desdeInt])
+            ->whereRaw("(xg.anio * 100 + xg.mes) <= ?", [$hastaInt])
+            ->select(
+                'xg.mes',
+                'xg.anio',
+                'xf.ofrenda as ofrenda_total',
+                'xf.pro_templo as pro_templo_total',
+                'xf.fondo_l_anterior',
+                'xf.fondo_local as ingreso_fondo_local',
+                'xf.gasto as gasto_mensual',
+                'xf.fondo_l_final'
+            )
+            ->orderBy('xg.anio', 'asc')
+            ->orderBy('xg.mes', 'asc')
+            ->get();
+
+        // 3. Preparar el texto del periodo para el PDF
+        [$anioD, $mesD] = explode('-', $desde);
+        [$anioH, $mesH] = explode('-', $hasta);
+        $periodo = $mesesNombres[(int)$mesD] . " " . $anioD . " - " . $mesesNombres[(int)$mesH] . " " . $anioH;
+
+        return \PDF::loadView('pdf.reporte_gasto_fondo', compact('reporteMensual', 'iglesia', 'periodo', 'mesesNombres'))
+          ->stream("Reporte_FondoLocal_{$iglesia->codigo}.pdf");
+    }
+
+    public function reporteFondoLocalExcel(Request $request) //reporte en EXCEL
+    {
+        $id_iglesia = $request->query('iglesia');
+        $desde = $request->query('desde'); // "2025-10"
+        $hasta = $request->query('hasta'); // "2026-02"
+
+        $desdeInt = (int) str_replace('-', '', $desde);
+        $hastaInt = (int) str_replace('-', '', $hasta);
+
+        $iglesia = DB::table('iglesias')
+            ->where('id_iglesia', $id_iglesia)
+            ->first();
+
+        $mesesNombres = [
+            1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
+            5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
+            9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
+        ];
+
+        $reporteMensual = DB::table('remesas_filiales as xf')
+            ->join('generas as xg', 'xf.id_remesa', '=', 'xg.id_remesa')
+            ->where('xg.id_iglesia', $id_iglesia)
+            ->whereRaw("(xg.anio * 100 + xg.mes) >= ?", [$desdeInt])
+            ->whereRaw("(xg.anio * 100 + xg.mes) <= ?", [$hastaInt])
+            ->select(
+                'xg.mes',
+                'xg.anio',
+                'xf.ofrenda as ofrenda_total',
+                'xf.pro_templo as pro_templo_total',
+                'xf.fondo_l_anterior',
+                'xf.fondo_local as ingreso_fondo_local',
+                'xf.gasto as gasto_mensual',
+                'xf.fondo_l_final'
+            )
+            ->orderBy('xg.anio', 'asc')
+            ->orderBy('xg.mes', 'asc')
+            ->get();
+
+        $nombreArchivo = "Fondo_Local_" . ($iglesia->codigo ?? 'Iglesia') . ".xlsx";
+
+        return Excel::download(new Report_FondoLocal_GastosExport($reporteMensual, $mesesNombres), $nombreArchivo);
+    }
+
+    public function reporteGeneralRemesasPdf(Request $request)
+    {
+        $id_iglesia = $request->query('iglesia');
+        $desdeInt = (int) str_replace('-', '', $request->query('desde'));
+        $hastaInt = (int) str_replace('-', '', $request->query('hasta'));
+
+        $iglesia = DB::table('iglesias')
+            ->leftJoin('distritos', 'iglesias.distrito_id', '=', 'distritos.id_distrito')
+            ->where('iglesias.id_iglesia', $id_iglesia)
+            ->select('iglesias.*', 'distritos.nombre as nombre_distrito')
+            ->first();
+
+        $mesesNombres = [1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre'];
+
+        [$anioD, $mesD] = explode('-', $request->query('desde'));
+        [$anioH, $mesH] = explode('-', $request->query('hasta'));
+        $periodo = "Rango: {$mesesNombres[(int)$mesD]} {$anioD} hasta {$mesesNombres[(int)$mesH]} {$anioH}";
+
+        if ($iglesia->tipo === 'Filial') {
+            $reporteMensual = DB::table('remesas_filiales')
+                ->join('generas', 'remesas_filiales.id_remesa', '=', 'generas.id_remesa')
+                ->where('generas.id_iglesia', $id_iglesia)
+                ->whereRaw("(generas.anio * 100 + generas.mes) >= ?", [$desdeInt])
+                ->whereRaw("(generas.anio * 100 + generas.mes) <= ?", [$hastaInt])
+                ->select('generas.mes', 'generas.anio', 'remesas_filiales.diezmo as diezmo_total', 'remesas_filiales.ofrenda as ofrenda_total', 'remesas_filiales.pro_templo as pro_templo_total', 'remesas_filiales.gasto')
+                ->orderBy('generas.anio', 'asc')->orderBy('generas.mes', 'asc')->get();
+        } else {
+            $reporteMensual = DB::table('remesas_semanales')
+                ->join('generas', 'remesas_semanales.id_remesa', '=', 'generas.id_remesa')
+                ->where('generas.id_iglesia', $id_iglesia)
+                ->whereRaw("(generas.anio * 100 + generas.mes) >= ?", [$desdeInt])
+                ->whereRaw("(generas.anio * 100 + generas.mes) <= ?", [$hastaInt])
+                ->select('generas.mes', 'generas.anio', DB::raw('SUM(diezmo_total) as diezmo_total'), DB::raw('SUM(ofrenda_total) as ofrenda_total'), DB::raw('SUM(pro_templo_total) as pro_templo_total'), DB::raw('SUM(gasto_total) as gasto'))
+                ->groupBy('generas.anio', 'generas.mes')
+                ->orderBy('generas.anio', 'asc')->orderBy('generas.mes', 'asc')->get();
+        }
+
+        // Sumatoria de gastos para inyectarlo en el objeto $remesa simulado que requiere tu vista HTML
+        $gastoTotal = $reporteMensual->sum('gasto');
+        $remesa = (object)['gasto_mensual' => $gastoTotal, 'id_remesa' => 'MULTIMES'];
+
+        return \Pdf::loadView('pdf.reporte_remesa_multimes', compact('remesa', 'reporteMensual', 'iglesia', 'periodo', 'mesesNombres'))
+            ->stream("Reporte_Planilla_{$iglesia->codigo}.pdf");
+    }
+
+    public function reporteGeneralRemesasExcel(Request $request)
+    {
+        $id_iglesia = $request->query('iglesia');
+        $desdeInt = (int) str_replace('-', '', $request->query('desde'));
+        $hastaInt = (int) str_replace('-', '', $request->query('hasta'));
+
+        $iglesia = DB::table('iglesias')->where('id_iglesia', $id_iglesia)->first();
+        $mesesNombres = [1=>'Enero',2=>'Febrero',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre'];
+
+        if ($iglesia->tipo === 'Filial') {
+            $reporteMensual = DB::table('remesas_filiales')
+                ->join('generas', 'remesas_filiales.id_remesa', '=', 'generas.id_remesa')
+                ->where('generas.id_iglesia', $id_iglesia)
+                ->whereRaw("(generas.anio * 100 + generas.mes) >= ?", [$desdeInt])
+                ->whereRaw("(generas.anio * 100 + generas.mes) <= ?", [$hastaInt])
+                ->select('generas.mes', 'generas.anio', 'remesas_filiales.diezmo as diezmo_total', 'remesas_filiales.ofrenda as ofrenda_total', 'remesas_filiales.pro_templo as pro_templo_total')
+                ->orderBy('generas.anio', 'asc')->orderBy('generas.mes', 'asc')->get();
+        } else {
+            $reporteMensual = DB::table('remesas_semanales')
+                ->join('generas', 'remesas_semanales.id_remesa', '=', 'generas.id_remesa')
+                ->where('generas.id_iglesia', $id_iglesia)
+                ->whereRaw("(generas.anio * 100 + generas.mes) >= ?", [$desdeInt])
+                ->whereRaw("(generas.anio * 100 + generas.mes) <= ?", [$hastaInt])
+                ->select('generas.mes', 'generas.anio', DB::raw('SUM(diezmo_total) as diezmo_total'), DB::raw('SUM(ofrenda_total) as ofrenda_total'), DB::raw('SUM(pro_templo_total) as pro_templo_total'))
+                ->groupBy('generas.anio', 'generas.mes')->orderBy('generas.anio', 'asc')->orderBy('generas.mes', 'asc')->get();
+        }
+
+        return Excel::download(new ReporteGeneralRemesasExport($reporteMensual, $mesesNombres), "Planilla_{$iglesia->codigo}.xlsx");
+    }
 
 }
