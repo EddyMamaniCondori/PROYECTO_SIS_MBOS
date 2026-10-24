@@ -1,6 +1,6 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
        <!--begin::Sidebar Brand-->
-        <div class="sidebar-brand" style="background-color: rgba(166, 187, 231, 0.05);"> 
+        <div class="sidebar-brand" style="background-color: rgba(166, 187, 231, 0.05);">
           <a href="#" class="brand-link">
             <img src="{{asset('img/logoiasd.png')}}" alt="IASD Logo" class="brand-image opacity-75 shadow" />
             <span class="brand-text fw-light">MBOS</span>
@@ -45,7 +45,7 @@
                           <p>Panel Principal</p>
                         </a>
                       </li>
-                  @endcan 
+                  @endcan
                   @can('ver dashboard pastores-panel')
                       <li class="nav-item ms-3">
                         <a href="{{ route('dashboard.pastor')}}" class="nav-link ">
@@ -53,7 +53,7 @@
                           <p>Dashboard Pastores</p>
                         </a>
                       </li>
-                  @endcan 
+                  @endcan
                   @can('ver meses-remesas')
                       <li class="nav-item ms-3">
                         <a href="{{ route('dashboard.tesorero')}}" class="nav-link ">
@@ -78,7 +78,7 @@
               <li class="nav-header"> SECRETARIA </li>
               @endcan
 
-      
+
               @canany(['ASEA_SECRE - ver colegios', 'ASEA_SECRE - crear colegios', 'ASEA_SECRE - editar colegios', 'ASEA_SECRE - asignar capellan colegios'])
                     <li class="nav-item">
                       <a href="{{ route('asea.index')}}" class="nav-link">
@@ -87,7 +87,7 @@
                       </a>
                     </li>
               @endcanany
-              
+
               @canany(['ASEA_CAPE - ver meses de visitas', 'ASEA_CAPE - ver visitas por meses', 'ASEA_CAPE - crear visitas'])
                 <li class="nav-item">
                   <a href="{{ route('visita_cape.index_mes')}}" class="nav-link">
@@ -161,7 +161,7 @@
                   </a>
                 </li>
               @endcan
-              
+
                <!-- desplegable-->
               @can('ver-distritos')
                 <li class="nav-item">
@@ -210,7 +210,7 @@
                   </ul>
                 </li>
               @endcan
-              
+
               @canany(['ver-iglesias','asignaciones-iglesias','ver pastor-iglesias'])
               <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -254,10 +254,10 @@
                     </a>
                   </li>
                   @endcan
-                  
+
                 </ul>
-              </li>  
-              @endcanany 
+              </li>
+              @endcanany
               <!-- desplegable-->
               @canany(['ver meses-visitas', 'ver anual-visitas', 'dashboard-visitas'])
                   <li class="nav-item">
@@ -275,9 +275,9 @@
                       <i class="bi bi-person-add"></i>
                       <p> Registrar Visitas</p>
                     </a>
-                  </li> 
+                  </li>
                   @endcan
-                
+
                   @can('ver anual-visitas')
                   <li class="nav-item ms-3">
                     <a href="{{ route('visitas.index')}}" class="nav-link">
@@ -298,7 +298,7 @@
                 </ul>
               </li>
               @endcanany
-              
+
               @canany(['ver-bautisos','ver dashboard pastor-bautisos distrito', 'ver pastor-bautisos distrito'])
               <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -315,7 +315,7 @@
                         <i class="fa-solid fa-dove"></i>
                         <p>Registrar Bautismos</p>
                       </a>
-                    </li> 
+                    </li>
                   @endcan
                   @can('ver pastor-bautisos distrito')
                     <li class="nav-item ms-3">
@@ -325,7 +325,7 @@
                       </a>
                     </li>
                   @endcan
-                  
+
                   @can('ver dashboard pastor-bautisos distrito')
                     <li class="nav-item ms-3">
                       <a href="{{ route('bautiso.dashboard.pastoral')}}" class="nav-link">
@@ -335,13 +335,13 @@
                     </li>
                   @endcan
 
-                  
 
-                  
+
+
                 </ul>
               </li>
               @endcanany
-              
+
               @can('ver-estudiantes')
               <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -366,12 +366,12 @@
                         <i class="bi bi-graph-up"></i>
                         <p>Dashboard estudiantes biblicos</p>
                       </a>
-                    </li> 
+                    </li>
                   @endcan
                 </ul>
-              </li>   
+              </li>
               @endcan
-              
+
               @can('ver-instructores')
                 <li class="nav-item">
                   <a href="#" class="nav-link">
@@ -388,7 +388,7 @@
                           <i class="bi bi-person-check-fill"></i>
                           <p>instructores Biblicos</p>
                         </a>
-                      </li> 
+                      </li>
                     @endcan
                     @can('ver avance-instructores')
                       <li class="nav-item ms-3">
@@ -399,9 +399,9 @@
                       </li>
                     @endcan
                   </ul>
-                </li> 
+                </li>
               @endcan
-              
+
               <!--SECCCION DESAFIOS SOLO PARA EL PASTOR RUBEN CHURA PRESIDENTE DE LA MISION-->
               @can('ver-presidente-mbos')
                 <li class="nav-header">DESAFIOS</li>
@@ -435,7 +435,7 @@
                     <i class="fa-solid fa-people-roof"></i>
                     <p>Campañas</p>
                   </a>
-                </li> 
+                </li>
               @endcan
               <!--SECCCION DESAFIOS-->
               <!--SECCCION DESAFIOS-->
@@ -531,21 +531,21 @@
                             </a>
                           </li>
                         @endcan
-                        @can('ver mbos-desafios anual Est Inst') 
+                        @can('ver mbos-desafios anual Est Inst')
                           <li class="nav-item ms-3">
                             <a href="{{ route('instructores.mbos.distrital.ver')  }}" class="nav-link">
                               <i class="bi bi-graph-up-arrow"></i>
                               <p>Seguimiento MBOS</p>
                             </a>
                           </li>
-                        @endcan 
+                        @endcan
                       </ul>
-                    </li>  
+                    </li>
                   @endcan
                   @canany(['ver-desafios eventos','ver-asignacion desafios eventos','ver-dashboards desafios eventos'])
                     <li class="nav-item">
                       <a href="#" class="nav-link">
-                        <i class="fa-solid fa-people-roof"></i> 
+                        <i class="fa-solid fa-people-roof"></i>
                         <p>
                           Campañas
                           <i class="nav-arrow bi bi-chevron-right"></i>
@@ -571,17 +571,17 @@
                         @can('ver-dashboards desafios eventos')
                             <li class="nav-item ms-3">
                             <a href="{{ route('desafio_eventos.dashboard_asignaciones')  }}" class="nav-link">
-                              <i class="bi bi-graph-up-arrow"></i>       
+                              <i class="bi bi-graph-up-arrow"></i>
                               <p>Seguimiento MBOS</p>
                             </a>
-                          </li> 
+                          </li>
                         @endcan
                       </ul>
-                    </li>  
+                    </li>
                   @endcanany
                 @endcanany
               @endcannot
-              
+
 
               <!--SECCCION FINANCIERO-->
               @canany(['ver meses-remesas', 'ver-remesas excel','ver-blanco', 'ver-puntualidad', 'ver distrital-pendientes','ver dashboar pastor-remesas dashboard'])
@@ -597,7 +597,7 @@
                         </p>
                       </a>
                       <ul class="nav nav-treeview">
-  
+
                         <li class="nav-item ms-3">
                           <a href="{{ route('remesas.distrital.dash')  }}" class="nav-link">
                             <i class="bi bi-graph-up"></i>
@@ -613,7 +613,7 @@
                       </ul>
                     </li>
                 @endcan
-                
+
                 <!--REMESAS-->
                 @can('ver meses-remesas')
                    <li class="nav-item">
@@ -639,9 +639,9 @@
                         </li>
 
                       </ul>
-                    </li> 
+                    </li>
                 @endcan
-                
+
                 <!--REMESAS-->
                 @can('ver-puntualidad')
                     <li class="nav-item">
@@ -666,8 +666,8 @@
                       </a>
                     </li>
                 @endcan
-                  
-                  
+
+
                 @can('ver-blanco')
                 <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -694,7 +694,7 @@
                     </ul>
                 </li>
                 @endcan
-                  
+
                 @canany(['ver anual-pendientes', 'ver distrital-pendientes', 'ver mensual-pendientes', 'ver dashboar remesas filiales pastor-remesas dashboard'])
                   <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -715,7 +715,7 @@
                       </li>
                     @endcan
 
-                    
+
                     @can('ver anual-pendientes')
                         <li class="nav-item ms-3">
                         <a href="{{ route('remesas.pendientes')}} " class="nav-link">
@@ -724,7 +724,7 @@
                         </a>
                       </li>
                     @endcan
-                    
+
                     @can('ver mensual-pendientes')
                         <li class="nav-item ms-3">
                         <a href="{{ route('remesas.pendientes.mensual')}} " class="nav-link">
@@ -745,7 +745,7 @@
                   </li>
                 @endcanany
                 <!--PENDIENTES-->
-                
+
                 <!--Solo Pastores pueden verlo -->
                 @can('ver dashboar pastor-remesas dashboard')
                     <li class="nav-item">
@@ -755,7 +755,7 @@
                       </a>
                     </li>
                 @endcan
-                <!--REPORTE FILIALES-->  
+                <!--REPORTE FILIALES-->
                 @canany(['ver dashboar remesas filiales pastor-remesas dashboard', 'ver dashboar fondo local pastor-remesas dashboard'])
                   <li class="nav-item">
                     <a href="#" class="nav-link">
@@ -782,16 +782,20 @@
                             </a>
                           </li>
                       @endcan
-                      
+
                     </ul>
                   </li>
                 @endcanany
+                <!--Solo Pastores pueden verlo -->
+                @can('MANTENIMIENTO - reportar errores')
+                    <li class="nav-item">
+                    <a href="https://sistemas-mbos.eu.nolt.io/kanban" target="_blank" class="nav-link">
+                        <i class="fa-solid fa-bug"></i>
+                        <p>Reportar Error</p>
+                    </a>
+                    </li>
+                @endcan
               @endcanany
-              
-                <!--REPORTE FILIALES--> 
-
-              
-
               @can('ver-roles')
                 <li class="nav-header">ROLES Y PERMISOS</li>
                 <li class="nav-item">
@@ -807,8 +811,8 @@
                   </a>
                 </li>
               @endcan
-              
-              
+
+
             </ul>
             <!--end::Sidebar Menu-->
           </nav>
