@@ -259,26 +259,38 @@
                                             </li>
                                             <li>
                                                 <div class="form-check form-switch mb-2">
-                                                    <input class="form-check-input toggle-vis" type="checkbox" value="10" id="col10" checked>
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="11" id="col10" checked>
                                                     <label class="form-check-label" for="col10">Observaciones</label>
                                                 </div>
                                             </li>
                                             <li>
                                                 <div class="form-check form-switch mb-2">
-                                                    <input class="form-check-input toggle-vis" type="checkbox" value="11" id="col11" checked>
-                                                    <label class="form-check-label" for="col11">Ofrenda</label>
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="14" id="col14" checked>
+                                                    <label class="form-check-label" for="col14">Ofrenda</label>
                                                 </div>
                                             </li>
                                             <li>
                                                 <div class="form-check form-switch mb-2">
-                                                    <input class="form-check-input toggle-vis" type="checkbox" value="12" id="col12" checked>
-                                                    <label class="form-check-label" for="col12">Diezmo</label>
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="15" id="col15" checked>
+                                                    <label class="form-check-label" for="col15">Diezmo</label>
                                                 </div>
                                             </li>
                                             <li>
                                                 <div class="form-check form-switch mb-2">
-                                                    <input class="form-check-input toggle-vis" type="checkbox" value="13" id="col13" checked>
-                                                    <label class="form-check-label" for="col13">Pro Templo</label>
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="16" id="col16" checked>
+                                                    <label class="form-check-label" for="col16">Pro Templo</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="12" id="col12">
+                                                    <label class="form-check-label" for="col12">Registrado por</label>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="form-check form-switch mb-2">
+                                                    <input class="form-check-input toggle-vis" type="checkbox" value="13" id="col13">
+                                                    <label class="form-check-label" for="col13">Actualizado por</label>
                                                 </div>
                                             </li>
                                         </ul>
@@ -301,6 +313,8 @@
                                             <th>Punt</th>
                                             <th>Estado</th>
                                             <th>Observaciones</th>
+                                            <th>Registrado por</th>
+                                            <th>Actualizado por</th>
                                             <th>Ofrenda</th><!--end::9-->
                                             <th>Diezmo</th>
                                             <th>Pro Templo</th><!--end::11-->
@@ -688,6 +702,14 @@
                     }
                 },
                 { data: 'observacion' },
+                {
+                    data: 'registered_by',
+                    render: function(data) { return data ? `<span class="small">${data}</span>` : '<span class="text-muted small">N/A</span>'; }
+                },
+                {
+                    data: 'updated_by',
+                    render: function(data) { return data ? `<span class="small">${data}</span>` : '<span class="text-muted small">N/A</span>'; }
+                },
                 { data: 'ofrenda' },
                 { data: 'diezmo' },
                 { data: 'pro_templo' },
@@ -794,6 +816,9 @@
                 if (data.tipo_igle === 'Filial') $(row).css('color', 'red');
                 $(row).attr('id', 'fila-' + data.id_remesa);
             },
+            columnDefs: [
+                { targets: [12, 13], visible: false }
+            ],
             scrollX: true,
             stateSave: true,
             ordering: false,
@@ -812,6 +837,15 @@
                     previous: "Anterior"
                 },
             }
+        });
+
+        // Sincronizar los interruptores con el estado guardado de DataTables
+        $('.toggle-vis').each(function() {
+            var columnIdx = $(this).val();
+            // Obtiene la visibilidad real de la columna desde la caché de DataTables
+            var isVisible = table.column(columnIdx).visible();
+            // Actualiza el switch visualmente para que coincida
+            $(this).prop('checked', isVisible);
         });
 
 

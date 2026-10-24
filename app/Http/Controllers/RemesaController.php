@@ -485,7 +485,7 @@ class RemesaController extends Controller
         }
 
         $remesa->alerta = json_encode($alertas);
-        $remesa->save();
+        $remesa->saveQuietly();
 
         return response()->json(['success' => true]);
     }
@@ -501,7 +501,7 @@ class RemesaController extends Controller
         $nuevoArray = array_values($alertas);
         $remesa->alerta = empty($nuevoArray) ? null : json_encode($nuevoArray);
 
-        $remesa->save();
+        $remesa->saveQuietly();
 
         return response()->json(['success' => true]);
     }
@@ -727,12 +727,17 @@ class RemesaController extends Controller
             $remesa->deposito = false;
             $remesa->documentacion = false;
             $remesa->escaneado = false;
+            $remesa->arqueo = false;
+            $remesa->registrado = false;
             $remesa->fecha_entrega = null;
             $remesa->estado_dias = "0";
             $remesa->observacion = null;
             $remesa->estado = $nuevoEstado;
 
-            $remesa->save();
+            $remesa->registered_by = null;
+            $remesa->updated_by = null;
+
+            $remesa->saveQuietly();
 
             // 4. Resetear Puntualidad en la tabla meses si existe
             // Necesitas el id_puntualidad asociado a la iglesia de esta remesa

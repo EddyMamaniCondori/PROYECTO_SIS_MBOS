@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-
+use Illuminate\Support\Facades\Auth;
 class Remesa extends Model
 {
     use HasFactory;
@@ -27,9 +27,28 @@ class Remesa extends Model
         'id_personal',
         'alerta',
         'sw_cierre_rem',
-        'sw_det_semana'
+        'sw_det_semana',
+        'registered_by',
+        'updated_by'
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function ($model) {
+            $model->registered_by = Auth::check() ? Auth::user()->email : null;
+        });
+
+        static::updating(function ($model) {
+            $email = Auth::check() ? Auth::user()->email : null;
+
+            $model->updated_by = $email;
+
+            // Usamos empty() para atrapar estrictamente null o cadenas vacías ("")
+            if (empty($model->registered_by)) {
+                $model->registered_by = $email;
+            }
+        });
+    }
 
     public function genera()
     {
@@ -44,7 +63,7 @@ class Remesa extends Model
     }
     public function remesaIglesia()
     {
-        return $this->hasOne(RemesaIglesia::class, 'id_r emesa', 'id_remesa');
+        return $this->hasOne(RemesaIglesia::class, 'id_remesa', 'id_remesa');
     }
 
     public function remesaFilial()

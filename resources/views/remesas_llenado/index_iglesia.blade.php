@@ -21,7 +21,7 @@
 
     .custom-scroll-container {
         /* Altura fija para que el scroll sea obligatorio si hay más de 3-4 alertas */
-        height: 350px !important; 
+        height: 350px !important;
         max-height: 350px !important;
         overflow-y: auto !important;
         overflow-x: hidden !important;
@@ -67,8 +67,8 @@
           <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6 pb-1"><h3 class="mb-0">Remesas </h3></div>
-                <div class="col-sm-3 text-end pb-1"> 
-                    <a href="{{ route('remesas.index_mes', ['mes' => $mes, 'anio' => $anio]) }}" 
+                <div class="col-sm-3 text-end pb-1">
+                    <a href="{{ route('remesas.index_mes', ['mes' => $mes, 'anio' => $anio]) }}"
                         class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i> Volver
                     </a>
@@ -80,7 +80,7 @@
                         @endforeach
                     </select>
                 </div>
-                
+
 
                 <div class="row">
                     <div class="col-md-6">
@@ -96,7 +96,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="card-body  p-3">
                                 <hr class="text-muted opacity-25 p-0 m-0">
                                 <div class="row g-1">
@@ -121,7 +121,7 @@
                                     <div class="col-6">
                                         <label class="text-muted d-block small uppercase fw-bold">Lugar</label>
                                         <p class="mb-0">
-                                            <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ $iglesia->lugar?? 'Sin lugar' }} 
+                                            <i class="fas fa-map-marker-alt text-danger me-2"></i>{{ $iglesia->lugar?? 'Sin lugar' }}
                                         </p>
                                     </div>
                                     <div class="col-sm-6">
@@ -166,7 +166,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
           </div>
@@ -179,7 +179,7 @@
                             <div class="card-header d-flex justify-content-between align-items-center py-3">
                                 <div class="fw-bold">
                                     <i class="fas fa-table me-2"></i>
-                                    Tabla de Remesas 
+                                    Tabla de Remesas
                                 </div>
 
                                 <div class="dropdown ms-auto">
@@ -232,6 +232,18 @@
                                                 <label class="form-check-label" for="col12">Observaciones</label>
                                             </div>
                                         </li>
+                                        <li>
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="14" id="col14">
+                                                <label class="form-check-label" for="col14">Registrado por</label>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="form-check form-switch mb-2">
+                                                <input class="form-check-input toggle-vis" type="checkbox" value="15" id="col15">
+                                                <label class="form-check-label" for="col15">Actualizado por</label>
+                                            </div>
+                                        </li>
                                     </ul>
                                 </div>
 
@@ -254,6 +266,8 @@
                                             <th>Punt</th>
                                             <th>Estado</th>
                                             <th>Observaciones</th>
+                                            <th>Registrado por</th>
+                                            <th>Actualizado por</th>
                                             <th>Acciones</th>
                                         </tr>
                                     </thead>
@@ -277,7 +291,7 @@
             <div class="modal-body">
                 <input type="hidden" id="edit_id_remesa">
                 <input type="hidden" id="edit_index">
-                
+
                 <div class="mb-3">
                     <label class="form-label fw-bold">Periodo</label>
                     <input type="text" id="edit_periodo" class="form-control bg-light" readonly>
@@ -313,7 +327,7 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="new_id_remesa">
-                
+
                 <div class="mb-3">
                     <label class="form-label fw-bold">Periodo Correspondiente</label>
                     <input type="text" id="new_periodo" class="form-control bg-light" readonly>
@@ -347,13 +361,13 @@
         <form id="formRemesa">
             @csrf
             <input type="hidden" name="id_remesa" id="modal_id_remesa">
-            
+
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Registrar Remesa</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                
+
                 <div class="modal-body">
                     <div class="row g-2 mb-3 bg-light p-2 rounded-3 border mx-0">
                         <div class="col-4">
@@ -375,7 +389,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Fecha y Hora de entrega:</label>
                         <input type="datetime-local" name="fecha_entrega" id="modal_fecha_entrega" class="form-control" step="1" required>
-                        
+
                         <div id="f_puntualidad_feedback" class="small mt-1 fw-bold"></div>
                     </div>
 
@@ -449,7 +463,7 @@
             // Detectar el cambio de selección
             $('#buscadorIglesia').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
                 const idIglesia = $(this).val(); // Obtenemos el ID seleccionado
-                
+
                 if (idIglesia) {
                     // Traemos las variables de PHP a JS
                     const anioActual = "{{ $anio }}";
@@ -465,7 +479,7 @@
             $('.bs-searchbox input').on('keyup', function() {
                 let value = $(this).val();
                 let $container = $(this).closest('.bootstrap-select');
-                
+
                 if (value.length > 0) {
                     $container.addClass('show-search-results');
                 } else {
@@ -486,43 +500,43 @@
                 dataSrc: 'data' // Laravel envía { "data": [...] }
             },
             columns: [
-                { 
-                    data: null, 
+                {
+                    data: null,
                     render: function(data, type, row) {
                         return `${row.nombre_mes} - ${row.anio}`;
                     }
-                },  
-                { 
+                },
+                {
                     data: 'cierre',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
-                { 
+                {
                     data: 'deposito',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
-                { 
+                {
                     data: 'documentacion',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
-                { 
+                {
                     data: 'escaneado',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
-                { 
+                {
                     data: 'arqueo',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
                     }
                 },
-                { 
+                {
                     data: 'registrado',
                     render: function(data) {
                         return data ? '<i class="bi bi-check-square-fill text-success"></i>' : '<i class="bi bi-file-excel-fill text-danger"></i>';
@@ -531,7 +545,7 @@
                 { data: 'monto' },
                 { data: 'fecha_entrega' },
                 { data: 'fecha_limite' },
-                { 
+                {
                     data: 'estado_dias',
                     render: function(data, type, row) {
                         // 1. Si no hay dato o es exactamente "0"
@@ -543,11 +557,11 @@
 
                         // 2. Lógica de colores basada en el texto que viene del controlador
                         // VERDE: Adelanto, 0 días de retraso o "dentro del plazo" (gracia)
-                        if (data.includes('adelanto') || 
-                            data.includes(' 0 días de retraso') || 
+                        if (data.includes('adelanto') ||
+                            data.includes(' 0 días de retraso') ||
                             data.includes('dentro del plazo')) {
                             colorClass = 'bg-success';
-                        } 
+                        }
                         // ROJO: Si dice retraso y NO es el caso de 0 días o dentro del plazo
                         else if (data.includes('retraso')) {
                             colorClass = 'bg-danger';
@@ -556,7 +570,7 @@
                         return `<span class="badge ${colorClass} badge-wrap">${data}</span>`;
                     }
                 },
-                { 
+                {
                     data: 'puntualidad',
                     width: '8px', // Ajuste solicitado
                     className: 'text-center',
@@ -581,7 +595,7 @@
                         }
                     }
                 },
-                { 
+                {
                     data: 'estado',
                     render: function(data) {
                         let color = data === 'PENDIENTE' ? 'red' : (data === 'ENTREGADO' ? 'green' : 'orange');
@@ -590,12 +604,20 @@
                 },
                 { data: 'observacion' },
                 {
+                    data: 'registered_by',
+                    render: function(data) { return data ? `<span class="small">${data}</span>` : '<span class="text-muted small">N/A</span>'; }
+                },
+                {
+                    data: 'updated_by',
+                    render: function(data) { return data ? `<span class="small">${data}</span>` : '<span class="text-muted small">N/A</span>'; }
+                },
+                {
                     data: null,
                     render: function(data) {
                         let urlRegistro = "{{ route('remesas.registro_semanas', ':id') }}";
                         // 2. Reemplazamos el placeholder con el valor real de JS
                         urlRegistro = urlRegistro.replace(':id', data.id_remesa);
-                        let mesVal = "{{ $mes }}"; 
+                        let mesVal = "{{ $mes }}";
                         let anioVal = "{{ $anio }}";
                         let urlReporte = "{{ route('remesas.reporte_pdf', ':id') }}".replace(':id', data.id_remesa);
 
@@ -610,7 +632,7 @@
                         if (estadoDet === 0) {
                             // ESTADO 0: No tiene datos (Botón gris claro o bordeado para invitar a crear)
                             botonSemanas = `
-                                <a href="${urlRegistro}" class="btn btn-outline-warning btn-sm rounded-circle shadow-sm" 
+                                <a href="${urlRegistro}" class="btn btn-outline-warning btn-sm rounded-circle shadow-sm"
                                 style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                 data-bs-toggle="tooltip" title="Iniciar Registro de Semanas">
                                     <i class="bi bi-calendar-plus"></i>
@@ -618,16 +640,16 @@
                         } else if (estadoDet === 1) {
                             // ESTADO 1: Tiene datos y se puede EDITAR
                             botonSemanas = `
-                                <a href="${urlRegistro}" class="btn btn-warning btn-sm rounded-circle shadow-sm" 
+                                <a href="${urlRegistro}" class="btn btn-warning btn-sm rounded-circle shadow-sm"
                                 style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                 data-bs-toggle="tooltip" title="Editar Semanas Registradas">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
-                                <button type="button" 
-                                    class="btn btn-secondary btn-sm rounded-circle shadow-sm" 
+                                <button type="button"
+                                    class="btn btn-secondary btn-sm rounded-circle shadow-sm"
                                     style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                     onclick="prepararReporte(${data.id_remesa})"
-                                    data-bs-toggle="tooltip" 
+                                    data-bs-toggle="tooltip"
                                     title="Generar Reporte PDF">
                                     <i class="bi bi-file-earmark-pdf"></i>
                                 </button>
@@ -635,16 +657,16 @@
                         } else {
                             // ESTADO 2: Tiene datos pero está BLOQUEADO (Solo ver)
                             botonSemanas = `
-                                <a href="${urlRegistro}" class="btn btn-secondary btn-sm rounded-circle shadow-sm opacity-75" 
+                                <a href="${urlRegistro}" class="btn btn-secondary btn-sm rounded-circle shadow-sm opacity-75"
                                 style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                 data-bs-toggle="tooltip" title="Registro Bloqueado (Solo lectura)">
                                     <i class="bi bi-eye"></i>
                                 </a>
-                                <button type="button" 
-                                    class="btn btn-secondary btn-sm rounded-circle shadow-sm" 
+                                <button type="button"
+                                    class="btn btn-secondary btn-sm rounded-circle shadow-sm"
                                     style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                     onclick="prepararReporte(${data.id_remesa})"
-                                    data-bs-toggle="tooltip" 
+                                    data-bs-toggle="tooltip"
                                     title="Generar Reporte PDF">
                                     <i class="bi bi-file-earmark-pdf"></i>
                                 </button>
@@ -655,21 +677,21 @@
                             <div class="btn-group gap-2">
                                 ${botonSemanas}
 
-                                <button type="button" 
-                                    class="btn btn-primary btn-sm rounded-circle shadow-sm" 
+                                <button type="button"
+                                    class="btn btn-primary btn-sm rounded-circle shadow-sm"
                                     style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;"
                                     onclick="abrirModalNuevaAlerta(${data.id_remesa}, '${periodo}')"
-                                    data-bs-toggle="tooltip" 
+                                    data-bs-toggle="tooltip"
                                     title="Añadir Alerta">
                                     <i class="bi bi-bell"></i>
                                 </button>
 
-                                <button type="button" 
-                                    class="btn btn-success btn-sm rounded-circle" 
+                                <button type="button"
+                                    class="btn btn-success btn-sm rounded-circle"
                                     onclick="editarRemesa('${data.id_remesa}')"
                                     title="Editar/Completar Remesa">
                                     <i class="bi bi-check-lg"></i>
-                                </button>  
+                                </button>
                                 <button type="button" class="btn btn-danger btn-sm rounded-circle shadow-sm" style="width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center;" onclick="revertirRegistroRemesa(${data.id_remesa})" data-bs-toggle="tooltip" title="Revertir/Resetear Registro">
                                     <i class="bi bi-arrow-counterclockwise"></i>
                                 </button>
@@ -684,10 +706,13 @@
                 if (data.tipo_igle === 'Filial') $(row).css('color', 'red');
                 $(row).attr('id', 'fila-' + data.id_remesa);
             },
+            columnDefs: [
+                { targets: [14, 15], visible: false }
+            ],
             scrollX: true,
             stateSave: true,
             ordering: false,
-            pageLength: 12, 
+            pageLength: 12,
             language: {
                 search: "Buscar:",   // Cambia el texto de "Search"
                 lengthMenu: "Mostrar _MENU_ registros por página",
@@ -703,16 +728,21 @@
                 },
             }
         });
-        
-
-
+        // Sincronizar los interruptores con el estado guardado de DataTables
+        $('.toggle-vis').each(function() {
+            var columnIdx = $(this).val();
+            // Obtiene la visibilidad real de la columna desde la caché de DataTables
+            var isVisible = table.column(columnIdx).visible();
+            // Actualiza el switch visualmente para que coincida
+            $(this).prop('checked', isVisible);
+        });
         // *********************************************************
         //              ocultar y mostar columnas
         // **********************************************************"
         $('.toggle-vis').on('change', function (e) {
             // Obtenemos el índice de la columna desde el 'value' del check
             var columnIdx = $(this).val();
-            
+
             // Obtenemos la columna de la instancia de DataTable
             var column = table.column(columnIdx);
 
@@ -722,7 +752,7 @@
         $('.dropdown-menu').on('click', function(e) {
             e.stopPropagation();
         });
-    
+
 
     });
 
@@ -776,7 +806,7 @@
                 <span>Actualizando...</span>
             </div>
         `);
-        
+
         $.get(`/alertas/${id_iglesia}`, function(alertas) {
             if (!alertas || alertas.length === 0) {
                 contenedor.empty();
@@ -785,7 +815,7 @@
             } else {
                 vistaVacia.addClass('d-none');
                 bodyAlertas.removeClass('d-none');
-                
+
                 let html = '';
                 alertas.forEach(alerta => {
                     let esRojo = alerta.estado === 'IMPORTANTE';
@@ -836,7 +866,7 @@
         $('#edit_periodo').val(periodo);
         $('#edit_estado').val(estado);
         $('#edit_mensaje').val(mensaje);
-        
+
         $('#modalEditarAlerta').modal('show');
     }
 
@@ -916,13 +946,13 @@
         $('#new_periodo').val(periodo);
         $('#new_mensaje').val('');
         $('#new_estado').val('AVISO');
-        
+
         $('#modalNuevaAlerta').modal('show');
     }
 
     function guardarNuevaAlerta() {
         const mensaje = $('#new_mensaje').val().trim();
-        
+
         if (mensaje === "") {
             Swal.fire('Atención', 'Por favor escriba un mensaje para la alerta', 'warning');
             return;
@@ -947,7 +977,7 @@
 
         $.post("{{ route('alertas.store') }}", data, function(res) {
             $('#modalNuevaAlerta').modal('hide');
-            
+
             Swal.fire({
                 icon: 'success',
                 title: 'Alerta Creada',
@@ -980,7 +1010,7 @@
         $('#modal_id_remesa').val(data.id_remesa);
         $('#modal_mes').val(data.mes);
         $('#modal_anio').val(data.anio);
-        
+
         $('#txt_mes').text(data.nombre_mes);
         $('#txt_anio').text(data.anio);
         $('#txt_monto').text(data.monto || '0.00');
@@ -1056,7 +1086,7 @@
 
                 // 4. RECARGAMOS LA TABLA (Sin recargar la página)
                 // Asumiendo que tu DataTable se llama 'table' o '#example'
-                $('#example').DataTable().ajax.reload(null, false); 
+                $('#example').DataTable().ajax.reload(null, false);
             },
             error: function(jqXHR) {
                 // Si hay error (ej: validación de Laravel 422 o error 500)
@@ -1086,7 +1116,7 @@
             return;
         }
 
-        // NORMALIZACIÓN: Extraemos solo la parte de la fecha (YYYY-MM-DD) 
+        // NORMALIZACIÓN: Extraemos solo la parte de la fecha (YYYY-MM-DD)
         // para que la hora no afecte el cálculo de días de puntualidad
         const soloFechaEntrega = fechaEntregaVal.split('T')[0];
         const soloFechaLimite = fechaLimiteActual.split(' ')[0];
@@ -1117,7 +1147,7 @@
                 claseCSS = "text-danger";
                 icono = "bi-star text-muted";
             }
-        } 
+        }
         else if (lugarIglesiaActual === 'ALTIPLANO') {
             // Altiplano tiene 5 días de gracia
             if (diferencia >= -5) {
