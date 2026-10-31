@@ -33,6 +33,7 @@ use App\Http\Controllers\RemesaSemanalController;
 use App\Http\Controllers\UnidadEducativaController;
 use App\Http\Controllers\VisitaCapellanController;
 use App\Http\Controllers\BautismoCapellanController;
+use App\Http\Controllers\ReporteTesoreroOroController;
 
 Route::get('/', function () {
 
@@ -623,6 +624,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/remesa/responsable', [ResponsableRemesaController::class, 'index'])->name('responsable.index');
     // Ruta para el proceso de asignación (usualmente un POST si procesas un formulario)
     Route::post('/remesa/asignar-responsable', [ResponsableRemesaController::class, 'asignar_responsable'])->name('remesa.asignar-responsable');
+
+    /** *******************************************************************************
+     *                          TESORERO DE ORO
+     * **********************************************************************************/
+    Route::get('/remesas/tesoreros-oro', [ReporteTesoreroOroController::class, 'index'])->name('remesas.tesoreros_oro');
+    Route::post('/remesas/tesoreros-oro/pdf', [ReporteTesoreroOroController::class, 'ReporteTesorerosDeOroPDF'])->name('remesas.tesoreros_oro_pdf');
 
 
     Route::resource('pastores', PastorController::class);

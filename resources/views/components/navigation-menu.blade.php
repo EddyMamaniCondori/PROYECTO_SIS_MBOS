@@ -645,10 +645,10 @@
                 <!--REMESAS-->
                 @can('ver-puntualidad')
                     <li class="nav-item">
-                      <a href="{{ route('remesas.puntualidades')  }}" class="nav-link">
-                        <i class="fa-solid fa-business-time"></i>
-                        <p> Puntualidad</p>
-                      </a>
+                        <a href="{{ route('remesas.tesoreros_oro') }}" class="nav-link">
+                            <i class="fa-solid fa-award"></i>
+                            <p> Reporte Tesoreros de ORO</p>
+                        </a>
                     </li>
                     <li class="nav-item">
                       <a href="{{ route('remesas.puntualidad_filtro_general')  }}" class="nav-link">
