@@ -139,6 +139,7 @@ BEGIN
                     codigo_iglesia,
                     nombre_iglesia,
                     nombre_distrito,
+                    lugar,
                     tipo_iglesia,
                     categoria,
                     puntuacion_total,
@@ -161,7 +162,7 @@ BEGIN
     END IF;
 
     -- Filtro Tipo Tesorero (Oro, Plata, Ambos o Todas)
-    IF POSITION('todas_iglesias' IN $5) = 0 THEN
+    IF POSITION('todas_iglesias' IN p_tipo_tesorero) = 0 THEN
         v_sql := v_sql || ' AND (
                (POSITION(''ambos'' IN $5) > 0 AND categoria IN (''Oro'', ''Plata''))
             OR (POSITION(''oro'' IN $5) > 0 AND categoria = ''Oro'')

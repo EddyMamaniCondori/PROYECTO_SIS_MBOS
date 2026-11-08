@@ -365,7 +365,7 @@
                         <div class="section-title">Filtros para el reporte</div>
 
                         <!-- Tipo de iglesia -->
-                        <div class="mb-5 mt-3">
+                        <div class="mb-2 mt-2">
                             <label class="fw-bold mb-1">Tipo de Iglesia</label>
                             <div class="row g-3">
                                 <div class="col-6 col-md-3">
@@ -396,22 +396,41 @@
                         </div>
 
                         <!-- Formato de Reporte -->
-                        <div class="mb-4">
+                        <div class="mb-2">
                             <label class="fw-bold mb-2">Formato del Reporte</label>
                             <div class="btn-group w-100" role="group">
-                                <input type="radio" class="btn-check" name="tipo_reporte" id="rep_detalles" value="detalles" checked>
+                                <input type="radio" class="btn-check" name="tipo_reporte" id="rep_estrellas" value="estrellas" checked>
+                                <label class="btn btn-outline-primary" for="rep_estrellas">Estrellas</label>
+
+                                <input type="radio" class="btn-check" name="tipo_reporte" id="rep_detalles" value="detalles">
                                 <label class="btn btn-outline-primary" for="rep_detalles">Con Detalles</label>
 
                                 <input type="radio" class="btn-check" name="tipo_reporte" id="rep_lista" value="lista">
                                 <label class="btn btn-outline-primary" for="rep_lista">Solo Lista</label>
-
-                                <input type="radio" class="btn-check" name="tipo_reporte" id="rep_todas" value="todas">
-                                <label class="btn btn-outline-primary" for="rep_todas">Todas las Iglesias</label>
                             </div>
                         </div>
 
-                        <div class="mt-4">
-                            <label class="fw-bold mb-1 d-block text-uppercase text-secondary" style="font-size: 0.8rem; letter-spacing: 1px;">
+                        <!-- Toggle: Considera -->
+                        <div class="mb-3 p-0 d-flex flex-column align-items-start gap-2">
+                            <label class="fw-bold mb-0 text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">
+                                Considera
+                            </label>
+                            <div class="switch-container mt-1">
+                                <div class="form-check form-switch m-0 p-0 d-flex align-items-center">
+                                    <!-- Input oculto para enviar 'false' explícitamente si está apagado -->
+                                    <input type="hidden" name="todas_iglesias" value="false">
+                                    <!-- Checkbox principal que envía 'true' si está encendido -->
+                                    <input class="form-check-input ms-0 mt-0 shadow-sm" type="checkbox" role="switch" id="switchTodas" name="todas_iglesias" value="true" style="width: 2.8em; height: 1.4em;">
+                                </div>
+                                <!-- El Label Dinámico (Por defecto "Solo Clasificados") -->
+                                <span class="badge bg-secondary ms-2" id="lblTodas" style="font-size: 0.85rem; padding: 6px 12px; transition: all 0.3s; font-weight: 600;">
+                                    Solo Clasificados
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mt-2">
+                            <label class="fw-bold mb-1 text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px;">
                                 Ordenamiento
                             </label>
 
@@ -697,19 +716,78 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // --- 5. LÓGICA SWITCH DETALLES ---
-    const switchDetalles = document.getElementById('switchDetalles');
-    const lblDetalles = document.getElementById('lblDetalles');
+    // --- 5. LÓGICA SWITCH UNIVERSO DE IGLESIAS ---
+    const switchTodas = document.getElementById('switchTodas');
+    const lblTodas = document.getElementById('lblTodas');
 
-    switchDetalles.addEventListener('change', function() {
+    const checksTesoreros = document.querySelectorAll('.tesorero-check, #teso_ambos');
+    const contenedorTesoreros = checksTesoreros[0].closest('.d-flex');
+
+    switchTodas.addEventListener('change', function() {
         if (this.checked) {
-            lblDetalles.textContent = 'Si';
-            lblDetalles.classList.add('text-success');
+            // Estado: Todas las Iglesias (Activo)
+            lblTodas.textContent = 'Todas las Iglesias';
+            lblTodas.classList.remove('bg-secondary');
+            lblTodas.classList.add('bg-primary');
+
+            // 1. Deshabilitamos y limpiamos Oro y Plata
+            checkOro.disabled = true;
+            checkOro.checked = false;
+            checkPlata.disabled = true;
+            checkPlata.checked = false;
+
+            // 2. Seleccionamos "Ambos" obligatoriamente (para que pase la validación)
+            checkAmbos.checked = true;
+            checkAmbos.disabled = false;
+
+            // 3. Ocultamos visualmente
+            contenedorTesoreros.style.opacity = '0.3';
+            contenedorTesoreros.style.pointerEvents = 'none';
+
         } else {
-            lblDetalles.textContent = 'No';
-            lblDetalles.classList.remove('text-success');
+            // Estado: Solo Clasificados (Inactivo)
+            lblTodas.textContent = 'Solo Clasificados';
+            lblTodas.classList.remove('bg-primary');
+            lblTodas.classList.add('bg-secondary');
+
+            // Restauramos todo a la normalidad
+            checkOro.disabled = false;
+            checkPlata.disabled = false;
+            checkAmbos.disabled = false;
+
+            contenedorTesoreros.style.opacity = '1';
+            contenedorTesoreros.style.pointerEvents = 'auto';
         }
     });
+
+    // --- 6. LÓGICA PARA BLOQUEAR EL PDF EN "CON DETALLES" ---
+    const radiosFormato = document.querySelectorAll('input[name="tipo_reporte"]');
+    const btnPdf = document.querySelector('.btn-pdf'); // Seleccionamos el botón rojo de PDF
+
+    radiosFormato.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'detalles') {
+                // Deshabilitar botón PDF y pintarlo de Plomo
+                btnPdf.disabled = true;
+                btnPdf.style.backgroundColor = '#94a3b8'; // Color plomo
+                btnPdf.style.borderColor = '#94a3b8';    // Borde plomo
+                btnPdf.style.opacity = '1';              // 100% visible (ya no desaparece)
+                btnPdf.style.cursor = 'not-allowed';
+
+                // Mensaje de aviso al poner el mouse encima (Opcional, pero los navegadores suelen bloquearlo en botones disabled)
+                btnPdf.title = 'Próximamente. Por favor, use Excel.';
+            } else {
+                // Habilitar botón PDF y restaurar su color Rojo original
+                btnPdf.disabled = false;
+                btnPdf.style.backgroundColor = ''; // Al dejarlo vacío, recupera el rojo de tu CSS
+                btnPdf.style.borderColor = '';
+                btnPdf.style.opacity = '1';
+                btnPdf.style.cursor = 'pointer';
+                btnPdf.title = '';
+            }
+        });
+    });
 });
+
 </script>
 @endpush

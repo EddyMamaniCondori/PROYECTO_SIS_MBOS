@@ -55,9 +55,9 @@
                 <th width="5%">Nro</th>
                 <th class="text-left" width="30%">Iglesia (Cod - Nombre)</th>
                 <th class="text-left" width="20%">Distrito</th>
+                <th width="10%">Lugar</th>
                 <th width="10%">Tipo</th>
                 <th width="11%">Categoría</th>
-                <th width="12%">Recepciona</th>
                 <th width="12%">Recibido</th>
             </tr>
         </thead>
@@ -67,11 +67,11 @@
                 <td>{{ $index + 1 }}</td>
                 <td class="text-left"><strong>{{ $t->codigo_iglesia }}</strong> - {{ $t->nombre_iglesia }}</td>
                 <td class="text-left">{{ $t->nombre_distrito }}</td>
+                <td>{{ $t->lugar }}</td>
                 <td>{{ $t->tipo_iglesia }}</td>
                 <td>
                     <span class="pill pill-{{ strtolower($t->categoria) }}">{{ $t->categoria }}</span>
                 </td>
-                <td></td>
                 <td></td>
             </tr>
             @endforeach
