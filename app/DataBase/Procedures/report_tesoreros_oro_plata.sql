@@ -124,6 +124,10 @@ BEGIN
 
     ALTER TABLE tmp_resumen ADD COLUMN categoria VARCHAR(20);
 
+
+    -- CATEGORIA Oro: Todos los meses tiene 2 pts (1 estrella) y solo en 1 mes 1 pts (media estrella)
+    -- CATEGORIA Plata: Todos los meses 2 pts (1 estrella) y solo 2 meses 1 pts (media estrella)
+
     UPDATE tmp_resumen
     SET categoria = CASE
         WHEN meses_0_estrellas = 0 AND meses_1_estrella <= 1 THEN 'Oro'

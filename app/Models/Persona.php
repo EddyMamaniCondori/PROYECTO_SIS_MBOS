@@ -9,18 +9,19 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Pastor;
 
-use App\Models\Persona; 
+use App\Models\Persona;
+use Laravel\Sanctum\HasApiTokens;
 
 class Persona extends Authenticatable
 {
-     use HasFactory, Notifiable, HasRoles; 
+     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     protected $table = 'personas';
     protected $primaryKey = 'id_persona';
     public $incrementing = true;
 
     /************************************************
-     * Campos asignables 
+     * Campos asignables
      */
     protected $fillable = [
         'nombre',
@@ -79,7 +80,7 @@ class Persona extends Authenticatable
         return "{$this->nombre} {$this->ape_paterno} {$this->ape_materno}";
     }
 
-    
+
 
 
 }
